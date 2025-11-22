@@ -101,8 +101,8 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         run: |
           # Fetch credentials from Doppler
-          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notifications --config github-actions --plain)
-          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project notifications --config github-actions --plain)
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notifications --config dev --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project notifications --config dev --plain)
           # Build message (plain text - Pushover doesn't support HTML)
           MESSAGE="🚨 Crypto MarketCap Rankings Failed
 
@@ -132,8 +132,8 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         run: |
           # Fetch credentials from Doppler
-          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notifications --config github-actions --plain)
-          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project notifications --config github-actions --plain)
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notifications --config dev --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project notifications --config dev --plain)
           # Build message (plain text)
           MESSAGE="✅ Crypto MarketCap Rankings Succeeded
 
