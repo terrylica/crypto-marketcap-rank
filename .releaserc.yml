@@ -1,6 +1,8 @@
 # Inline configuration
 # Level: Project (standalone)
 
+repositoryUrl: https://github.com/terryli/crypto-marketcap-rank
+
 branches:
   - main
   - name: beta
