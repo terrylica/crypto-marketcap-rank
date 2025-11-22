@@ -1,0 +1,31 @@
+{
+  "name": "crypto-marketcap-rank",
+  "version": "0.0.0-development",
+  "description": "[![Daily Collection](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/daily-collection.yml/badge.svg)](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/daily-collection.yml) [![CI Status](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/ci.yml/badge.svg)](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/ci.yml)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "semantic-release --no-ci",
+    "release:dry": "semantic-release --dry-run --no-ci"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.6",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "semantic-release": "^25.0.2"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  }
+}
