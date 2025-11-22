@@ -69,3 +69,6 @@ htmlcov/
 *.tmp
 tmp/
 node_modules/
+
+# Lychee link checker cache and results
+.lychee*

@@ -21,12 +21,13 @@ Adheres to SLO:
 - Observability: Progress logging for build operations
 """
 
-import duckdb
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from .base_builder import DatabaseBuilder, BuildError, DatabaseSchema
+import duckdb
+
+from .base_builder import BuildError, DatabaseBuilder, DatabaseSchema
 
 
 class DuckDBBuilder(DatabaseBuilder):
@@ -63,7 +64,7 @@ class DuckDBBuilder(DatabaseBuilder):
             print(f"  Date: {collection_date}, Coins: {len(coins)}")
 
             # Transform to rows
-            print(f"Transforming to database rows...")
+            print("Transforming to database rows...")
             rows = self._transform_to_rows(collection_date, coins)
             print(f"  Rows: {len(rows)}")
 
@@ -226,7 +227,7 @@ class DuckDBBuilder(DatabaseBuilder):
 
             con.close()
 
-            print(f"✅ DuckDB validation passed")
+            print("✅ DuckDB validation passed")
             return True
 
         except BuildError:
@@ -253,7 +254,7 @@ if __name__ == "__main__":
         builder.validate(db_file)
 
         print(f"\n{'='*80}")
-        print(f"✅ Build successful!")
+        print("✅ Build successful!")
         print(f"{'='*80}")
         print(f"  Input: {input_file}")
         print(f"  Output: {db_file}")

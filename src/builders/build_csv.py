@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from .base_builder import DatabaseBuilder, BuildError, DatabaseSchema
+from .base_builder import BuildError, DatabaseBuilder, DatabaseSchema
 
 
 class CSVBuilder(DatabaseBuilder):
@@ -62,7 +62,7 @@ class CSVBuilder(DatabaseBuilder):
             print(f"  Date: {collection_date}, Coins: {len(coins)}")
 
             # Transform to rows
-            print(f"Transforming to database rows...")
+            print("Transforming to database rows...")
             rows = self._transform_to_rows(collection_date, coins)
             print(f"  Rows: {len(rows)}")
 
@@ -175,7 +175,7 @@ class CSVBuilder(DatabaseBuilder):
                 if null_count > 0:
                     raise BuildError(f"Found {null_count} empty values in required field: {field}")
 
-            print(f"✅ CSV validation passed")
+            print("✅ CSV validation passed")
             return True
 
         except BuildError:
@@ -202,7 +202,7 @@ if __name__ == "__main__":
         builder.validate(csv_file)
 
         print(f"\n{'='*80}")
-        print(f"✅ Build successful!")
+        print("✅ Build successful!")
         print(f"{'='*80}")
         print(f"  Input: {input_file}")
         print(f"  Output: {csv_file}")

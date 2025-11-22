@@ -23,13 +23,12 @@ Adheres to SLO:
 
 import sys
 from datetime import datetime
-from pathlib import Path
 
-from collectors.coingecko_collector import CoinGeckoCollector, CollectionError
+from builders.base_builder import BuildError
+from builders.build_csv import CSVBuilder
 from builders.build_duckdb import DuckDBBuilder
 from builders.build_parquet import ParquetBuilder
-from builders.build_csv import CSVBuilder
-from builders.base_builder import BuildError
+from collectors.coingecko_collector import CoinGeckoCollector, CollectionError
 
 
 def main(date: str = None):
@@ -43,7 +42,7 @@ def main(date: str = None):
         date = datetime.now().strftime('%Y-%m-%d')
 
     print(f"{'='*80}")
-    print(f"Crypto Market Cap Rankings - Daily Collection")
+    print("Crypto Market Cap Rankings - Daily Collection")
     print(f"{'='*80}")
     print(f"Date: {date}")
     print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -109,11 +108,11 @@ def main(date: str = None):
 
     # Step 3: Summary
     print(f"\n{'='*80}")
-    print(f"✅ Pipeline Complete!")
+    print("✅ Pipeline Complete!")
     print(f"{'='*80}")
     print(f"Date: {date}")
     print(f"End time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"\nOutput files:")
+    print("\nOutput files:")
     print(f"  Raw JSON:  {raw_file}")
     print(f"  DuckDB:    {built_files['duckdb']} ({built_files['duckdb'].stat().st_size / (1024*1024):.1f} MB)")
     print(f"  Parquet:   {built_files['parquet']}")

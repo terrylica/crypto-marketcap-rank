@@ -21,13 +21,14 @@ Adheres to SLO:
 - Observability: Progress logging for build operations
 """
 
-import pyarrow as pa
-import pyarrow.parquet as pq
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from .base_builder import DatabaseBuilder, BuildError, DatabaseSchema
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+from .base_builder import BuildError, DatabaseBuilder, DatabaseSchema
 
 
 class ParquetBuilder(DatabaseBuilder):
@@ -64,7 +65,7 @@ class ParquetBuilder(DatabaseBuilder):
             print(f"  Date: {collection_date}, Coins: {len(coins)}")
 
             # Transform to rows
-            print(f"Transforming to database rows...")
+            print("Transforming to database rows...")
             rows = self._transform_to_rows(collection_date, coins)
             print(f"  Rows: {len(rows)}")
 
@@ -213,7 +214,7 @@ class ParquetBuilder(DatabaseBuilder):
             if total_rows == 0:
                 raise BuildError("Parquet directory is empty")
 
-            print(f"✅ Parquet validation passed")
+            print("✅ Parquet validation passed")
             return True
 
         except BuildError:
@@ -244,7 +245,7 @@ if __name__ == "__main__":
         size_mb = total_size / (1024 * 1024)
 
         print(f"\n{'='*80}")
-        print(f"✅ Build successful!")
+        print("✅ Build successful!")
         print(f"{'='*80}")
         print(f"  Input: {input_file}")
         print(f"  Output: {parquet_dir}")

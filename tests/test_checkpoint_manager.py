@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Unit tests for CheckpointManager."""
 
-import pytest
 import sys
 import tempfile
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import pytest
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from utils.checkpoint_manager import CheckpointManager, Checkpoint, CheckpointError
+from utils.checkpoint_manager import Checkpoint, CheckpointError, CheckpointManager
 
 
 def test_checkpoint_save_restore():

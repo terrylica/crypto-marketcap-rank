@@ -26,10 +26,9 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 import requests
-
 
 # Configure logging
 logging.basicConfig(
@@ -98,7 +97,7 @@ class CoinGeckoCollector:
         self.delay = self.DELAY_WITH_KEY if self.api_key else self.DELAY_WITHOUT_KEY
         self.metrics = CollectionMetrics()
 
-        logger.info(f"Initialized CoinGeckoCollector")
+        logger.info("Initialized CoinGeckoCollector")
         logger.info(f"  API Key: {'✓ Present' if self.api_key else '✗ Not configured'}")
         logger.info(f"  Request delay: {self.delay}s")
         logger.info(f"  Output directory: {self.output_dir}")
@@ -170,7 +169,7 @@ class CoinGeckoCollector:
 
                 # Safety limit (prevent infinite loops)
                 if page > 100:
-                    logger.warning(f"Safety limit reached (100 pages)")
+                    logger.warning("Safety limit reached (100 pages)")
                     break
 
             self.metrics.end_time = time.time()
@@ -179,7 +178,7 @@ class CoinGeckoCollector:
             output_file = self._save_raw_data(all_coins, date)
 
             # Log final metrics
-            logger.info(f"Collection complete!")
+            logger.info("Collection complete!")
             logger.info(f"  Total coins: {len(all_coins)}")
             logger.info(f"  API calls: {self.metrics.total_api_calls}")
             logger.info(f"  Failed requests: {self.metrics.failed_requests}")
@@ -323,7 +322,7 @@ def main():
         output_file = collector.collect_all_coins(date=date)
 
         print(f"\n{'='*80}")
-        print(f"✅ Collection successful!")
+        print("✅ Collection successful!")
         print(f"{'='*80}")
         print(f"  Date: {date or datetime.now().strftime('%Y-%m-%d')}")
         print(f"  Coins collected: {collector.metrics.total_coins_fetched}")
