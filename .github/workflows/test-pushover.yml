@@ -1,0 +1,143 @@
+name: Test Pushover Notifications
+
+on:
+  workflow_dispatch:
+    inputs:
+      notification_type:
+        description: 'Notification type to test'
+        required: true
+        type: choice
+        options:
+          - success
+          - failure
+          - both
+
+jobs:
+  test-pushover:
+    name: Send Test Pushover Notification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Doppler CLI
+        run: |
+          (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || \
+           wget -t 3 -qO- https://cli.doppler.com/install.sh) | sudo sh
+
+      - name: Test Success Notification
+        if: github.event.inputs.notification_type == 'success' || github.event.inputs.notification_type == 'both'
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          echo "Testing SUCCESS notification..."
+
+          # Fetch credentials from Doppler
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN \
+            --project notifications --config dev --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY \
+            --project notifications --config dev --plain)
+
+          # Build message
+          MESSAGE="🧪 Test Notification - SUCCESS
+
+          This is a test of the Pushover notification system.
+
+          Workflow: Test Pushover Notifications
+          Run: ${{ github.run_id }}
+          Repo: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # Send to Pushover (priority -1 = silent)
+          RESPONSE=$(curl -s \
+            --form-string "token=$PUSHOVER_APP_TOKEN" \
+            --form-string "user=$PUSHOVER_USER_KEY" \
+            --form-string "title=✅ Pushover Test - Success" \
+            --form-string "message=$MESSAGE" \
+            --form-string "priority=-1" \
+            https://api.pushover.net/1/messages.json)
+
+          echo "Pushover API Response:"
+          echo "$RESPONSE" | jq .
+
+          # Verify success
+          STATUS=$(echo "$RESPONSE" | jq -r '.status')
+          if [ "$STATUS" != "1" ]; then
+            echo "❌ Pushover notification failed!"
+            exit 1
+          fi
+
+          echo "✅ SUCCESS notification sent successfully!"
+
+      - name: Test Failure Notification
+        if: github.event.inputs.notification_type == 'failure' || github.event.inputs.notification_type == 'both'
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          echo "Testing FAILURE notification..."
+
+          # Fetch credentials from Doppler
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN \
+            --project notifications --config dev --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY \
+            --project notifications --config dev --plain)
+
+          # Build message with simulated error
+          MESSAGE="🧪 Test Notification - FAILURE
+
+          This is a test of the Pushover notification system.
+
+          Workflow: Test Pushover Notifications
+          Run: ${{ github.run_id }}
+          Repo: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          Simulated Errors:
+          - Error: Test error message 1
+          - Error: Test error message 2
+
+          URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # Send to Pushover (priority 1 = high, bypasses quiet hours)
+          RESPONSE=$(curl -s \
+            --form-string "token=$PUSHOVER_APP_TOKEN" \
+            --form-string "user=$PUSHOVER_USER_KEY" \
+            --form-string "title=❌ Pushover Test - Failure" \
+            --form-string "message=$MESSAGE" \
+            --form-string "priority=1" \
+            --form-string "sound=siren" \
+            https://api.pushover.net/1/messages.json)
+
+          echo "Pushover API Response:"
+          echo "$RESPONSE" | jq .
+
+          # Verify success
+          STATUS=$(echo "$RESPONSE" | jq -r '.status')
+          if [ "$STATUS" != "1" ]; then
+            echo "❌ Pushover notification failed!"
+            exit 1
+          fi
+
+          echo "✅ FAILURE notification sent successfully!"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Pushover Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Notification Type**: ${{ github.event.inputs.notification_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Credentials Source" >> $GITHUB_STEP_SUMMARY
+          echo "- **Doppler Project**: notifications" >> $GITHUB_STEP_SUMMARY
+          echo "- **Doppler Config**: dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Service Token**: DOPPLER_TOKEN (from repo secrets)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### What to Check" >> $GITHUB_STEP_SUMMARY
+          echo "1. Check your Pushover app/device for test notification(s)" >> $GITHUB_STEP_SUMMARY
+          echo "2. Success notification: Silent (priority -1)" >> $GITHUB_STEP_SUMMARY
+          echo "3. Failure notification: Loud with siren sound (priority 1)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "If you received the notification(s), Pushover integration is working correctly! ✅" >> $GITHUB_STEP_SUMMARY
