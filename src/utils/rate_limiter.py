@@ -47,7 +47,7 @@ class RateLimitMetrics:
             self.month_start = now
 
 
-class RateLimitExceeded(Exception):
+class RateLimitError(Exception):
     """Raised when rate limit is exceeded."""
     pass
 
@@ -86,13 +86,13 @@ class RateLimiter:
             wait: If True, blocks until rate limit allows. If False, raises immediately.
 
         Raises:
-            RateLimitExceeded: If monthly quota exceeded or wait=False and minute limit hit
+            RateLimitError: If monthly quota exceeded or wait=False and minute limit hit
         """
         # Check monthly quota (hard limit, cannot wait)
         self.metrics.reset_if_new_month()
 
         if self.metrics.monthly_calls >= self.config.calls_per_month:
-            raise RateLimitExceeded(
+            raise RateLimitError(
                 f"Monthly quota exceeded: {self.metrics.monthly_calls}/{self.config.calls_per_month}"
             )
 
@@ -104,7 +104,7 @@ class RateLimiter:
 
         if current_minute_calls >= self.config.calls_per_minute:
             if not wait:
-                raise RateLimitExceeded(
+                raise RateLimitError(
                     f"Minute limit exceeded: {current_minute_calls}/{self.config.calls_per_minute}"
                 )
 
@@ -176,4 +176,4 @@ if __name__ == "__main__":
 
     metrics = limiter.get_metrics()
     print(f"\nMetrics: {metrics}")
-    print(f"✅ Rate limiter test passed")
+    print("✅ Rate limiter test passed")

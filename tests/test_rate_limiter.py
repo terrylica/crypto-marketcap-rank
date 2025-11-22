@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Unit tests for RateLimiter."""
 
-import time
-import pytest
 import sys
+import time
 from pathlib import Path
+
+import pytest
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from utils.rate_limiter import RateLimiter, RateLimitConfig, RateLimitExceeded
+from utils.rate_limiter import RateLimitConfig, RateLimiter, RateLimitError
 
 
 def test_rate_limiter_basic():
@@ -22,7 +23,7 @@ def test_rate_limiter_basic():
         limiter.acquire(wait=False)
 
     # 6th call should raise
-    with pytest.raises(RateLimitExceeded):
+    with pytest.raises(RateLimitError):
         limiter.acquire(wait=False)
 
 
@@ -53,7 +54,7 @@ def test_rate_limiter_monthly_quota():
         limiter.acquire(wait=False)
 
     # Should raise on quota exceeded
-    with pytest.raises(RateLimitExceeded, match="Monthly quota exceeded"):
+    with pytest.raises(RateLimitError, match="Monthly quota exceeded"):
         limiter.acquire(wait=False)
 
 

@@ -1,12 +1,12 @@
 """Utility modules for crypto market cap ranking."""
 
-from .rate_limiter import RateLimiter, RateLimitConfig, RateLimitExceeded
-from .checkpoint_manager import CheckpointManager, Checkpoint, CheckpointError
+from .checkpoint_manager import Checkpoint, CheckpointError, CheckpointManager
+from .rate_limiter import RateLimitConfig, RateLimiter, RateLimitError
 
 __all__ = [
     "RateLimiter",
     "RateLimitConfig",
-    "RateLimitExceeded",
+    "RateLimitError",
     "CheckpointManager",
     "Checkpoint",
     "CheckpointError",
