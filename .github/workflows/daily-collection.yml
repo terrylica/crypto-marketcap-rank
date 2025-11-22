@@ -1,0 +1,164 @@
+name: Daily Cryptocurrency Rankings Collection
+
+on:
+  schedule:
+    # Run daily at 6:00 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+    inputs:
+      date:
+        description: 'Collection date (YYYY-MM-DD, defaults to today)'
+        required: false
+        type: string
+
+env:
+  PYTHON_VERSION: '3.14'
+
+jobs:
+  collect-and-build:
+    name: Collect & Build Databases
+    runs-on: ubuntu-latest
+    timeout-minutes: 360  # 6 hours max
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Restore checkpoint cache
+        id: restore-checkpoint
+        uses: actions/cache/restore@v4
+        with:
+          path: data/.checkpoints
+          key: checkpoint-${{ github.run_id }}
+          restore-keys: |
+            checkpoint-
+
+      - name: Run collection and build
+        env:
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+        run: |
+          DATE="${{ github.event.inputs.date || '' }}"
+          if [ -z "$DATE" ]; then
+            uv run src/main.py
+          else
+            uv run src/main.py "$DATE"
+          fi
+
+      - name: Save checkpoint cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/.checkpoints
+          key: checkpoint-${{ github.run_id }}
+
+      - name: Upload DuckDB artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duckdb-database
+          path: data/processed/*.duckdb
+          retention-days: 7
+
+      - name: Upload Parquet artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: parquet-database
+          path: data/processed/*.parquet/
+          retention-days: 7
+
+      - name: Upload CSV artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: csv-database
+          path: data/processed/*.csv.gz
+          retention-days: 7
+
+      - name: Get collection date
+        id: get-date
+        run: |
+          DATE="${{ github.event.inputs.date || '' }}"
+          if [ -z "$DATE" ]; then
+            DATE=$(date +%Y-%m-%d)
+          fi
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: collect-and-build
+    runs-on: ubuntu-latest
+    if: success()
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Get collection date
+        id: get-date
+        run: |
+          DATE="${{ github.event.inputs.date || '' }}"
+          if [ -z "$DATE" ]; then
+            DATE=$(date +%Y-%m-%d)
+          fi
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: "Latest Daily Rankings"
+          body: |
+            # Cryptocurrency Market Cap Rankings
+
+            **Collection Date:** ${{ steps.get-date.outputs.date }}
+            **Generated:** ${{ github.event.repository.updated_at }}
+
+            ## Download Options
+
+            - **DuckDB** (instant SQL queries): `crypto_rankings_*.duckdb`
+            - **Parquet** (ClickHouse import): `crypto_rankings_*.parquet.tar.gz`
+            - **CSV** (universal compatibility): `crypto_rankings_*.csv.gz`
+
+            ## Quick Start
+
+            ```python
+            import duckdb
+            con = duckdb.connect('crypto_rankings_${{ steps.get-date.outputs.date }}.duckdb')
+            con.execute("SELECT * FROM rankings ORDER BY rank LIMIT 10").df()
+            ```
+
+            ---
+            *Automated daily collection via GitHub Actions*
+          files: |
+            artifacts/duckdb-database/*.duckdb
+            artifacts/parquet-database/*.parquet/
+            artifacts/csv-database/*.csv.gz
+          draft: false
+          prerelease: false
+          make_latest: true
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Daily collection failed for ${{ steps.get-date.outputs.date }}"

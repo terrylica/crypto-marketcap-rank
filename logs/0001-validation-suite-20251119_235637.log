@@ -1,0 +1,39 @@
+=========================================
+Automated Validation Suite
+=========================================
+Log: logs/0001-validation-suite-20251119_235637.log
+
+Test 1: Python Syntax Validation
+----------------------------------------------------------
+Checking validation/scripts/validate_kaggle.py...
+  ✅ Syntax valid
+
+Test 2: R Syntax Validation
+----------------------------------------------------------
+⚠️  R not installed, skipping R script validation
+
+Test 3: Documentation Consistency
+----------------------------------------------------------
+  ❌ Plan missing ADR reference
+  ✅ ADR-0001 exists
+
+Test 4: Directory Structure
+----------------------------------------------------------
+  ✅ docs/architecture/decisions exists
+  ✅ docs/development/plan exists
+  ✅ data exists
+  ✅ logs exists
+  ✅ validation exists
+  ✅ tools exists
+
+Test 5: Python Dependencies
+----------------------------------------------------------
+  ✅ Virtual environment exists
+  ✅ Core packages installed (pandas, numpy)
+
+=========================================
+VALIDATION SUMMARY
+=========================================
+❌ 1 validation(s) failed
+
+Please fix errors before proceeding.

@@ -1,0 +1,86 @@
+2025-11-20 08:51:09,629 - INFO - CoinGecko Validation Log: logs/0001-coingecko-validation-20251120_085109.log
+2025-11-20 08:51:09,629 - INFO - Input file: data/raw/coingecko/test/sample_market_cap.csv
+2025-11-20 08:51:09,629 - INFO - 
+2025-11-20 08:51:09,629 - INFO - ============================================================
+2025-11-20 08:51:09,629 - INFO - CoinGecko Data Validation Suite
+2025-11-20 08:51:09,629 - INFO - ============================================================
+2025-11-20 08:51:09,629 - INFO - Loading CoinGecko data from data/raw/coingecko/test/sample_market_cap.csv
+2025-11-20 08:51:09,631 - INFO - Loaded 65 rows, 7 columns
+2025-11-20 08:51:09,631 - INFO - Columns: ['date', 'id', 'name', 'current_price', 'market_cap', 'market_cap_rank', 'total_volume']
+2025-11-20 08:51:09,631 - INFO - Test 1: Schema Validation
+2025-11-20 08:51:09,631 - INFO -   ✅ Date field found: date
+2025-11-20 08:51:09,631 - INFO -   ✅ Identifier field found: id
+2025-11-20 08:51:09,631 - INFO -   ✅ Price field found: current_price
+2025-11-20 08:51:09,631 - INFO -   ✅ Market cap field found: market_cap
+2025-11-20 08:51:09,631 - INFO -   ✅ Rank field found: market_cap_rank
+2025-11-20 08:51:09,631 - WARNING -   ⚠️  No circulating_supply field (expected for CoinGecko free tier)
+2025-11-20 08:51:09,631 - INFO -   ✅ Schema validation PASSED
+2025-11-20 08:51:09,631 - INFO - 
+2025-11-20 08:51:09,631 - INFO - Test 2: Date Coverage Validation
+2025-11-20 08:51:09,633 - INFO -   Date range: 2024-01-01 to 2024-11-19
+2025-11-20 08:51:09,633 - INFO -   Coverage: 323 days
+2025-11-20 08:51:09,633 - WARNING -   ⚠️  Coverage 323 days (expected ~365)
+2025-11-20 08:51:09,633 - WARNING -   ⚠️  Data 366 days old
+2025-11-20 08:51:09,633 - INFO -   ✅ Date coverage PASSED
+2025-11-20 08:51:09,633 - INFO - 
+2025-11-20 08:51:09,633 - INFO - Test 3: Data Completeness Validation
+2025-11-20 08:51:09,633 - INFO -   ✅ current_price: No nulls
+2025-11-20 08:51:09,634 - INFO -   ✅ current_price: No zeros
+2025-11-20 08:51:09,634 - INFO -   ✅ market_cap: No nulls
+2025-11-20 08:51:09,634 - INFO -   ✅ market_cap: No zeros
+2025-11-20 08:51:09,634 - INFO -   ✅ Data completeness PASSED
+2025-11-20 08:51:09,634 - INFO - 
+2025-11-20 08:51:09,634 - INFO - Test 4: Market Cap Consistency
+2025-11-20 08:51:09,634 - INFO -   Top 10 coins on 2024-11-19:
+2025-11-20 08:51:09,634 - INFO -     # 1 bitcoin    Market Cap: $1,790,000,000,000
+2025-11-20 08:51:09,634 - INFO -     # 2 ethereum   Market Cap: $371,000,000,000
+2025-11-20 08:51:09,635 - INFO -     # 3 tether     Market Cap: $123,000,000,000
+2025-11-20 08:51:09,635 - INFO -     # 4 binancecoin Market Cap: $96,800,000,000
+2025-11-20 08:51:09,635 - INFO -     # 5 solana     Market Cap: $102,000,000,000
+2025-11-20 08:51:09,635 - INFO -   ✅ Top market cap: $1,790,000,000,000
+2025-11-20 08:51:09,635 - WARNING -   ⚠️  Rank mismatches: 2
+2025-11-20 08:51:09,635 - INFO -   ✅ Market cap consistency PASSED
+2025-11-20 08:51:09,635 - INFO - 
+2025-11-20 08:51:09,635 - INFO - Test 5: Major Coin Coverage
+2025-11-20 08:51:09,636 - INFO -   ✅ BTC present (as 'bitcoin')
+2025-11-20 08:51:09,636 - INFO -   ✅ ETH present (as 'ethereum')
+2025-11-20 08:51:09,636 - INFO -   ✅ USDT present (as 'tether')
+2025-11-20 08:51:09,636 - INFO -   Total unique coins: 5
+2025-11-20 08:51:09,636 - WARNING -   ⚠️  Low coin count: 5
+2025-11-20 08:51:09,636 - INFO -   ✅ Coin coverage check COMPLETE
+2025-11-20 08:51:09,636 - INFO - 
+2025-11-20 08:51:09,636 - INFO - Generating Quality Assessment
+2025-11-20 08:51:09,636 - INFO -   Quality Tier: unverified
+2025-11-20 08:51:09,636 - INFO -   Coverage: 323 days
+2025-11-20 08:51:09,636 - INFO -   Records: 65
+2025-11-20 08:51:09,636 - INFO -   Unique Coins: 5
+2025-11-20 08:51:09,636 - INFO - ============================================================
+2025-11-20 08:51:09,636 - INFO - VALIDATION SUMMARY
+2025-11-20 08:51:09,636 - INFO - ============================================================
+2025-11-20 08:51:09,636 - INFO - ⚠️  5 warnings:
+2025-11-20 08:51:09,636 - INFO -   ⚠️  QUALITY LIMITATION: No circulating_supply field in CoinGecko data
+   Cannot verify market_cap = price × supply calculation
+   Data will be flagged as 'unverified' quality tier
+2025-11-20 08:51:09,636 - INFO -   ⚠️  Date coverage is 323 days (expected ~365)
+   Slightly below expected range, but acceptable
+2025-11-20 08:51:09,636 - INFO -   ⚠️  Data is 366 days old (last date: 2024-11-19)
+   Consider refreshing CoinGecko data
+2025-11-20 08:51:09,636 - INFO -   ⚠️  Rank/MarketCap ordering mismatch: 2 coins (40.0%)
+   Provided rank may not match market cap sorting
+2025-11-20 08:51:09,636 - INFO -   ⚠️  Only 5 unique coins found
+   Expected: 100+ for top coin rankings
+2025-11-20 08:51:09,636 - INFO - 
+2025-11-20 08:51:09,636 - INFO - ✅ All validation tests PASSED
+2025-11-20 08:51:09,636 - INFO - 
+2025-11-20 08:51:09,636 - INFO - QUALITY TIER: UNVERIFIED
+2025-11-20 08:51:09,636 - INFO -   - CoinGecko data is usable but flagged as unverified
+2025-11-20 08:51:09,636 - INFO -   - Cannot verify market_cap calculation (no circulating_supply)
+2025-11-20 08:51:09,636 - INFO -   - Recommended for 2024-2025 period only
+2025-11-20 08:51:09,636 - INFO -   - Will be merged with verified data (Kaggle + crypto2)
+2025-11-20 08:51:09,636 - INFO - 
+2025-11-20 08:51:09,636 - INFO - NEXT STEPS:
+2025-11-20 08:51:09,636 - INFO -   1. Use this data for 2024-2025 recent period
+2025-11-20 08:51:09,636 - INFO -   2. Combine with verified data from Kaggle/crypto2
+2025-11-20 08:51:09,636 - INFO -   3. Flag all CoinGecko records as quality_tier='unverified'
+2025-11-20 08:51:09,636 - INFO -   4. Document limitations in final dataset README
+2025-11-20 08:51:09,636 - INFO - Log saved to: logs/0001-coingecko-validation-20251120_085109.log

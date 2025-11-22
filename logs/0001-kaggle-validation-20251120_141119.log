@@ -1,0 +1,17 @@
+2025-11-20 14:11:19,854 - __main__ - INFO - 
+================================================================================
+2025-11-20 14:11:19,854 - __main__ - INFO - KAGGLE DATASET VALIDATION SUITE
+2025-11-20 14:11:19,854 - __main__ - INFO - ================================================================================
+2025-11-20 14:11:19,854 - __main__ - INFO - Dataset: data/raw/kaggle/historical.csv
+2025-11-20 14:11:19,854 - __main__ - INFO - Timestamp: 2025-11-20T14:11:19.854211
+2025-11-20 14:11:19,854 - __main__ - INFO - ================================================================================
+
+2025-11-20 14:11:19,854 - __main__ - INFO - Loading data from data/raw/kaggle/historical.csv
+2025-11-20 14:11:24,881 - __main__ - INFO - Loaded 4,441,972 records
+2025-11-20 14:11:24,882 - __main__ - ERROR - 
+================================================================================
+2025-11-20 14:11:24,882 - __main__ - ERROR - VALIDATION RESULT: ❌ FAILED
+2025-11-20 14:11:24,882 - __main__ - ERROR - ================================================================================
+2025-11-20 14:11:24,882 - __main__ - ERROR - Missing required columns: ['symbol', 'name', 'rank']
+Available columns: ['date', 'coin_id', 'cmc_rank', 'market_cap', 'price', 'open', 'high', 'low', 'close', 'time_high', 'time_low', 'volume_24h', 'percent_change_1h', 'percent_change_24h', 'percent_change_7d', 'circulating_supply', 'total_supply', 'max_supply', 'num_market_pairs']
+2025-11-20 14:11:24,882 - __main__ - ERROR - ================================================================================

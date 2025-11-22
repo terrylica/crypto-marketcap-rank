@@ -1,0 +1,51 @@
+[2025-11-20 17:26:54,419] INFO - CoinGecko Data Collection
+[2025-11-20 17:26:54,419] INFO - Log file: logs/0001-coingecko-collection-20251120_172654.log
+[2025-11-20 17:26:54,419] INFO - 
+[2025-11-20 17:26:54,419] INFO - ⚠️  TEST MODE: Collecting only 3 coins
+[2025-11-20 17:26:54,419] INFO - 
+[2025-11-20 17:26:54,419] INFO - Step 1: Retrieving top 3 coins...
+[2025-11-20 17:26:54,597] INFO -   Retrieved page 1/1: 3 coins
+[2025-11-20 17:26:54,597] INFO - ✅ Retrieved 3 coins
+[2025-11-20 17:26:54,597] INFO -   Sample coins:
+[2025-11-20 17:26:54,597] INFO -     Rank   1: bitcoin              (BTC)
+[2025-11-20 17:26:54,598] INFO -     Rank   2: ethereum             (ETH)
+[2025-11-20 17:26:54,598] INFO -     Rank   3: tether               (USDT)
+[2025-11-20 17:26:54,598] INFO - 
+[2025-11-20 17:26:54,598] INFO - Step 2: Estimation
+[2025-11-20 17:26:54,598] INFO -   Coins to collect: 3
+[2025-11-20 17:26:54,598] INFO -   Rate limiting: 2.0s between requests
+[2025-11-20 17:26:54,598] INFO -   Estimated time: 0.1 minutes
+[2025-11-20 17:26:54,598] INFO - 
+[2025-11-20 17:26:54,598] INFO - Step 3: Collecting historical data...
+[2025-11-20 17:26:54,598] INFO -   (This may take 0 minutes)
+[2025-11-20 17:26:54,598] INFO - 
+[2025-11-20 17:26:54,598] INFO -   [1/3] Collecting bitcoin (BTC)...
+[2025-11-20 17:26:56,748] INFO -     ✅ 366 records
+[2025-11-20 17:26:56,748] INFO -   [2/3] Collecting ethereum (ETH)...
+[2025-11-20 17:26:58,958] INFO -     ✅ 366 records
+[2025-11-20 17:26:58,958] INFO -   [3/3] Collecting tether (USDT)...
+[2025-11-20 17:27:01,162] INFO -     ✅ 366 records
+[2025-11-20 17:27:01,162] INFO - 
+[2025-11-20 17:27:01,162] INFO - Step 4: Saving data...
+[2025-11-20 17:27:01,170] INFO - ✅ Saved to: data/raw/coingecko/market_cap_20251120_172701.csv
+[2025-11-20 17:27:01,170] INFO -   Records: 1,098
+[2025-11-20 17:27:01,170] INFO -   File size: 0.1 MB
+[2025-11-20 17:27:01,170] INFO -   Date range: 2024-11-21 to 2025-11-20
+[2025-11-20 17:27:01,171] INFO -   Unique coins: 3
+[2025-11-20 17:27:01,171] INFO - 
+[2025-11-20 17:27:01,171] INFO - ============================================================
+[2025-11-20 17:27:01,171] INFO - COLLECTION SUMMARY
+[2025-11-20 17:27:01,171] INFO - ============================================================
+[2025-11-20 17:27:01,171] INFO - Coins requested:    3
+[2025-11-20 17:27:01,171] INFO - Coins collected:    3
+[2025-11-20 17:27:01,171] INFO - Coins failed:       0
+[2025-11-20 17:27:01,171] INFO - Total records:      1,098
+[2025-11-20 17:27:01,171] INFO - API calls made:     4
+[2025-11-20 17:27:01,171] INFO - Collection time:    0.1 minutes
+[2025-11-20 17:27:01,171] INFO - Output file:        data/raw/coingecko/market_cap_20251120_172701.csv
+[2025-11-20 17:27:01,171] INFO - 
+[2025-11-20 17:27:01,171] INFO - NEXT STEPS:
+[2025-11-20 17:27:01,171] INFO -   1. Validate data: uv run validation/scripts/validate_coingecko.py data/raw/coingecko/market_cap_20251120_172701.csv
+[2025-11-20 17:27:01,171] INFO -   2. Merge with crypto2: uv run tools/merge_datasets.py
+[2025-11-20 17:27:01,171] INFO - 
+[2025-11-20 17:27:01,171] INFO - Collection complete! 🚀

@@ -1,0 +1,6 @@
+[2025-11-19T17:59:43.210428] [INFO    ] Fetching global market data
+[2025-11-19T17:59:43.247690] [WARN    ] Failed to fetch global data
+[2025-11-19T17:59:43.247796] [INFO    ] Fetching ticker data (66 pages maximum)
+[2025-11-19T17:59:43.247839] [INFO    ] Page   1/66 [  1.5%]
+[2025-11-19T17:59:43.276776] [ERROR   ] Failed to fetch page 1
+[2025-11-19T17:59:43.276886] [ERROR   ] No coins collected - aborting

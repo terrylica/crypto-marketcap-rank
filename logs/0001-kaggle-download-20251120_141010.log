@@ -1,0 +1,32 @@
+=========================================
+Kaggle Dataset Download
+=========================================
+Dataset: bizzyvinci/coinmarketcap-historical-data
+Output: data/raw/kaggle
+Log: logs/0001-kaggle-download-20251120_141010.log
+
+Downloading dataset (820 MB, ~5-10 minutes)...
+Dataset URL: https://www.kaggle.com/datasets/bizzyvinci/coinmarketcap-historical-data
+License(s): CC0-1.0
+Downloading coinmarketcap-historical-data.zip to data/raw/kaggle
+  0%|                                                                                        | 0.00/782M [00:00<?, ?B/s]  9%|███████▍                                                                        | 73.0M/782M [00:00<00:02, 280MB/s] 29%|███████████████████████▎                                                         | 225M/782M [00:00<00:00, 723MB/s] 48%|██████████████████████████████████████▌                                         | 377M/782M [00:00<00:00, 1.00GB/s] 67%|█████████████████████████████████████████████████████▎                          | 521M/782M [00:00<00:00, 1.15GB/s] 85%|████████████████████████████████████████████████████████████████████            | 665M/782M [00:00<00:00, 1.26GB/s]100%|████████████████████████████████████████████████████████████████████████████████| 782M/782M [00:00<00:00, 1.09GB/s]
+
+
+Extracting...
+Archive:  data/raw/kaggle/coinmarketcap-historical-data.zip
+  inflating: data/raw/kaggle/coinmarketcap.sqlite  
+  inflating: data/raw/kaggle/coins.csv  
+  inflating: data/raw/kaggle/historical.csv  
+
+✅ Download complete!
+
+Files:
+total 3498368
+-rw-r--r--@ 1 terryli  staff   810M Aug  9  2021 coinmarketcap.sqlite
+-rw-r--r--@ 1 terryli  staff   9.7M Aug  9  2021 coins.csv
+-rw-r--r--@ 1 terryli  staff   866M Aug  9  2021 historical.csv
+
+=========================================
+Next step: Run validation
+  uv run validation/scripts/validate_kaggle.py data/raw/kaggle/historical_data.csv
+=========================================

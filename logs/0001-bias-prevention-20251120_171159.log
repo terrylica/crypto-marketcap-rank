@@ -1,0 +1,43 @@
+2025-11-20 17:11:59,410 - INFO - Bias Prevention Validation Log: logs/0001-bias-prevention-20251120_171159.log
+2025-11-20 17:11:59,410 - INFO - Input file: data/raw/crypto2/scenario_b_full_20251120_20251120_154741.csv
+2025-11-20 17:11:59,410 - INFO - 
+2025-11-20 17:11:59,410 - INFO - ======================================================================
+2025-11-20 17:11:59,410 - INFO - LOOK-AHEAD BIAS PREVENTION VALIDATION SUITE
+2025-11-20 17:11:59,410 - INFO - ======================================================================
+2025-11-20 17:11:59,410 - INFO - 
+2025-11-20 17:11:59,410 - INFO - Loading dataset from data/raw/crypto2/scenario_b_full_20251120_20251120_154741.csv
+2025-11-20 17:11:59,833 - INFO - Loaded 264,388 rows
+2025-11-20 17:11:59,834 - INFO - Date range: 2013-04-28 23:59:59 to 2024-12-31 23:59:59
+2025-11-20 17:11:59,838 - INFO - Unique coins: 69
+2025-11-20 17:11:59,838 - INFO - ============================================================
+2025-11-20 17:11:59,838 - INFO - Test 1: Dead Coin Verification (Survivorship Bias)
+2025-11-20 17:11:59,838 - INFO - ============================================================
+2025-11-20 17:11:59,838 - INFO - 
+Checking BitConnect...
+2025-11-20 17:11:59,876 - ERROR -   ❌ BitConnect NOT FOUND - SURVIVORSHIP BIAS!
+2025-11-20 17:11:59,877 - INFO - 
+Checking Terra...
+2025-11-20 17:11:59,913 - ERROR -   ❌ Terra NOT FOUND - SURVIVORSHIP BIAS!
+2025-11-20 17:11:59,913 - INFO - 
+Checking FTX Token...
+2025-11-20 17:11:59,931 - ERROR -   ❌ FTX Token NOT FOUND - SURVIVORSHIP BIAS!
+2025-11-20 17:11:59,932 - ERROR - ======================================================================
+2025-11-20 17:11:59,932 - ERROR - VALIDATION FAILED
+2025-11-20 17:11:59,932 - ERROR - ======================================================================
+2025-11-20 17:11:59,932 - ERROR - Error: SURVIVORSHIP BIAS DETECTED:
+❌ CRITICAL: BitConnect not found in dataset
+   Expected symbols: ['BCC', 'BITCONNECT']
+   This indicates SURVIVORSHIP BIAS - dataset excludes dead coins
+   Reason: Ponzi scheme shutdown
+❌ CRITICAL: Terra not found in dataset
+   Expected symbols: ['LUNA', 'LUNC']
+   This indicates SURVIVORSHIP BIAS - dataset excludes dead coins
+   Reason: Algorithmic stablecoin collapse ($60B wipeout)
+❌ CRITICAL: FTX Token not found in dataset
+   Expected symbols: ['FTT']
+   This indicates SURVIVORSHIP BIAS - dataset excludes dead coins
+   Reason: Exchange bankruptcy
+
+RECOMMENDATION: Dataset excludes dead coins. This creates look-ahead bias. Data source is unreliable.
+2025-11-20 17:11:59,932 - ERROR - 
+2025-11-20 17:11:59,932 - ERROR - Full log: logs/0001-bias-prevention-20251120_171159.log

@@ -1,0 +1,891 @@
+DEBUG uv 0.9.10 (44f5a14f4 2025-11-17)
+DEBUG Acquired shared lock for `/Users/terryli/.cache/uv`
+DEBUG Reading inline script metadata from `tools/collect_coingecko.py`
+DEBUG Acquired lock for `/Users/terryli/eon/crypto-marketcap-rank/tools/collect_coingecko.py`
+DEBUG Using Python request `/Users/terryli/.local/share/uv/python/cpython-3.13.6-macos-aarch64-none/bin/python3` from explicit request
+DEBUG Using Python request path `/Users/terryli/.local/share/uv/python/cpython-3.13.6-macos-aarch64-none/bin/python3` from explicit request
+DEBUG Checking for Python environment at: `/Users/terryli/.cache/uv/environments-v2/collect-coingecko-7ab54f7e00dfaaff`
+DEBUG The script environment's Python version satisfies the request: `path `/Users/terryli/.local/share/uv/python/cpython-3.13.6-macos-aarch64-none/bin/python3``
+DEBUG Released lock at `/var/folders/f4/yr36gs0j7gb46m_lcdc6tr2h0000gn/T/uv-7ab54f7e00dfaaff.lock`
+DEBUG Acquired lock for `/Users/terryli/.cache/uv/environments-v2/collect-coingecko-7ab54f7e00dfaaff`
+DEBUG All requirements satisfied: certifi>=2017.4.17 | charset-normalizer>=2, <4 | idna>=2.5, <4 | numpy>=1.26.0 ; python_full_version >= '3.12' | pandas>=2.0.0 | python-dateutil>=2.8.2 | pytz>=2020.1 | requests>=2.31.0 | six>=1.5 | tzdata>=2022.7 | urllib3>=1.21.1, <3
+DEBUG Released lock at `/Users/terryli/.cache/uv/environments-v2/collect-coingecko-7ab54f7e00dfaaff/.lock`
+DEBUG Using Python 3.13.6 interpreter at: /Users/terryli/.cache/uv/environments-v2/collect-coingecko-7ab54f7e00dfaaff/bin/python3
+DEBUG Running `python tools/collect_coingecko.py --top-n 500 --output data/raw/coingecko`
+DEBUG Spawned child 73128 in process group 73052
+⚠️  No API key provided (using free tier without registration)
+   Consider registering for Demo API for better rate limits:
+   https://www.coingecko.com/en/api
+
+[2025-11-20 17:33:31,085] INFO - CoinGecko Data Collection
+[2025-11-20 17:33:31,085] INFO - Log file: logs/0001-coingecko-collection-20251120_173331.log
+[2025-11-20 17:33:31,085] INFO - 
+[2025-11-20 17:33:31,085] INFO - Step 1: Retrieving top 500 coins...
+[2025-11-20 17:33:31,187] INFO -   Retrieved page 1/2: 250 coins
+[2025-11-20 17:33:35,284] INFO -   Retrieved page 2/2: 250 coins
+[2025-11-20 17:33:35,284] INFO - ✅ Retrieved 500 coins
+[2025-11-20 17:33:35,284] INFO -   Sample coins:
+[2025-11-20 17:33:35,284] INFO -     Rank   1: bitcoin              (BTC)
+[2025-11-20 17:33:35,284] INFO -     Rank   2: ethereum             (ETH)
+[2025-11-20 17:33:35,284] INFO -     Rank   3: tether               (USDT)
+[2025-11-20 17:33:35,284] INFO -     Rank   4: ripple               (XRP)
+[2025-11-20 17:33:35,284] INFO -     Rank   5: binancecoin          (BNB)
+[2025-11-20 17:33:35,284] INFO - 
+[2025-11-20 17:33:35,284] INFO - Step 2: Estimation
+[2025-11-20 17:33:35,284] INFO -   Coins to collect: 500
+[2025-11-20 17:33:35,284] INFO -   Rate limiting: 4.0s between requests
+[2025-11-20 17:33:35,284] INFO -   Estimated time: 33.3 minutes
+[2025-11-20 17:33:35,284] INFO - 
+[2025-11-20 17:33:35,284] INFO - Step 3: Collecting historical data...
+[2025-11-20 17:33:35,284] INFO -   (This may take 33 minutes)
+[2025-11-20 17:33:35,284] INFO - 
+[2025-11-20 17:33:35,284] INFO -   [1/500] Collecting bitcoin (BTC)...
+[2025-11-20 17:33:39,384] INFO -     ✅ 366 records
+[2025-11-20 17:33:39,384] INFO -   [2/500] Collecting ethereum (ETH)...
+[2025-11-20 17:33:43,508] INFO -     ✅ 366 records
+[2025-11-20 17:33:43,508] INFO -   [3/500] Collecting tether (USDT)...
+[2025-11-20 17:33:47,654] INFO -     ✅ 366 records
+[2025-11-20 17:33:47,655] INFO -   [4/500] Collecting ripple (XRP)...
+[2025-11-20 17:33:51,688] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 6
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:33:51,689] INFO -   [5/500] Collecting binancecoin (BNB)...
+[2025-11-20 17:33:55,722] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 7
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:33:55,722] INFO -   [6/500] Collecting solana (SOL)...
+[2025-11-20 17:33:59,757] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 8
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:33:59,758] INFO -   [7/500] Collecting usd-coin (USDC)...
+[2025-11-20 17:34:03,791] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 9
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:03,791] INFO -   [8/500] Collecting tron (TRX)...
+[2025-11-20 17:34:07,827] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 10
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:07,828] INFO -   [9/500] Collecting staked-ether (STETH)...
+[2025-11-20 17:34:11,860] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 11
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:11,860] INFO -   [10/500] Collecting dogecoin (DOGE)...
+[2025-11-20 17:34:15,898] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 12
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:15,899] INFO -   [11/500] Collecting cardano (ADA)...
+[2025-11-20 17:34:19,932] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 13
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:19,933] INFO -   [12/500] Collecting figure-heloc (FIGR_HELOC)...
+[2025-11-20 17:34:23,969] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 14
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:23,970] INFO -   [13/500] Collecting whitebit (WBT)...
+[2025-11-20 17:34:28,003] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 15
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:28,004] INFO -   [14/500] Collecting wrapped-steth (WSTETH)...
+[2025-11-20 17:34:32,039] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 16
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:32,039] INFO -   [15/500] Collecting zcash (ZEC)...
+[2025-11-20 17:34:36,071] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 17
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:36,072] INFO -   [16/500] Collecting wrapped-bitcoin (WBTC)...
+[2025-11-20 17:34:40,107] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 18
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:40,107] INFO -   [17/500] Collecting hyperliquid (HYPE)...
+[2025-11-20 17:34:44,142] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 19
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:44,143] INFO -   [18/500] Collecting wrapped-beacon-eth (WBETH)...
+[2025-11-20 17:34:48,181] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 20
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:34:48,182] INFO -   [19/500] Collecting bitcoin-cash (BCH)...
+[2025-11-20 17:34:52,347] INFO -     ✅ 366 records
+[2025-11-20 17:34:52,347] INFO -   [20/500] Collecting chainlink (LINK)...
+[2025-11-20 17:34:56,503] INFO -     ✅ 366 records
+[2025-11-20 17:34:56,503] INFO -   [21/500] Collecting usds (USDS)...
+[2025-11-20 17:35:00,636] INFO -     ✅ 366 records
+[2025-11-20 17:35:00,636] INFO -   [22/500] Collecting binance-bridged-usdt-bnb-smart-chain (BSC-USD)...
+[2025-11-20 17:35:04,799] INFO -     ✅ 366 records
+[2025-11-20 17:35:04,799] INFO -   [23/500] Collecting leo-token (LEO)...
+[2025-11-20 17:35:08,931] INFO -     ✅ 366 records
+[2025-11-20 17:35:08,932] INFO -   [24/500] Collecting stellar (XLM)...
+[2025-11-20 17:35:13,070] INFO -     ✅ 366 records
+[2025-11-20 17:35:13,070] INFO -   [25/500] Collecting ethena-usde (USDE)...
+[2025-11-20 17:35:17,098] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 27
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:17,099] INFO -   [26/500] Collecting weth (WETH)...
+[2025-11-20 17:35:21,131] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 28
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:21,132] INFO -   [27/500] Collecting wrapped-eeth (WEETH)...
+[2025-11-20 17:35:25,169] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 29
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:25,171] INFO -   [28/500] Collecting litecoin (LTC)...
+[2025-11-20 17:35:29,202] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 30
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:29,202] INFO -   [29/500] Collecting monero (XMR)...
+[2025-11-20 17:35:33,234] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 31
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:33,235] INFO -   [30/500] Collecting coinbase-wrapped-btc (CBBTC)...
+[2025-11-20 17:35:37,266] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 32
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:37,266] INFO -   [31/500] Collecting avalanche-2 (AVAX)...
+[2025-11-20 17:35:41,312] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 33
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:41,312] INFO -   [32/500] Collecting hedera-hashgraph (HBAR)...
+[2025-11-20 17:35:45,362] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 34
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:45,363] INFO -   [33/500] Collecting sui (SUI)...
+[2025-11-20 17:35:49,416] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 35
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:49,418] INFO -   [34/500] Collecting shiba-inu (SHIB)...
+[2025-11-20 17:35:53,455] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 36
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:53,456] INFO -   [35/500] Collecting dai (DAI)...
+[2025-11-20 17:35:57,508] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 37
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:35:57,509] INFO -   [36/500] Collecting ethena-staked-usde (SUSDE)...
+[2025-11-20 17:36:01,562] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 38
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:01,563] INFO -   [37/500] Collecting uniswap (UNI)...
+[2025-11-20 17:36:05,608] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 39
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:05,610] INFO -   [38/500] Collecting polkadot (DOT)...
+[2025-11-20 17:36:09,655] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 40
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:09,656] INFO -   [39/500] Collecting usdt0 (USDT0)...
+[2025-11-20 17:36:13,704] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 41
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:13,706] INFO -   [40/500] Collecting the-open-network (TON)...
+[2025-11-20 17:36:17,924] INFO -     ✅ 366 records
+[2025-11-20 17:36:17,924] INFO -   [41/500] Collecting crypto-com-chain (CRO)...
+[2025-11-20 17:36:22,094] INFO -     ✅ 366 records
+[2025-11-20 17:36:22,094] INFO -   [42/500] Collecting susds (SUSDS)...
+[2025-11-20 17:36:26,262] INFO -     ✅ 345 records
+[2025-11-20 17:36:26,262] INFO -   [43/500] Collecting world-liberty-financial (WLFI)...
+[2025-11-20 17:36:30,318] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 45
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:30,319] INFO -   [44/500] Collecting paypal-usd (PYUSD)...
+[2025-11-20 17:36:34,361] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 46
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:34,362] INFO -   [45/500] Collecting memecore (M)...
+[2025-11-20 17:36:38,411] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 47
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:38,413] INFO -   [46/500] Collecting mantle (MNT)...
+[2025-11-20 17:36:42,450] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 48
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:42,450] INFO -   [47/500] Collecting canton-network (CC)...
+[2025-11-20 17:36:46,485] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 49
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:46,485] INFO -   [48/500] Collecting bittensor (TAO)...
+[2025-11-20 17:36:50,526] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 50
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:50,527] INFO -   [49/500] Collecting usd1-wlfi (USD1)...
+[2025-11-20 17:36:54,568] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 51
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:54,568] INFO -   [50/500] Collecting near (NEAR)...
+[2025-11-20 17:36:58,637] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 52
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:36:58,639] INFO -   [51/500] Collecting internet-computer (ICP)...
+[2025-11-20 17:37:02,699] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 53
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:02,700] INFO -   [52/500] Collecting c1usd (C1USD)...
+[2025-11-20 17:37:06,735] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 54
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:06,735] INFO -   [53/500] Collecting aave (AAVE)...
+[2025-11-20 17:37:10,799] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 55
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:10,802] INFO -   [54/500] Collecting aster-2 (ASTER)...
+[2025-11-20 17:37:14,865] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 56
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:14,867] INFO -   [55/500] Collecting bitget-token (BGB)...
+[2025-11-20 17:37:18,928] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 57
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:18,929] INFO -   [56/500] Collecting blackrock-usd-institutional-digital-liquidity-fund (BUIDL)...
+[2025-11-20 17:37:22,968] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 58
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:22,969] INFO -   [57/500] Collecting okb (OKB)...
+[2025-11-20 17:37:27,037] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 59
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:27,039] INFO -   [58/500] Collecting falcon-finance (USDF)...
+[2025-11-20 17:37:31,379] INFO -     ✅ 273 records
+[2025-11-20 17:37:31,379] INFO -   [59/500] Collecting tether-gold (XAUT)...
+[2025-11-20 17:37:35,567] INFO -     ✅ 366 records
+[2025-11-20 17:37:35,568] INFO -   [60/500] Collecting ethereum-classic (ETC)...
+[2025-11-20 17:37:39,733] INFO -     ✅ 366 records
+[2025-11-20 17:37:39,733] INFO -   [61/500] Collecting pi-network (PI)...
+[2025-11-20 17:37:43,888] INFO -     ✅ 276 records
+[2025-11-20 17:37:43,888] INFO -   [62/500] Collecting aptos (APT)...
+[2025-11-20 17:37:48,070] INFO -     ✅ 366 records
+[2025-11-20 17:37:48,070] INFO -   [63/500] Collecting ethena (ENA)...
+[2025-11-20 17:37:52,105] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 65
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:52,105] INFO -   [64/500] Collecting pepe (PEPE)...
+[2025-11-20 17:37:56,175] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 66
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:37:56,177] INFO -   [65/500] Collecting jito-staked-sol (JITOSOL)...
+[2025-11-20 17:38:00,233] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 67
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:00,234] INFO -   [66/500] Collecting jupiter-perpetuals-liquidity-provider-token (JLP)...
+[2025-11-20 17:38:04,301] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 68
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:04,302] INFO -   [67/500] Collecting wrapped-solana (SOL)...
+[2025-11-20 17:38:08,365] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 69
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:08,367] INFO -   [68/500] Collecting pump-fun (PUMP)...
+[2025-11-20 17:38:12,393] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 70
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:12,393] INFO -   [69/500] Collecting binance-peg-weth (WETH)...
+[2025-11-20 17:38:16,444] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 71
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:16,445] INFO -   [70/500] Collecting htx-dao (HTX)...
+[2025-11-20 17:38:20,472] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 72
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:20,473] INFO -   [71/500] Collecting ondo-finance (ONDO)...
+[2025-11-20 17:38:24,539] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 73
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:24,541] INFO -   [72/500] Collecting worldcoin-wld (WLD)...
+[2025-11-20 17:38:28,602] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 74
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:28,603] INFO -   [73/500] Collecting kucoin-shares (KCS)...
+[2025-11-20 17:38:32,669] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 75
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:32,670] INFO -   [74/500] Collecting polygon-ecosystem-token (POL)...
+[2025-11-20 17:38:36,731] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 76
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:36,732] INFO -   [75/500] Collecting pax-gold (PAXG)...
+[2025-11-20 17:38:40,795] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 77
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:40,797] INFO -   [76/500] Collecting cosmos (ATOM)...
+[2025-11-20 17:38:44,827] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 78
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:44,828] INFO -   [77/500] Collecting official-trump (TRUMP)...
+[2025-11-20 17:38:48,885] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 79
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:38:48,886] INFO -   [78/500] Collecting usdtb (USDTB)...
+[2025-11-20 17:38:53,057] INFO -     ✅ 340 records
+[2025-11-20 17:38:53,058] INFO -   [79/500] Collecting filecoin (FIL)...
+[2025-11-20 17:38:57,229] INFO -     ✅ 366 records
+[2025-11-20 17:38:57,229] INFO -   [80/500] Collecting bfusd (BFUSD)...
+[2025-11-20 17:39:01,380] INFO -     ✅ 101 records
+[2025-11-20 17:39:01,380] INFO -   [81/500] Collecting hash-2 (HASH)...
+[2025-11-20 17:39:05,533] INFO -     ✅ 178 records
+[2025-11-20 17:39:05,534] INFO -   [82/500] Collecting syrupusdc (SYRUPUSDC)...
+[2025-11-20 17:39:09,672] INFO -     ✅ 266 records
+[2025-11-20 17:39:09,673] INFO -   [83/500] Collecting binance-bridged-usdc-bnb-smart-chain (USDC)...
+[2025-11-20 17:39:13,868] INFO -     ✅ 366 records
+[2025-11-20 17:39:13,869] INFO -   [84/500] Collecting algorand (ALGO)...
+[2025-11-20 17:39:17,923] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 86
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:17,926] INFO -   [85/500] Collecting kinetic-staked-hype (KHYPE)...
+[2025-11-20 17:39:21,986] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 87
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:21,990] INFO -   [86/500] Collecting rocket-pool-eth (RETH)...
+[2025-11-20 17:39:26,025] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 88
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:26,026] INFO -   [87/500] Collecting arbitrum (ARB)...
+[2025-11-20 17:39:30,088] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 89
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:30,090] INFO -   [88/500] Collecting global-dollar (USDG)...
+[2025-11-20 17:39:34,143] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 90
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:34,144] INFO -   [89/500] Collecting gatechain-token (GT)...
+[2025-11-20 17:39:38,207] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 91
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:38,209] INFO -   [90/500] Collecting wbnb (WBNB)...
+[2025-11-20 17:39:42,270] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 92
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:42,272] INFO -   [91/500] Collecting binance-staked-sol (BNSOL)...
+[2025-11-20 17:39:46,332] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 93
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:46,334] INFO -   [92/500] Collecting hashnote-usyc (USYC)...
+[2025-11-20 17:39:50,399] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 94
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:50,401] INFO -   [93/500] Collecting syrupusdt (SYRUPUSDT)...
+[2025-11-20 17:39:54,455] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 95
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:54,456] INFO -   [94/500] Collecting vechain (VET)...
+[2025-11-20 17:39:58,489] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 96
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:39:58,489] INFO -   [95/500] Collecting ripple-usd (RLUSD)...
+[2025-11-20 17:40:02,541] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 97
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:02,542] INFO -   [96/500] Collecting sky (SKY)...
+[2025-11-20 17:40:06,594] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 98
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:06,594] INFO -   [97/500] Collecting quant-network (QNT)...
+[2025-11-20 17:40:10,653] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 99
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:10,655] INFO -   [98/500] Collecting kaspa (KAS)...
+[2025-11-20 17:40:14,716] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 100
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:14,717] INFO -   [99/500] Collecting ignition-fbtc (FBTC)...
+[2025-11-20 17:40:18,945] INFO -     ✅ 366 records
+[2025-11-20 17:40:18,945] INFO -   [100/500] Collecting starknet (STRK)...
+[2025-11-20 17:40:23,095] INFO -     ✅ 366 records
+[2025-11-20 17:40:23,095] INFO -   [101/500] Collecting flare-networks (FLR)...
+[2025-11-20 17:40:27,262] INFO -     ✅ 366 records
+[2025-11-20 17:40:27,263] INFO -   [102/500] Collecting kelp-dao-restaked-eth (RSETH)...
+[2025-11-20 17:40:31,448] INFO -     ✅ 366 records
+[2025-11-20 17:40:31,448] INFO -   [103/500] Collecting lombard-staked-btc (LBTC)...
+[2025-11-20 17:40:35,510] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 105
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:35,513] INFO -   [104/500] Collecting render-token (RENDER)...
+[2025-11-20 17:40:39,576] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 106
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:39,578] INFO -   [105/500] Collecting superstate-short-duration-us-government-securities-fund-ustb (USTB)...
+[2025-11-20 17:40:43,612] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 107
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:43,613] INFO -   [106/500] Collecting liquid-staked-ethereum (LSETH)...
+[2025-11-20 17:40:47,645] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 108
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:47,646] INFO -   [107/500] Collecting nexo (NEXO)...
+[2025-11-20 17:40:51,705] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 109
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:51,706] INFO -   [108/500] Collecting first-digital-usd (FDUSD)...
+[2025-11-20 17:40:55,758] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 110
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:55,759] INFO -   [109/500] Collecting sei-network (SEI)...
+[2025-11-20 17:40:59,813] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 111
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:40:59,815] INFO -   [110/500] Collecting solv-btc (SOLVBTC)...
+[2025-11-20 17:41:03,882] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 112
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:03,884] INFO -   [111/500] Collecting dash (DASH)...
+[2025-11-20 17:41:07,935] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 113
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:07,936] INFO -   [112/500] Collecting xdce-crowd-sale (XDC)...
+[2025-11-20 17:41:11,994] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 114
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:11,996] INFO -   [113/500] Collecting renzo-restaked-eth (EZETH)...
+[2025-11-20 17:41:16,056] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 115
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:16,059] INFO -   [114/500] Collecting story-2 (IP)...
+[2025-11-20 17:41:20,103] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 116
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:20,103] INFO -   [115/500] Collecting morpho (MORPHO)...
+[2025-11-20 17:41:24,152] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 117
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:24,153] INFO -   [116/500] Collecting jupiter-exchange-solana (JUP)...
+[2025-11-20 17:41:28,208] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 118
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:28,211] INFO -   [117/500] Collecting rain (RAIN)...
+[2025-11-20 17:41:32,268] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 119
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:32,269] INFO -   [118/500] Collecting fetch-ai (FET)...
+[2025-11-20 17:41:36,398] INFO -     ✅ 366 records
+[2025-11-20 17:41:36,400] INFO -   [119/500] Collecting bonk (BONK)...
+[2025-11-20 17:41:40,538] INFO -     ✅ 366 records
+[2025-11-20 17:41:40,538] INFO -   [120/500] Collecting ousg (OUSG)...
+[2025-11-20 17:41:44,792] INFO -     ✅ 366 records
+[2025-11-20 17:41:44,794] INFO -   [121/500] Collecting janus-henderson-anemoy-aaa-clo-fund (JAAA)...
+[2025-11-20 17:41:48,999] INFO -     ✅ 10 records
+[2025-11-20 17:41:48,999] INFO -   [122/500] Collecting pancakeswap-token (CAKE)...
+[2025-11-20 17:41:53,179] INFO -     ✅ 366 records
+[2025-11-20 17:41:53,181] INFO -   [123/500] Collecting fasttoken (FTN)...
+[2025-11-20 17:41:57,238] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 125
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:41:57,238] INFO -   [124/500] Collecting pudgy-penguins (PENGU)...
+[2025-11-20 17:42:01,296] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 126
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:01,297] INFO -   [125/500] Collecting mantle-staked-ether (METH)...
+[2025-11-20 17:42:05,352] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 127
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:05,353] INFO -   [126/500] Collecting arbitrum-bridged-wbtc-arbitrum-one (WBTC)...
+[2025-11-20 17:42:09,410] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 128
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:09,411] INFO -   [127/500] Collecting ondo-us-dollar-yield (USDY)...
+[2025-11-20 17:42:13,473] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 129
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:13,475] INFO -   [128/500] Collecting optimism (OP)...
+[2025-11-20 17:42:17,542] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 130
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:17,544] INFO -   [129/500] Collecting clbtc (CLBTC)...
+[2025-11-20 17:42:21,578] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 131
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:21,579] INFO -   [130/500] Collecting aerodrome-finance (AERO)...
+[2025-11-20 17:42:25,611] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 132
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:25,611] INFO -   [131/500] Collecting virtual-protocol (VIRTUAL)...
+[2025-11-20 17:42:29,675] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 133
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:29,676] INFO -   [132/500] Collecting jupiter-staked-sol (JUPSOL)...
+[2025-11-20 17:42:33,734] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 134
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:33,735] INFO -   [133/500] Collecting celestia (TIA)...
+[2025-11-20 17:42:37,786] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 135
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:37,787] INFO -   [134/500] Collecting lido-dao (LDO)...
+[2025-11-20 17:42:41,845] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 136
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:41,846] INFO -   [135/500] Collecting beldex (BDX)...
+[2025-11-20 17:42:45,900] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 137
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:45,902] INFO -   [136/500] Collecting injective-protocol (INJ)...
+[2025-11-20 17:42:49,977] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 138
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:49,979] INFO -   [137/500] Collecting stakewise-v3-oseth (OSETH)...
+[2025-11-20 17:42:54,037] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 139
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:42:54,038] INFO -   [138/500] Collecting blockstack (STX)...
+[2025-11-20 17:42:58,208] INFO -     ✅ 366 records
+[2025-11-20 17:42:58,208] INFO -   [139/500] Collecting polygon-pos-bridged-dai-polygon-pos (DAI)...
+[2025-11-20 17:43:02,375] INFO -     ✅ 366 records
+[2025-11-20 17:43:02,375] INFO -   [140/500] Collecting bridged-usdc-polygon-pos-bridge (USDC.E)...
+[2025-11-20 17:43:06,561] INFO -     ✅ 366 records
+[2025-11-20 17:43:06,561] INFO -   [141/500] Collecting curve-dao-token (CRV)...
+[2025-11-20 17:43:10,726] INFO -     ✅ 366 records
+[2025-11-20 17:43:10,726] INFO -   [142/500] Collecting the-graph (GRT)...
+[2025-11-20 17:43:14,861] INFO -     ✅ 366 records
+[2025-11-20 17:43:14,861] INFO -   [143/500] Collecting newton-project (AB)...
+[2025-11-20 17:43:19,054] INFO -     ✅ 366 records
+[2025-11-20 17:43:19,054] INFO -   [144/500] Collecting l2-standard-bridged-weth-base (WETH)...
+[2025-11-20 17:43:23,108] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 146
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:23,110] INFO -   [145/500] Collecting tezos (XTZ)...
+[2025-11-20 17:43:27,157] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 147
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:27,158] INFO -   [146/500] Collecting usual-usd (USD0)...
+[2025-11-20 17:43:31,206] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 148
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:31,207] INFO -   [147/500] Collecting msol (MSOL)...
+[2025-11-20 17:43:35,248] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 149
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:35,251] INFO -   [148/500] Collecting tbtc (TBTC)...
+[2025-11-20 17:43:39,372] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 150
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:39,374] INFO -   [149/500] Collecting usdai (USDAI)...
+[2025-11-20 17:43:43,421] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 151
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:43,424] INFO -   [150/500] Collecting telcoin (TEL)...
+[2025-11-20 17:43:47,474] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 152
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:47,476] INFO -   [151/500] Collecting decred (DCR)...
+[2025-11-20 17:43:51,543] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 153
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:51,547] INFO -   [152/500] Collecting iota (IOTA)...
+[2025-11-20 17:43:55,606] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 154
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:55,607] INFO -   [153/500] Collecting ether-fi (ETHFI)...
+[2025-11-20 17:43:59,654] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 155
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:43:59,655] INFO -   [154/500] Collecting true-usd (TUSD)...
+[2025-11-20 17:44:03,689] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 156
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:03,689] INFO -   [155/500] Collecting cgeth-hashkey-cloud (CGETH.HASHKEY)...
+[2025-11-20 17:44:07,747] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 157
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:07,749] INFO -   [156/500] Collecting mantle-bridged-usdt-mantle (USDT)...
+[2025-11-20 17:44:11,800] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 158
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:11,800] INFO -   [157/500] Collecting arbitrum-bridged-weth-arbitrum-one (WETH)...
+[2025-11-20 17:44:15,860] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 159
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:15,861] INFO -   [158/500] Collecting myx-finance (MYX)...
+[2025-11-20 17:44:19,913] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 160
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:19,915] INFO -   [159/500] Collecting pyth-network (PYTH)...
+[2025-11-20 17:44:24,081] INFO -     ✅ 366 records
+[2025-11-20 17:44:24,081] INFO -   [160/500] Collecting floki (FLOKI)...
+[2025-11-20 17:44:28,299] INFO -     ✅ 366 records
+[2025-11-20 17:44:28,299] INFO -   [161/500] Collecting kaia (KAIA)...
+[2025-11-20 17:44:32,461] INFO -     ✅ 366 records
+[2025-11-20 17:44:32,461] INFO -   [162/500] Collecting spx6900 (SPX)...
+[2025-11-20 17:44:36,528] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 164
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:36,529] INFO -   [163/500] Collecting usdd (USDD)...
+[2025-11-20 17:44:40,584] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 165
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:40,587] INFO -   [164/500] Collecting trust-wallet-token (TWT)...
+[2025-11-20 17:44:44,634] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 166
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:44,634] INFO -   [165/500] Collecting conflux-token (CFX)...
+[2025-11-20 17:44:48,685] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 167
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:48,686] INFO -   [166/500] Collecting steakhouse-usdc-morpho-vault (STEAKUSDC)...
+[2025-11-20 17:44:52,717] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 168
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:52,717] INFO -   [167/500] Collecting gteth (GTETH)...
+[2025-11-20 17:44:56,756] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 169
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:44:56,757] INFO -   [168/500] Collecting stader-ethx (ETHX)...
+[2025-11-20 17:45:00,819] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 170
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:00,821] INFO -   [169/500] Collecting ethereum-name-service (ENS)...
+[2025-11-20 17:45:04,867] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 171
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:04,869] INFO -   [170/500] Collecting sonic-3 (S)...
+[2025-11-20 17:45:08,930] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 172
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:08,932] INFO -   [171/500] Collecting ether-fi-liquid-eth (LIQUIDETH)...
+[2025-11-20 17:45:13,002] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 173
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:13,003] INFO -   [172/500] Collecting eutbl (EUTBL)...
+[2025-11-20 17:45:17,073] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 174
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:17,074] INFO -   [173/500] Collecting plasma (XPL)...
+[2025-11-20 17:45:21,115] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 175
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:21,117] INFO -   [174/500] Collecting the-sandbox (SAND)...
+[2025-11-20 17:45:25,156] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 176
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:25,158] INFO -   [175/500] Collecting doublezero (2Z)...
+[2025-11-20 17:45:29,205] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 177
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:29,206] INFO -   [176/500] Collecting wrapped-hype (WHYPE)...
+[2025-11-20 17:45:33,279] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 178
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:33,280] INFO -   [177/500] Collecting flow (FLOW)...
+[2025-11-20 17:45:37,476] INFO -     ✅ 366 records
+[2025-11-20 17:45:37,476] INFO -   [178/500] Collecting gho (GHO)...
+[2025-11-20 17:45:41,621] INFO -     ✅ 366 records
+[2025-11-20 17:45:41,621] INFO -   [179/500] Collecting bitcoin-cash-sv (BSV)...
+[2025-11-20 17:45:45,813] INFO -     ✅ 366 records
+[2025-11-20 17:45:45,814] INFO -   [180/500] Collecting sun-token (SUN)...
+[2025-11-20 17:45:50,033] INFO -     ✅ 366 records
+[2025-11-20 17:45:50,033] INFO -   [181/500] Collecting usdb (USDB)...
+[2025-11-20 17:45:54,190] INFO -     ✅ 366 records
+[2025-11-20 17:45:54,190] INFO -   [182/500] Collecting bittorrent (BTT)...
+[2025-11-20 17:45:58,250] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 184
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:45:58,253] INFO -   [183/500] Collecting ape-and-pepe (APEPE)...
+[2025-11-20 17:46:02,310] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 185
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:02,311] INFO -   [184/500] Collecting ether-fi-staked-eth (EETH)...
+[2025-11-20 17:46:06,367] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 186
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:06,369] INFO -   [185/500] Collecting merlin-chain (MERL)...
+[2025-11-20 17:46:10,436] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 187
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:10,437] INFO -   [186/500] Collecting binance-peg-dogecoin (DOGE)...
+[2025-11-20 17:46:14,504] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 188
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:14,506] INFO -   [187/500] Collecting dogwifcoin (WIF)...
+[2025-11-20 17:46:18,554] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 189
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:18,555] INFO -   [188/500] Collecting theta-token (THETA)...
+[2025-11-20 17:46:22,591] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 190
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:22,591] INFO -   [189/500] Collecting pendle (PENDLE)...
+[2025-11-20 17:46:26,631] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 191
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:26,634] INFO -   [190/500] Collecting apenft (NFT)...
+[2025-11-20 17:46:30,668] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 192
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:30,668] INFO -   [191/500] Collecting gala (GALA)...
+[2025-11-20 17:46:34,702] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 193
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:34,703] INFO -   [192/500] Collecting helium (HNT)...
+[2025-11-20 17:46:38,737] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 194
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:38,738] INFO -   [193/500] Collecting sbtc-2 (SBTC)...
+[2025-11-20 17:46:42,775] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 195
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:42,775] INFO -   [194/500] Collecting sweth (SWETH)...
+[2025-11-20 17:46:46,813] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 196
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:46,815] INFO -   [195/500] Collecting coinbase-wrapped-staked-eth (CBETH)...
+[2025-11-20 17:46:50,854] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 197
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:50,854] INFO -   [196/500] Collecting jasmycoin (JASMY)...
+[2025-11-20 17:46:54,891] ERROR -     ❌ Failed: RATE LIMIT EXCEEDED (429)
+API calls made: 198
+CoinGecko free tier limit: 30 calls/minute
+RECOMMENDATION: Increase delay between requests or register for Demo API
+[2025-11-20 17:46:54,892] INFO -   [197/500] Collecting just (JST)...
+[2025-11-20 17:46:59,033] INFO -     ✅ 366 records
+[2025-11-20 17:46:59,033] INFO -   [198/500] Collecting bitcoin-avalanche-bridged-btc-b (BTC.B)...
+[2025-11-20 17:47:03,187] INFO -     ✅ 366 records
+[2025-11-20 17:47:03,187] INFO -   [199/500] Collecting syrup (SYRUP)...
+DEBUG Received SIGTERM, forwarding to child at 73128
+DEBUG Command exited with signal: Some(15)
+DEBUG Released lock at `/Users/terryli/.cache/uv/.lock`

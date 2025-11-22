@@ -1,0 +1,35 @@
+COINGECKO MARKET CAP INVESTIGATION - FILE INDEX
+================================================
+
+START HERE:
+-----------
+1. QUICK_REFERENCE.txt      - One-page summary with key facts
+2. EXECUTIVE_SUMMARY.txt    - Comprehensive summary answering all questions
+3. README.md                - Investigation overview and recommendations
+
+DETAILED ANALYSIS:
+------------------
+4. FINDINGS.md              - Detailed findings with evidence and analysis
+5. API_DOCUMENTATION.md     - Technical API reference and examples
+6. coin_comparison_table.md - Comparison data across tested coins
+
+TEST ARTIFACTS:
+---------------
+7. test_coingecko.py        - Comprehensive test suite (Python)
+8. test_slower.py           - Rate-limit aware testing script (Python)
+9. capture_sample.py        - Sample response capture script (Python)
+
+DATA FILES:
+-----------
+10. test_results.json            - Raw test results from comprehensive suite
+11. coin_comparison.json         - Cross-coin comparison data
+12. sample_response_structure.json - API response format example
+
+QUICK VERDICT:
+--------------
+❌ CoinGecko FREE API is NOT suitable for multi-year market cap data
+✅ Market cap data IS available (but only 365 days on free tier)
+🚨 Hard 365-day limit enforced server-side
+💰 Requires paid plan ($129-499/month) for historical data
+
+For full details, start with QUICK_REFERENCE.txt or EXECUTIVE_SUMMARY.txt

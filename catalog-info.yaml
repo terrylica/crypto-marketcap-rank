@@ -1,0 +1,29 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: crypto-marketcap-rank
+  description: Daily cryptocurrency market cap rankings database with CI/CD automation
+  annotations:
+    github.com/project-slug: terryli/crypto-marketcap-rank
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - cryptocurrency
+    - data-pipeline
+    - cicd
+    - github-actions
+  links:
+    - url: https://github.com/terryli/crypto-marketcap-rank/releases/latest
+      title: Latest Database Release
+      icon: database
+    - url: https://github.com/terryli/crypto-marketcap-rank/actions
+      title: GitHub Actions
+      icon: dashboard
+spec:
+  type: data-pipeline
+  lifecycle: production
+  owner: team-data
+  system: crypto-analytics
+  dependsOn:
+    - resource:coingecko-api
+  providesApis:
+    - crypto-rankings-database

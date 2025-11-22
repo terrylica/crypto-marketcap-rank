@@ -1,0 +1,92 @@
+name: Monthly Archive Snapshot
+
+on:
+  schedule:
+    # Run on 1st of every month at 12:00 UTC
+    - cron: '0 12 1 * *'
+  workflow_dispatch:
+    # Allow manual triggering
+    inputs:
+      year_month:
+        description: 'Archive period (YYYY-MM)'
+        required: true
+        type: string
+
+env:
+  PYTHON_VERSION: '3.14'
+
+jobs:
+  create-monthly-archive:
+    name: Create Monthly Archive
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get archive period
+        id: get-period
+        run: |
+          PERIOD="${{ github.event.inputs.year_month || '' }}"
+          if [ -z "$PERIOD" ]; then
+            # Default to previous month
+            PERIOD=$(date -d "last month" +%Y-%m)
+          fi
+          echo "period=$PERIOD" >> $GITHUB_OUTPUT
+          echo "tag=v$PERIOD" >> $GITHUB_OUTPUT
+
+      - name: Download latest release databases
+        run: |
+          # Download latest DuckDB, Parquet, CSV from "latest" release
+          gh release download latest --pattern "*.duckdb" --dir archives/
+          gh release download latest --pattern "*.parquet" --dir archives/
+          gh release download latest --pattern "*.csv.gz" --dir archives/
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create compressed archive
+        run: |
+          cd archives
+          tar -czf crypto-rankings-${{ steps.get-period.outputs.period }}.tar.gz *.duckdb *.parquet *.csv.gz
+          ls -lh
+
+      - name: Create monthly release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get-period.outputs.tag }}
+          name: "Archive: ${{ steps.get-period.outputs.period }}"
+          body: |
+            # Monthly Archive: ${{ steps.get-period.outputs.period }}
+
+            Complete cryptocurrency market cap rankings for ${{ steps.get-period.outputs.period }}.
+
+            **Contents:**
+            - DuckDB database (instant SQL queries)
+            - Parquet files (ClickHouse import)
+            - CSV files (universal compatibility)
+
+            **Archive Size:** Compressed snapshot of daily collections
+
+            ## Usage
+
+            ```bash
+            # Download archive
+            wget https://github.com/${{ github.repository }}/releases/download/${{ steps.get-period.outputs.tag }}/crypto-rankings-${{ steps.get-period.outputs.period }}.tar.gz
+
+            # Extract
+            tar -xzf crypto-rankings-${{ steps.get-period.outputs.period }}.tar.gz
+
+            # Query with DuckDB
+            duckdb crypto_rankings_*.duckdb -c "SELECT * FROM rankings LIMIT 10"
+            ```
+
+            ---
+            *Monthly archive created via GitHub Actions*
+          files: |
+            archives/crypto-rankings-${{ steps.get-period.outputs.period }}.tar.gz
+          draft: false
+          prerelease: false

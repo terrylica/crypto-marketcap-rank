@@ -1,0 +1,63 @@
+DEBUG uv 0.9.10 (44f5a14f4 2025-11-17)
+DEBUG Acquired shared lock for `/Users/terryli/.cache/uv`
+DEBUG Reading inline script metadata from `validation/scripts/validate_kaggle.py`
+DEBUG Acquired lock for `/Users/terryli/eon/crypto-marketcap-rank/validation/scripts/validate_kaggle.py`
+DEBUG Using Python request `/Users/terryli/.local/share/uv/python/cpython-3.13.6-macos-aarch64-none/bin/python3` from explicit request
+DEBUG Using Python request path `/Users/terryli/.local/share/uv/python/cpython-3.13.6-macos-aarch64-none/bin/python3` from explicit request
+DEBUG Checking for Python environment at: `/Users/terryli/.cache/uv/environments-v2/validate-kaggle-3c2fb9b34d00dd6a`
+DEBUG The script environment's Python version satisfies the request: `path `/Users/terryli/.local/share/uv/python/cpython-3.13.6-macos-aarch64-none/bin/python3``
+DEBUG Released lock at `/var/folders/f4/yr36gs0j7gb46m_lcdc6tr2h0000gn/T/uv-3c2fb9b34d00dd6a.lock`
+DEBUG Acquired lock for `/Users/terryli/.cache/uv/environments-v2/validate-kaggle-3c2fb9b34d00dd6a`
+DEBUG All requirements satisfied: numpy>=1.24.0 | numpy>=1.26.0 ; python_full_version >= '3.12' | pandas>=2.0.0 | python-dateutil>=2.8.2 | pytz>=2020.1 | six>=1.5 | tzdata>=2022.7
+DEBUG Released lock at `/Users/terryli/.cache/uv/environments-v2/validate-kaggle-3c2fb9b34d00dd6a/.lock`
+DEBUG Using Python 3.13.6 interpreter at: /Users/terryli/.cache/uv/environments-v2/validate-kaggle-3c2fb9b34d00dd6a/bin/python3
+DEBUG Running `python validation/scripts/validate_kaggle.py data/raw/kaggle/historical.csv`
+DEBUG Spawned child 45232 in process group 45202
+2025-11-20 14:12:11,505 - __main__ - INFO - 
+================================================================================
+2025-11-20 14:12:11,505 - __main__ - INFO - KAGGLE DATASET VALIDATION SUITE
+2025-11-20 14:12:11,505 - __main__ - INFO - ================================================================================
+2025-11-20 14:12:11,505 - __main__ - INFO - Dataset: data/raw/kaggle/historical.csv
+2025-11-20 14:12:11,505 - __main__ - INFO - Timestamp: 2025-11-20T14:12:11.505565
+2025-11-20 14:12:11,505 - __main__ - INFO - ================================================================================
+
+2025-11-20 14:12:11,505 - __main__ - INFO - Loading data from data/raw/kaggle/historical.csv
+2025-11-20 14:12:16,392 - __main__ - INFO - Loaded 4,441,972 records
+2025-11-20 14:12:16,393 - __main__ - INFO - Loading coins metadata from data/raw/kaggle/coins.csv
+2025-11-20 14:12:16,427 - __main__ - INFO - Loaded 8,927 coin metadata records
+2025-11-20 14:12:16,897 - __main__ - INFO - Final dataset: 4,441,972 records with 23 columns
+2025-11-20 14:12:16,897 - __main__ - INFO - ================================================================================
+2025-11-20 14:12:16,897 - __main__ - INFO - TEST 1: BitConnect Presence (Survivorship Bias)
+2025-11-20 14:12:16,897 - __main__ - INFO - ================================================================================
+2025-11-20 14:12:17,289 - __main__ - INFO - ✅ BitConnect found: 730 entries
+2025-11-20 14:12:17,289 - __main__ - INFO -    Date range: 2017-01-20 to 2021-06-13
+2025-11-20 14:12:17,289 - __main__ - INFO -    Peak rank: 7
+2025-11-20 14:12:17,289 - __main__ - INFO -    Peak market cap: $2,865,499,626
+2025-11-20 14:12:17,289 - __main__ - WARNING - ⚠️  BitConnect start date 2017-01-20 seems late (expected ~2016)
+2025-11-20 14:12:17,289 - __main__ - INFO - ✅ TEST 1 PASSED: Point-in-time data confirmed (dead coin present)
+2025-11-20 14:12:17,289 - __main__ - INFO - ================================================================================
+2025-11-20 14:12:17,289 - __main__ - INFO - TEST 2: Circulating Supply Variation (Look-Ahead Bias)
+2025-11-20 14:12:17,289 - __main__ - INFO - ================================================================================
+2025-11-20 14:12:17,400 - __main__ - ERROR - ❌ 2015-01-01: 13,675,575 BTC (expected 14,000,000-14,500,000)
+2025-11-20 14:12:17,400 - __main__ - INFO - ✅ 2017-01-01: 16,077,337 BTC (expected 16,000,000-16,500,000)
+2025-11-20 14:12:17,400 - __main__ - ERROR - ❌ 2019-01-01: 17,457,600 BTC (expected 17,500,000-18,000,000)
+2025-11-20 14:12:17,401 - __main__ - INFO - ✅ 2021-01-01: 18,587,825 BTC (expected 18,500,000-19,000,000)
+2025-11-20 14:12:17,401 - __main__ - ERROR - LOOK-AHEAD BIAS SUSPECTED: 2/4 supply checks failed
+Bitcoin circulating supply values do not match expected historical progression.
+Dataset may be using current supply for all historical dates.
+
+RECOMMENDATION: REJECT this Kaggle dataset
+FALLBACK: Use crypto2 R package with verified historical supply
+2025-11-20 14:12:17,401 - __main__ - ERROR - 
+================================================================================
+2025-11-20 14:12:17,401 - __main__ - ERROR - VALIDATION RESULT: ❌ FAILED
+2025-11-20 14:12:17,401 - __main__ - ERROR - ================================================================================
+2025-11-20 14:12:17,401 - __main__ - ERROR - LOOK-AHEAD BIAS SUSPECTED: 2/4 supply checks failed
+Bitcoin circulating supply values do not match expected historical progression.
+Dataset may be using current supply for all historical dates.
+
+RECOMMENDATION: REJECT this Kaggle dataset
+FALLBACK: Use crypto2 R package with verified historical supply
+2025-11-20 14:12:17,401 - __main__ - ERROR - ================================================================================
+DEBUG Command exited with code: 1
+DEBUG Released lock at `/Users/terryli/.cache/uv/.lock`

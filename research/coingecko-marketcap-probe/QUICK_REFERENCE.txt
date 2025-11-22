@@ -1,0 +1,120 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              COINGECKO API - MARKET CAP QUICK REFERENCE                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+VERDICT: ❌ NOT SUITABLE FOR MULTI-YEAR MARKET CAP DATA (FREE TIER)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ WHAT WORKS
+
+  • Market cap data IS included in responses
+  • Format: [timestamp_ms, market_cap_usd]
+  • Data is complete and accurate (within 365-day window)
+  • All coins have market cap data available
+  • Daily granularity for 365-day requests
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ WHAT DOESN'T WORK
+
+  • FREE TIER: MAXIMUM 365 DAYS ONLY
+  • days=730, days=max → HTTP 401 (BLOCKED)
+  • No workarounds available
+  • Rate limit: ~10-30 calls/minute (very restrictive)
+  • Would take 11-32 hours to download all 19,416 coins
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 TEST RESULTS
+
+  ┌─────────────────┬──────────┬────────────────────────────────────────┐
+  │ Request         │ Status   │ Result                                 │
+  ├─────────────────┼──────────┼────────────────────────────────────────┤
+  │ days=365        │ ✅ 200   │ SUCCESS - 366 data points              │
+  │ days=730        │ ❌ 401   │ BLOCKED - "exceeds allowed time range" │
+  │ days=max        │ ❌ 401   │ BLOCKED - "exceeds allowed time range" │
+  └─────────────────┴──────────┴────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📡 API ENDPOINT
+
+  GET https://api.coingecko.com/api/v3/coins/{id}/market_chart
+  
+  Parameters:
+    • vs_currency: "usd"
+    • days: "365" (max on free tier)
+
+  Response:
+    {
+      "prices": [[timestamp_ms, price], ...],
+      "market_caps": [[timestamp_ms, market_cap], ...],
+      "total_volumes": [[timestamp_ms, volume], ...]
+    }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 PRICING
+
+  Free Tier:
+    • 365 days maximum
+    • ~10-30 calls/minute
+    • ❌ NOT suitable for multi-year data
+
+  Analyst Plan: $129/month
+    • Full historical data
+    • Higher rate limits
+    
+  Pro Plan: $499/month
+    • Full historical data
+    • Even higher rate limits
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔄 ALTERNATIVES (Free Options)
+
+  • CoinCap API - Free historical data available
+  • Messari API - Limited free tier with multi-year data
+  • CryptoCompare - Free tier with historical access
+  • Public datasets (Kaggle, exchanges, academic)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 TESTED COINS
+
+  Bitcoin   (2009): ✅ 366 points | $1,862B → $1,842B | 2024-11-20 to 2025-11-19
+  Cardano   (2017): ✅ 366 points | $28.8B → $17.1B   | 2024-11-20 to 2025-11-19
+  Polkadot  (2020): ✅ 366 points | $8.3B → $4.4B     | 2024-11-20 to 2025-11-19
+  Solana    (2020): ✅ 366 points | $112.0B → $79.2B  | 2024-11-20 to 2025-11-19
+  Chainlink (2017): ✅ 366 points | $9.0B → $9.5B     | 2024-11-20 to 2025-11-19
+
+  Note: All coins return identical 365-day range (API-tier based, not coin-specific)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ PYTHON EXAMPLE
+
+  import requests, time
+  
+  url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+  params = {'vs_currency': 'usd', 'days': '365'}
+  
+  response = requests.get(url, params=params)
+  market_caps = response.json()['market_caps']
+  
+  time.sleep(5)  # Avoid rate limits!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 BOTTOM LINE
+
+  For multi-year historical market cap data:
+    ❌ CoinGecko free tier = NOT SUITABLE
+    ✅ Must use paid plan ($129-499/month) OR alternative data source
+
+  Investigation date: 2025-11-19
+  Evidence: Real API calls with actual responses captured
+  Location: /tmp/coingecko-marketcap-probe/
+
+╚══════════════════════════════════════════════════════════════════════════════╝

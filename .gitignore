@@ -1,0 +1,70 @@
+# Data directories (raw API responses, processed data, built artifacts)
+data/raw/
+data/processed/
+data/releases/
+data/rankings/
+data/analysis/
+data/coin_ids/
+data/*.csv
+data/*.json
+
+# Research data files (keep scripts, exclude data)
+research/**/data/
+research/**/*.db
+research/**/*.jsonl
+research/**/*.jsonl.gz
+research/**/*.csv
+research/**/*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# uv
+.uv/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs are INCLUDED (not ignored - track execution history)
+# logs/ is intentionally NOT in .gitignore
+
+# Temporary files
+*.tmp
+tmp/

@@ -1,0 +1,51 @@
+=========================================
+Automated Validation Suite
+=========================================
+Log: logs/0001-validation-suite-20251119_235606.log
+
+Test 1: Python Syntax Validation
+----------------------------------------------------------
+Checking validation/scripts/validate_kaggle.py...
+  ✅ Syntax valid
+
+Test 2: R Syntax Validation
+----------------------------------------------------------
+⚠️  R not installed, skipping R script validation
+
+Test 3: Documentation Consistency
+----------------------------------------------------------
+  ❌ Plan missing ADR reference
+  ✅ ADR-0001 exists
+
+Test 4: Directory Structure
+----------------------------------------------------------
+  ✅ docs/architecture/decisions exists
+  ✅ docs/development/plan exists
+  ✅ data exists
+  ✅ logs exists
+  ✅ validation exists
+  ✅ tools exists
+
+Test 5: Python Dependencies
+----------------------------------------------------------
+  ✅ Virtual environment exists
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import pandas; import numpy; import kaggle
+                                 ^^^^^^^^^^^^^
+  File "/Users/terryli/eon/crypto-marketcap-rank/.venv/lib/python3.13/site-packages/kaggle/__init__.py", line 6, in <module>
+    api.authenticate()
+    ~~~~~~~~~~~~~~~~^^
+  File "/Users/terryli/eon/crypto-marketcap-rank/.venv/lib/python3.13/site-packages/kaggle/api/kaggle_api_extended.py", line 434, in authenticate
+    raise IOError('Could not find {}. Make sure it\'s located in'
+    ...<3 lines>...
+                      self.config_file, self.config_dir))
+OSError: Could not find kaggle.json. Make sure it's located in /Users/terryli/.kaggle. Or use the environment method. See setup instructions at https://github.com/Kaggle/kaggle-api/
+  ✅ All required packages installed
+
+=========================================
+VALIDATION SUMMARY
+=========================================
+❌ 1 validation(s) failed
+
+Please fix errors before proceeding.
