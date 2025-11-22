@@ -1,7 +1,7 @@
 # Cryptocurrency Market Cap Rankings Database
 
-[![Daily Collection](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/daily-collection.yml/badge.svg)](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/daily-collection.yml)
-[![CI Status](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/ci.yml/badge.svg)](https://github.com/terryli/crypto-marketcap-rank/actions/workflows/ci.yml)
+[![Daily Collection](https://github.com/tainora/crypto-marketcap-rank/actions/workflows/daily-collection.yml/badge.svg)](https://github.com/tainora/crypto-marketcap-rank/actions/workflows/daily-collection.yml)
+[![CI Status](https://github.com/tainora/crypto-marketcap-rank/actions/workflows/ci.yml/badge.svg)](https://github.com/tainora/crypto-marketcap-rank/actions/workflows/ci.yml)
 
 Daily automated collection of comprehensive cryptocurrency market cap rankings for all 19,411+ CoinGecko coins. Distributed as queryable database artifacts via GitHub Releases.
 
@@ -20,7 +20,7 @@ Daily automated collection of comprehensive cryptocurrency market cap rankings f
 
 ```bash
 # Download DuckDB database (recommended)
-wget https://github.com/terryli/crypto-marketcap-rank/releases/download/latest/crypto_rankings_2025-11-21.duckdb
+wget https://github.com/tainora/crypto-marketcap-rank/releases/download/latest/crypto_rankings_2025-11-21.duckdb
 
 # Query instantly with DuckDB
 duckdb crypto_rankings_2025-11-21.duckdb
@@ -138,7 +138,7 @@ Collection → Build → Validate → Release
 
 ```bash
 # Clone repository
-git clone https://github.com/terryli/crypto-marketcap-rank.git
+git clone https://github.com/tainora/crypto-marketcap-rank.git
 cd crypto-marketcap-rank
 
 # Install dependencies
@@ -282,8 +282,8 @@ See [docs/architecture/decisions/](docs/architecture/decisions/) for detailed AD
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/terryli/crypto-marketcap-rank/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/terryli/crypto-marketcap-rank/discussions)
+- **Issues**: [GitHub Issues](https://github.com/tainora/crypto-marketcap-rank/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/tainora/crypto-marketcap-rank/discussions)
 - **API Docs**: [CoinGecko API](https://docs.coingecko.com/reference/coins-markets)
 
 ---
