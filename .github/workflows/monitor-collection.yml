@@ -91,42 +91,57 @@ jobs:
 
       - name: Send Pushover notification on failure
         if: steps.check.outputs.conclusion == 'failure'
-        uses: desiderati/github-action-pushover@v1
-        with:
-          job-status: ${{ steps.check.outputs.conclusion }}
-          pushover-api-token: ${{ secrets.PUSHOVER_API_TOKEN }}
-          pushover-user-key: ${{ secrets.PUSHOVER_USER_KEY }}
-          pushover-message: |
-            🚨 Crypto MarketCap Rankings Collection Failed
+        env:
+          PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
+          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+        run: |
+          # Build message (plain text - Pushover doesn't support HTML)
+          MESSAGE="🚨 Crypto MarketCap Rankings Failed
 
-            Run ID: ${{ steps.check.outputs.run_id }}
-            Branch: ${{ steps.check.outputs.branch }}
-            Time: ${{ steps.check.outputs.created_at }}
+          Run: ${{ steps.check.outputs.run_id }}
+          Repo: ${{ github.repository }}
+          Branch: ${{ steps.check.outputs.branch }}
+          Time: ${{ steps.check.outputs.created_at }}
 
-            Recent Errors:
-            ${{ steps.details.outputs.errors }}
+          Errors:
+          ${{ steps.details.outputs.errors }}
 
-            View logs: https://github.com/${{ github.repository }}/actions/runs/${{ steps.check.outputs.run_id }}
-          pushover-priority: 1
-          pushover-title: "❌ Daily Collection Failed"
+          URL: https://github.com/${{ github.repository }}/actions/runs/${{ steps.check.outputs.run_id }}"
+
+          # Send to Pushover (priority 1 = high, bypasses quiet hours)
+          curl -s \
+            --form-string "token=$PUSHOVER_APP_TOKEN" \
+            --form-string "user=$PUSHOVER_USER_KEY" \
+            --form-string "title=❌ Daily Collection Failed" \
+            --form-string "message=$MESSAGE" \
+            --form-string "priority=1" \
+            --form-string "sound=siren" \
+            https://api.pushover.net/1/messages.json
 
       - name: Send Pushover notification on success
         if: steps.check.outputs.conclusion == 'success' && github.event_name == 'workflow_run'
-        uses: desiderati/github-action-pushover@v1
-        with:
-          job-status: ${{ steps.check.outputs.conclusion }}
-          pushover-api-token: ${{ secrets.PUSHOVER_API_TOKEN }}
-          pushover-user-key: ${{ secrets.PUSHOVER_USER_KEY }}
-          pushover-message: |
-            ✅ Crypto MarketCap Rankings Collection Succeeded
+        env:
+          PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
+          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+        run: |
+          # Build message (plain text)
+          MESSAGE="✅ Crypto MarketCap Rankings Succeeded
 
-            Run ID: ${{ steps.check.outputs.run_id }}
-            Branch: ${{ steps.check.outputs.branch }}
-            Time: ${{ steps.check.outputs.created_at }}
+          Run: ${{ steps.check.outputs.run_id }}
+          Repo: ${{ github.repository }}
+          Branch: ${{ steps.check.outputs.branch }}
+          Time: ${{ steps.check.outputs.created_at }}
 
-            View artifacts: https://github.com/${{ github.repository }}/actions/runs/${{ steps.check.outputs.run_id }}
-          pushover-priority: -1
-          pushover-title: "✅ Daily Collection OK"
+          URL: https://github.com/${{ github.repository }}/actions/runs/${{ steps.check.outputs.run_id }}"
+
+          # Send to Pushover (priority -1 = silent)
+          curl -s \
+            --form-string "token=$PUSHOVER_APP_TOKEN" \
+            --form-string "user=$PUSHOVER_USER_KEY" \
+            --form-string "title=✅ Daily Collection OK" \
+            --form-string "message=$MESSAGE" \
+            --form-string "priority=-1" \
+            https://api.pushover.net/1/messages.json
 
       - name: Summary
         run: |
