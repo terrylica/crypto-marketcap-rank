@@ -132,6 +132,8 @@ class CoinGeckoCollector:
             logger.info(f"Estimated time: ~{pages_needed * self.delay / 60:.1f} minutes")
 
             all_coins = []
+            seen_coin_ids = set()  # Track coin IDs to prevent duplicates
+            duplicates_skipped = 0
             page = 1
             last_log_time = time.time()
 
@@ -153,8 +155,15 @@ class CoinGeckoCollector:
                     logger.info(f"Reached end of ranked coins at page {page}")
                     break
 
-                all_coins.extend(coins)
-                self.metrics.total_coins_fetched += len(coins)
+                # Deduplicate: only add coins we haven't seen before
+                for coin in coins:
+                    coin_id = coin.get('id')
+                    if coin_id and coin_id not in seen_coin_ids:
+                        all_coins.append(coin)
+                        seen_coin_ids.add(coin_id)
+                        self.metrics.total_coins_fetched += 1
+                    elif coin_id:
+                        duplicates_skipped += 1
 
                 # Check if this was a partial page (last page)
                 if len(coins) < self.COINS_PER_PAGE:
@@ -180,6 +189,8 @@ class CoinGeckoCollector:
             # Log final metrics
             logger.info("Collection complete!")
             logger.info(f"  Total coins: {len(all_coins)}")
+            logger.info(f"  Unique coins: {len(seen_coin_ids)}")
+            logger.info(f"  Duplicates skipped: {duplicates_skipped}")
             logger.info(f"  API calls: {self.metrics.total_api_calls}")
             logger.info(f"  Failed requests: {self.metrics.failed_requests}")
             logger.info(f"  Duration: {self.metrics.duration_seconds:.1f}s")
