@@ -172,9 +172,19 @@ class DatabaseBuilder(ABC):
         rows = []
 
         for idx, coin in enumerate(coins, start=1):
+            # Explicit type coercion for rank (API may return string or int)
+            rank_value = coin.get("market_cap_rank")
+            if rank_value is not None:
+                try:
+                    rank = int(rank_value)
+                except (ValueError, TypeError):
+                    rank = idx  # Fallback to enumeration index
+            else:
+                rank = idx
+
             row = {
                 "date": collection_date,
-                "rank": coin.get("market_cap_rank") or idx,
+                "rank": rank,
                 "coin_id": coin.get("id"),
                 "symbol": coin.get("symbol"),
                 "name": coin.get("name"),
