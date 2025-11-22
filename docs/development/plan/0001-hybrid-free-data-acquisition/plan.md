@@ -4,7 +4,7 @@
 **Created**: 2025-11-19
 **Last Updated**: 2025-11-20
 **Status**: In Progress - Phase 2 Collection Complete, Starting CoinGecko Collection
-**ADR**: [ADR-0001](../../architecture/decisions/0001-hybrid-free-data-acquisition.md)
+**ADR**: [ADR-0001](../../../architecture/decisions/0001-hybrid-free-data-acquisition.md)
 **adr-id**: 0001
 
 ---
@@ -486,6 +486,6 @@ install.packages("crypto2")
 
 **Related Documents**:
 
-- [ADR-0001: Hybrid Free Data Acquisition](../../architecture/decisions/0001-hybrid-free-data-acquisition.md)
-- [Project Plan](../../../PROJECT_PLAN.md)
-- [Research Summary](../../../RESEARCH_SUMMARY.md)
+- [ADR-0001: Hybrid Free Data Acquisition](../../../architecture/decisions/0001-hybrid-free-data-acquisition.md)
+- [Project Plan](../../../archive/PROJECT_PLAN.md)
+- [Research Summary](../../../investigations/RESEARCH_SUMMARY.md)
