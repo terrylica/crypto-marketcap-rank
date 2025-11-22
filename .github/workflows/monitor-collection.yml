@@ -89,12 +89,20 @@ jobs:
           echo "$ERRORS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Install Doppler CLI
+        if: steps.check.outputs.conclusion == 'failure' || (steps.check.outputs.conclusion == 'success' && github.event_name == 'workflow_run')
+        run: |
+          # Install Doppler CLI
+          (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || wget -t 3 -qO- https://cli.doppler.com/install.sh) | sudo sh
+
       - name: Send Pushover notification on failure
         if: steps.check.outputs.conclusion == 'failure'
         env:
-          PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
-          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         run: |
+          # Fetch credentials from Doppler
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_API_TOKEN --project claude-config --config prd --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project claude-config --config prd --plain)
           # Build message (plain text - Pushover doesn't support HTML)
           MESSAGE="🚨 Crypto MarketCap Rankings Failed
 
@@ -121,9 +129,11 @@ jobs:
       - name: Send Pushover notification on success
         if: steps.check.outputs.conclusion == 'success' && github.event_name == 'workflow_run'
         env:
-          PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
-          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         run: |
+          # Fetch credentials from Doppler
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_API_TOKEN --project claude-config --config prd --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project claude-config --config prd --plain)
           # Build message (plain text)
           MESSAGE="✅ Crypto MarketCap Rankings Succeeded
 
