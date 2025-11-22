@@ -212,18 +212,18 @@ class DuckDBBuilder(DatabaseBuilder):
             if min_rank != 1:
                 raise BuildError(f"Invalid minimum rank: {min_rank} (expected 1)")
 
-            # Check for duplicates
+            # Check for duplicate coins (same coin appearing multiple times on same date)
             dup_count = con.execute("""
                 SELECT COUNT(*) FROM (
-                    SELECT date, rank, COUNT(*) as cnt
+                    SELECT date, coin_id, COUNT(*) as cnt
                     FROM rankings
-                    GROUP BY date, rank
+                    GROUP BY date, coin_id
                     HAVING cnt > 1
                 )
             """).fetchone()[0]
 
             if dup_count > 0:
-                raise BuildError(f"Found {dup_count} duplicate (date, rank) pairs")
+                raise BuildError(f"Found {dup_count} duplicate (date, coin_id) pairs")
 
             con.close()
 
