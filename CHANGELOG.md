@@ -1,3 +1,100 @@
+# [2.0.0](https://github.com/terrylica/crypto-marketcap-rank/compare/v1.0.0...v2.0.0) (2025-11-23)
+
+
+* feat!: deprecate CSV format and migrate to daily release tags ([99e2937](https://github.com/terrylica/crypto-marketcap-rank/commit/99e29379332e5c14dd69ca06a67b2792b33c7110))
+
+
+### Bug Fixes
+
+* **release:** use SSH URL for repositoryUrl to enable authentication ([19c2d9c](https://github.com/terrylica/crypto-marketcap-rank/commit/19c2d9c78bce9cf1fdcc3b2b741115dea2d86091))
+
+
+### Code Refactoring
+
+* migrate to PyArrow Schema V2 with zero-copy DuckDB integration ([a5597cd](https://github.com/terrylica/crypto-marketcap-rank/commit/a5597cd8c5f3547ebb394b1c5f794ae5cbfbd7d3))
+
+
+### Documentation
+
+* update README and plan to reflect Schema V2 migration ([3058915](https://github.com/terrylica/crypto-marketcap-rank/commit/30589155192891ffaeef27dca17293718a2e9d6c))
+
+
+### BREAKING CHANGES
+
+* Notice**:
+Schema V2 (v2.0.0) uses native DATE type instead of STRING. Historical data (pre-Nov 2025) uses Schema V1. DuckDB automatically handles type conversion in queries.
+* CSV format no longer generated
+
+**Changes**:
+
+- **CSV Builder Removal**:
+  - Deleted `src/builders/build_csv.py`
+  - Removed CSV references from `scripts/test_builders.py`
+  - Updated test script to only build DuckDB + Parquet
+
+- **Workflow Updates**:
+  - Removed CSV artifact upload from daily-collection.yml
+  - Changed release tag pattern: latest → daily-YYYY-MM-DD
+  - Updated release body to remove CSV references
+  - Deleted .github/workflows/monthly-archive.yml (perpetual daily releases)
+  - Deleted .github/workflows/monitor-collection.yml.bak (cleanup)
+
+- **GitHub Releases**:
+  - Daily tags (daily-YYYY-MM-DD) for perpetual storage
+  - make_latest: true ensures latest release is always current
+  - No monthly archives (replaced by daily releases)
+
+**Rationale**:
+- Parquet is 5x smaller than CSV (DuckDB benchmark 2024)
+- Parquet provides self-describing schema (embedded metadata)
+- CSV provides minimal value for analytical data (slow, large, untyped)
+- Daily tags enable long-term data retention without monthly aggregation
+* Schema V2 introduces PyArrow native types (pa.date32(), pa.int64())
+
+**Changes**:
+
+- **Schema Foundation**:
+  - Created `src/schemas/crypto_rankings_schema.py` as single source of truth
+  - Defined CRYPTO_RANKINGS_SCHEMA_V2 with PyArrow native types
+  - Date field: STRING → pa.date32() (native DATE type)
+  - Rank field: pa.int32() → pa.int64() (consistency with DuckDB BIGINT)
+  - Added JSON Schema export for documentation
+
+- **Comprehensive Validation**:
+  - Created `src/validators/schema_validator.py` with 5 validation rules
+  - Schema conformance (exact type matching)
+  - Duplicate detection ((date, coin_id) pairs)
+  - NULL checks (required fields: date, rank, coin_id)
+  - Range validation (rank 1 to N, sequential)
+  - Value validation (market_cap > 0)
+
+- **Base Builder Refactoring**:
+  - Removed DatabaseSchema class (replaced by PyArrow schema)
+  - Updated _transform_to_rows() to return pa.Table instead of List[Dict]
+  - Kept defensive type coercion (_safe_int, _safe_float)
+  - Parse date string to Python date object for pa.date32()
+
+- **Parquet Builder (Schema V2)**:
+  - Uses CRYPTO_RANKINGS_SCHEMA_V2 directly
+  - Hive-style partitioning (year=/month=/day=/)
+  - Validation before write (fail-fast)
+  - Simplified _build_parquet() (table already constructed)
+
+- **DuckDB Builder (Zero-Copy Arrow)**:
+  - Implements zero-copy PyArrow → DuckDB via con.register()
+  - No serialization overhead (instant, memory-efficient)
+  - DuckDB auto-maps Arrow types: pa.date32() → DATE, pa.int64() → BIGINT
+  - Validation using shared validate_arrow_table()
+
+- **CI/CD Fix**:
+  - Reverted .github/workflows/release.yml: npm install → npm ci
+  - Restores deterministic CI builds
+
+**Migration Strategy**:
+- No backward compatibility (fresh start approach)
+- Historical data (v1) and future data (v2) coexist
+- DuckDB handles mixed schemas via automatic type conversion
+
 # 1.0.0 (2025-11-23)
 
 
