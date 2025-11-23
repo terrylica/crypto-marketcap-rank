@@ -5,6 +5,7 @@
 #   "python-dateutil>=2.8.0",
 #   "duckdb>=1.0.0",
 #   "pyarrow>=15.0.0",
+#   "pandas>=2.0.0",
 # ]
 # ///
 """
