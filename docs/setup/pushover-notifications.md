@@ -1,5 +1,7 @@
 # Pushover Notifications Setup
 
+**Last Updated**: 2025-11-22 (Migrated to Doppler canonical source)
+
 This document explains how to configure Pushover notifications for the daily collection workflow monitoring.
 
 ## Overview
@@ -10,65 +12,98 @@ The **Monitor Daily Collection** workflow automatically sends Pushover notificat
 - ✅ Daily collection workflow **succeeds** (priority -1 - silent)
 - ⏳ Scheduled health check every 6 hours
 
-## Prerequisites
+## Canonical Architecture (as of 2025-11-22)
 
-1. **Pushover Account**: Sign up at [pushover.net](https://pushover.net/)
-2. **Pushover App**: Install on your phone (iOS/Android)
+**Pushover credentials are stored in Doppler** (`notifications/dev`) - NOT as repository secrets.
+
+- **Service Token**: `<your-doppler-token>`
+- **Scope**: Read-only access to `notifications/dev` ONLY
+- **Security**: Collaborators cannot access actual Pushover credentials
+
+---
 
 ## Setup Steps
 
-### Step 1: Get Pushover Credentials
+### Step 1: Add Doppler Service Token to GitHub
 
-1. **User Key**:
-
-   - Log into https://pushover.net
-   - Your **User Key** is displayed at the top right
-   - Copy this 30-character string
-
-2. **API Token**:
-   - Go to https://pushover.net/apps/build
-   - Create a new application:
-     - Name: `Crypto MarketCap Rankings`
-     - Description: `Daily collection workflow monitoring`
-     - URL: `https://github.com/tainora/crypto-marketcap-rank`
-     - Icon: (optional)
-   - Click **Create Application**
-   - Copy the **API Token/Key**
-
-### Step 2: Add GitHub Secrets
-
-Add the credentials as repository secrets:
+The repository only needs the Doppler service token (NOT the actual Pushover credentials):
 
 ```bash
 # Using GitHub CLI (recommended)
-gh secret set PUSHOVER_USER_KEY --repo tainora/crypto-marketcap-rank
-# Paste your user key when prompted
-
-gh secret set PUSHOVER_API_TOKEN --repo tainora/crypto-marketcap-rank
-# Paste your API token when prompted
+gh secret set DOPPLER_TOKEN --repo terrylica/crypto-marketcap-rank
+# Paste token when prompted: <your-doppler-token>
 ```
 
 Or via GitHub web interface:
 
-1. Go to https://github.com/tainora/crypto-marketcap-rank/settings/secrets/actions
+1. Go to https://github.com/terrylica/crypto-marketcap-rank/settings/secrets/actions
 2. Click **New repository secret**
-3. Add:
-   - Name: `PUSHOVER_USER_KEY`, Value: `<your-user-key>`
-   - Name: `PUSHOVER_API_TOKEN`, Value: `<your-api-token>`
+3. Name: `DOPPLER_TOKEN`
+4. Value: `<your-doppler-token>`
 
-### Step 3: Verify Setup
+### Step 2: Verify Setup
 
-Test the monitoring workflow:
+The workflow will automatically fetch Pushover credentials from Doppler at runtime:
 
 ```bash
 # Trigger monitoring workflow manually
-gh workflow run "Monitor Daily Collection" --repo tainora/crypto-marketcap-rank
+gh workflow run "Monitor Daily Collection" --repo terrylica/crypto-marketcap-rank
 
 # Wait a few seconds, then check status
 gh run list --workflow "Monitor Daily Collection" --limit 1
 ```
 
 You should receive a notification on your phone showing the status of the latest daily collection run.
+
+---
+
+## How It Works
+
+### Workflow Credential Flow
+
+```yaml
+- name: Install Doppler CLI
+  run: |
+    curl -Ls https://cli.doppler.com/install.sh | sudo sh
+
+- name: Send Pushover notification
+  env:
+    DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+  run: |
+    # Fetch credentials from Doppler (canonical source)
+    PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN \
+      --project notifications --config dev --plain)
+    PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY \
+      --project notifications --config dev --plain)
+
+    # Send notification
+    curl -s \
+      --form-string "token=$PUSHOVER_APP_TOKEN" \
+      --form-string "user=$PUSHOVER_USER_KEY" \
+      --form-string "message=Notification text" \
+      https://api.pushover.net/1/messages.json
+```
+
+### Security Benefits
+
+✅ **No credential exposure to collaborators**
+
+- Only service token in repository secrets
+- Actual credentials stay in Doppler
+
+✅ **Easy credential rotation**
+
+- Update in Doppler (`notifications/dev`)
+- All repositories automatically use new credentials
+- No need to update 50+ repo secrets
+
+✅ **Scoped access**
+
+- Service token can ONLY read `notifications/dev`
+- Cannot access publishing tokens (`claude-config/prd`)
+- Follows principle of least privilege
+
+---
 
 ## Notification Types
 
@@ -77,17 +112,18 @@ You should receive a notification on your phone showing the status of the latest
 Sent when daily collection fails:
 
 ```
-🚨 Crypto MarketCap Rankings Collection Failed
+🚨 Crypto MarketCap Rankings Failed
 
-Run ID: 19589282314
+Run: 19589282314
+Repo: terrylica/crypto-marketcap-rank
 Branch: main
 Time: 2025-11-22T03:01:58Z
 
-Recent Errors:
+Errors:
 - BuildError: Found 1693 duplicate (date, coin_id) pairs
 - Process completed with exit code 1
 
-View logs: https://github.com/...
+https://github.com/terrylica/crypto-marketcap-rank/actions/runs/19589282314
 ```
 
 **Behavior**: Triggers sound/vibration on your phone
@@ -97,30 +133,27 @@ View logs: https://github.com/...
 Sent when daily collection succeeds:
 
 ```
-✅ Crypto MarketCap Rankings Collection Succeeded
+✅ Crypto MarketCap Rankings Succeeded
 
-Run ID: 19589282315
+Run: 19589282315
+Repo: terrylica/crypto-marketcap-rank
 Branch: main
 Time: 2025-11-22T04:00:00Z
 
-View artifacts: https://github.com/...
+https://github.com/terrylica/crypto-marketcap-rank/actions/runs/19589282315
 ```
 
 **Behavior**: Silent notification (no sound)
 
-### Scheduled Health Check
-
-Runs every 6 hours to verify monitoring is working.
+---
 
 ## Monitoring Workflow Triggers
 
 1. **On Completion** (`workflow_run`):
-
    - Triggers immediately when daily collection completes
    - Sends notification based on success/failure
 
 2. **Scheduled** (every 6 hours):
-
    - Backup monitoring in case webhook missed
    - Verifies monitoring workflow is healthy
 
@@ -128,15 +161,17 @@ Runs every 6 hours to verify monitoring is working.
    - For testing and verification
    - Can be triggered via GitHub UI or CLI
 
+---
+
 ## Troubleshooting
 
 ### No Notifications Received
 
-1. **Check secrets are set**:
+1. **Check Doppler token is set**:
 
    ```bash
-   gh secret list --repo tainora/crypto-marketcap-rank
-   # Should show: PUSHOVER_API_TOKEN, PUSHOVER_USER_KEY
+   gh secret list --repo terrylica/crypto-marketcap-rank
+   # Should show: DOPPLER_TOKEN
    ```
 
 2. **Check Pushover app is installed** on your phone
@@ -157,26 +192,69 @@ Runs every 6 hours to verify monitoring is working.
 Check the workflow logs for errors:
 
 ```bash
-gh run view --log | grep -i pushover
+gh run view --log | grep -i -E "doppler|pushover"
 ```
 
 Common issues:
 
-- Invalid API token or user key
-- Pushover API rate limit exceeded (30 messages/month free tier)
+- Doppler token invalid or revoked
+- Doppler CLI installation failed
 - Network connectivity issues
+- Pushover API rate limit exceeded (10,000 messages/month free tier)
 
-### Test Notification Manually
+### Test Notification Manually (Local)
 
-Use curl to test Pushover directly:
+Use the canonical Doppler source:
 
 ```bash
+# Load from Doppler (canonical source)
+export PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN \
+  --project notifications --config dev --plain)
+export PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY \
+  --project notifications --config dev --plain)
+
+# Test notification
 curl -s \
-  --form-string "token=YOUR_API_TOKEN" \
-  --form-string "user=YOUR_USER_KEY" \
-  --form-string "message=Test notification from crypto-marketcap-rank" \
+  --form-string "token=$PUSHOVER_APP_TOKEN" \
+  --form-string "user=$PUSHOVER_USER_KEY" \
+  --form-string "message=Test from crypto-marketcap-rank" \
   https://api.pushover.net/1/messages.json
 ```
+
+---
+
+## Doppler Architecture
+
+### Credentials Location
+
+```
+notifications/
+└── dev/
+    ├── PUSHOVER_APP_TOKEN  (application token)
+    └── PUSHOVER_USER_KEY   (user key)
+```
+
+### Service Token Details
+
+**Token**: `<your-doppler-token>`
+
+**Scope**:
+
+- ✅ Can read: `notifications/dev`
+- ❌ Cannot read: `claude-config/prd` (publishing tokens)
+- ❌ Cannot read: Any other project
+
+**Verification** (local):
+
+```bash
+# This works
+DOPPLER_TOKEN="dp.st.dev..." doppler secrets --project notifications --config dev --only-names
+
+# This fails (blocked by token scope)
+DOPPLER_TOKEN="dp.st.dev..." doppler secrets --project claude-config --config prd --only-names
+```
+
+---
 
 ## Pushover Limits
 
@@ -192,12 +270,16 @@ curl -s \
 - Custom notification sounds
 - Desktop notifications
 
+---
+
 ## Security Notes
 
-- **Never commit** API tokens or user keys to git
-- Secrets are encrypted in GitHub Actions
-- Only repository admins can view/edit secrets
-- Rotate tokens if compromised
+- **Never commit** Doppler tokens or Pushover credentials to git
+- Service token is read-only (cannot write/delete secrets)
+- Token can be revoked in Doppler dashboard if compromised
+- Actual Pushover credentials not accessible to repository collaborators
+
+---
 
 ## Monitoring Workflow File
 
@@ -205,24 +287,46 @@ Location: `.github/workflows/monitor-collection.yml`
 
 Key features:
 
+- Doppler integration for secure credential access
 - Automatic failure detection
 - Error log extraction
 - Priority-based notifications
 - Manual trigger support
 - GitHub Actions summary
 
-## Next Steps
+---
 
-After setup:
+## Migration from Repository Secrets (Historical)
 
-1. ✅ Add Pushover secrets to GitHub
-2. ✅ Test with manual trigger
-3. ✅ Wait for next scheduled run or daily collection
-4. ✅ Verify notification received
-5. ✅ Monitor for 1 week to ensure reliability
+**Before (deprecated 2025-11-22)**:
+
+- Pushover credentials stored as repository secrets
+- Accessible to all collaborators with write access
+- Required updating each repository individually
+
+**After (current)**:
+
+- Only Doppler service token in repository secrets
+- Actual credentials in Doppler `notifications/dev`
+- Single source of truth for all repositories
+
+---
 
 ## References
 
 - Pushover API: https://pushover.net/api
+- Doppler CLI: https://docs.doppler.com/docs/cli
 - GitHub Actions Secrets: https://docs.github.com/en/actions/security-guides/encrypted-secrets
-- desiderati/github-action-pushover: https://github.com/desiderati/github-action-pushover
+- Canonical Architecture: `/tmp/pushover_canonical_architecture_2025-11-22.md`
+
+---
+
+## Next Steps
+
+After setup:
+
+1. ✅ Add DOPPLER_TOKEN to GitHub repository secrets
+2. ✅ Test with manual trigger
+3. ✅ Wait for next scheduled run or daily collection
+4. ✅ Verify notification received
+5. ✅ Monitor for 1 week to ensure reliability

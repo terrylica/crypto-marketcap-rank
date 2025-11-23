@@ -1,0 +1,168 @@
+name: Monitor Daily Collection
+
+on:
+  # Trigger when the daily collection workflow completes
+  workflow_run:
+    workflows: ["Daily Cryptocurrency Rankings Collection"]
+    types:
+      - completed
+
+  # Also run on schedule to catch missed notifications
+  schedule:
+    - cron: "15 */6 * * *" # Every 6 hours at :15
+
+  # Manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    name: Check Status & Notify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check workflow status
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Checking latest daily collection workflow..."
+
+          # Get latest workflow run
+          LATEST_RUN=$(gh run list \
+            --workflow "Daily Cryptocurrency Rankings Collection" \
+            --limit 1 \
+            --json databaseId,status,conclusion,name,createdAt,updatedAt,headBranch)
+
+          echo "Latest run:"
+          echo "$LATEST_RUN" | jq .
+
+          RUN_ID=$(echo "$LATEST_RUN" | jq -r '.[0].databaseId')
+          STATUS=$(echo "$LATEST_RUN" | jq -r '.[0].status')
+          CONCLUSION=$(echo "$LATEST_RUN" | jq -r '.[0].conclusion')
+          CREATED_AT=$(echo "$LATEST_RUN" | jq -r '.[0].createdAt')
+          BRANCH=$(echo "$LATEST_RUN" | jq -r '.[0].headBranch')
+
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          echo "conclusion=$CONCLUSION" >> $GITHUB_OUTPUT
+          echo "created_at=$CREATED_AT" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+          # Determine notification type
+          if [ "$STATUS" = "completed" ]; then
+            if [ "$CONCLUSION" = "failure" ]; then
+              echo "notify=failure" >> $GITHUB_OUTPUT
+              echo "message=❌ Daily collection workflow FAILED" >> $GITHUB_OUTPUT
+            elif [ "$CONCLUSION" = "success" ]; then
+              echo "notify=success" >> $GITHUB_OUTPUT
+              echo "message=✅ Daily collection workflow succeeded" >> $GITHUB_OUTPUT
+            else
+              echo "notify=other" >> $GITHUB_OUTPUT
+              echo "message=⚠️ Daily collection workflow completed with status: $CONCLUSION" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "notify=running" >> $GITHUB_OUTPUT
+            echo "message=⏳ Daily collection workflow is $STATUS" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get failure details
+        if: steps.check.outputs.conclusion == 'failure'
+        id: details
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RUN_ID="${{ steps.check.outputs.run_id }}"
+
+          echo "Fetching failure logs for run $RUN_ID..."
+
+          # Get failed job logs (last 50 lines)
+          LOGS=$(gh run view "$RUN_ID" --log-failed 2>&1 | tail -50)
+
+          # Extract error messages
+          ERRORS=$(echo "$LOGS" | grep -iE "(error|failed|exception)" | head -10 || echo "No specific error found in logs")
+
+          # Save for notification
+          echo "errors<<EOF" >> $GITHUB_OUTPUT
+          echo "$ERRORS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Install Doppler CLI
+        if: steps.check.outputs.conclusion == 'failure' || (steps.check.outputs.conclusion == 'success' && github.event_name == 'workflow_run')
+        run: |
+          # Install Doppler CLI
+          (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || wget -t 3 -qO- https://cli.doppler.com/install.sh) | sudo sh
+
+      - name: Send Pushover notification on failure
+        if: steps.check.outputs.conclusion == 'failure'
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          # Fetch credentials from Doppler
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notifications --config github-actions --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project notifications --config github-actions --plain)
+          # Build message (plain text - Pushover doesn't support HTML)
+          MESSAGE="🚨 Crypto MarketCap Rankings Failed
+
+          Run: ${{ steps.check.outputs.run_id }}
+          Repo: ${{ github.repository }}
+          Branch: ${{ steps.check.outputs.branch }}
+          Time: ${{ steps.check.outputs.created_at }}
+
+          Errors:
+          ${{ steps.details.outputs.errors }}
+
+          URL: https://github.com/${{ github.repository }}/actions/runs/${{ steps.check.outputs.run_id }}"
+
+          # Send to Pushover (priority 1 = high, bypasses quiet hours)
+          curl -s \
+            --form-string "token=$PUSHOVER_APP_TOKEN" \
+            --form-string "user=$PUSHOVER_USER_KEY" \
+            --form-string "title=❌ Daily Collection Failed" \
+            --form-string "message=$MESSAGE" \
+            --form-string "priority=1" \
+            --form-string "sound=siren" \
+            https://api.pushover.net/1/messages.json
+
+      - name: Send Pushover notification on success
+        if: steps.check.outputs.conclusion == 'success' && github.event_name == 'workflow_run'
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          # Fetch credentials from Doppler
+          PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN --project notifications --config github-actions --plain)
+          PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY --project notifications --config github-actions --plain)
+          # Build message (plain text)
+          MESSAGE="✅ Crypto MarketCap Rankings Succeeded
+
+          Run: ${{ steps.check.outputs.run_id }}
+          Repo: ${{ github.repository }}
+          Branch: ${{ steps.check.outputs.branch }}
+          Time: ${{ steps.check.outputs.created_at }}
+
+          URL: https://github.com/${{ github.repository }}/actions/runs/${{ steps.check.outputs.run_id }}"
+
+          # Send to Pushover (priority -1 = silent)
+          curl -s \
+            --form-string "token=$PUSHOVER_APP_TOKEN" \
+            --form-string "user=$PUSHOVER_USER_KEY" \
+            --form-string "title=✅ Daily Collection OK" \
+            --form-string "message=$MESSAGE" \
+            --form-string "priority=-1" \
+            https://api.pushover.net/1/messages.json
+
+      - name: Summary
+        run: |
+          echo "## Monitoring Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** Daily Cryptocurrency Rankings Collection" >> $GITHUB_STEP_SUMMARY
+          echo "**Run ID:** ${{ steps.check.outputs.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ steps.check.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Conclusion:** ${{ steps.check.outputs.conclusion }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Created:** ${{ steps.check.outputs.created_at }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ steps.check.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Notification:** ${{ steps.check.outputs.notify }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Message:** ${{ steps.check.outputs.message }}" >> $GITHUB_STEP_SUMMARY
