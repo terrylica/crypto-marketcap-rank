@@ -11,7 +11,7 @@ Test and validate all database builders.
 
 This script:
 1. Collects sample data (500 coins)
-2. Builds DuckDB, Parquet, and CSV formats
+2. Builds DuckDB and Parquet formats
 3. Validates each output
 4. Reports file sizes and metrics
 
@@ -26,7 +26,6 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from builders.build_csv import CSVBuilder
 from builders.build_duckdb import DuckDBBuilder
 from builders.build_parquet import ParquetBuilder
 
@@ -140,21 +139,6 @@ def main():
         print(f"❌ Parquet build failed: {e}")
         return 1
 
-    # Step 4: Build CSV
-    print("Step 4: Building CSV file...")
-    print("-" * 80)
-    csv_builder = CSVBuilder(output_dir="data/processed")
-
-    try:
-        csv_file = csv_builder.build(raw_file)
-        csv_builder.validate(csv_file)
-        csv_size = csv_file.stat().st_size / (1024 * 1024)
-        print(f"✅ CSV build successful: {csv_file} ({csv_size:.2f} MB)")
-        print()
-    except Exception as e:
-        print(f"❌ CSV build failed: {e}")
-        return 1
-
     # Summary
     print("=" * 80)
     print("✅ All builders validated successfully!")
@@ -164,13 +148,11 @@ def main():
     print(f"  Raw JSON:  {raw_file.stat().st_size / (1024 * 1024):.2f} MB")
     print(f"  DuckDB:    {duckdb_size:.2f} MB")
     print(f"  Parquet:   {parquet_size:.2f} MB")
-    print(f"  CSV.gz:    {csv_size:.2f} MB")
     print()
     print("Output files:")
     print(f"  {raw_file}")
     print(f"  {duckdb_file}")
     print(f"  {parquet_dir}")
-    print(f"  {csv_file}")
     print("=" * 80)
 
     return 0
