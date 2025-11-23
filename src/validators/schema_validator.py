@@ -87,6 +87,10 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
             missing = set(expected_names) - set(actual_names)
             extra = set(actual_names) - set(expected_names)
 
+            # Allow Hive partition columns (added by PyArrow when reading partitioned Parquet)
+            ALLOWED_PARTITION_COLUMNS = {"year", "month", "day"}
+            extra = extra - ALLOWED_PARTITION_COLUMNS
+
             if missing:
                 errors.append(SchemaError(f"Missing columns: {missing}"))
             if extra:
