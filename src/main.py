@@ -12,7 +12,7 @@ Main Entry Point - Daily Cryptocurrency Rankings Collection
 
 Orchestrates:
 1. Data collection (CoinGecko API)
-2. Database building (DuckDB + Parquet + CSV)
+2. Database building (DuckDB + Parquet)
 3. Validation (quality checks)
 
 Adheres to SLO:
@@ -25,7 +25,6 @@ import sys
 from datetime import datetime
 
 from builders.base_builder import BuildError
-from builders.build_csv import CSVBuilder
 from builders.build_duckdb import DuckDBBuilder
 from builders.build_parquet import ParquetBuilder
 from collectors.coingecko_collector import CoinGeckoCollector, CollectionError
@@ -93,19 +92,6 @@ def main(date: str = None):
         print(f"❌ Parquet build failed: {e}")
         sys.exit(1)
 
-    # Build CSV
-    try:
-        print("\n2c. Building CSV...")
-        csv_builder = CSVBuilder()
-        csv_file = csv_builder.build(raw_file)
-        csv_builder.validate(csv_file)
-        built_files['csv'] = csv_file
-        print(f"✅ CSV complete: {csv_file}")
-
-    except BuildError as e:
-        print(f"❌ CSV build failed: {e}")
-        sys.exit(1)
-
     # Step 3: Summary
     print(f"\n{'='*80}")
     print("✅ Pipeline Complete!")
@@ -116,7 +102,6 @@ def main(date: str = None):
     print(f"  Raw JSON:  {raw_file}")
     print(f"  DuckDB:    {built_files['duckdb']} ({built_files['duckdb'].stat().st_size / (1024*1024):.1f} MB)")
     print(f"  Parquet:   {built_files['parquet']}")
-    print(f"  CSV:       {built_files['csv']} ({built_files['csv'].stat().st_size / (1024*1024):.1f} MB)")
     print(f"{'='*80}\n")
 
 
