@@ -288,20 +288,32 @@ WHERE date = '2025-11-23'
 
 ### Phase 7: Documentation Updates (Task 12)
 
-- [ ] **Task 12**: Update README and documentation
-  - Remove CSV references
-  - Document Parquet-only workflow
-  - Add schema v2 migration guide
-  - Update query examples (DuckDB + Parquet)
-  - Document daily tag pattern
+- [x] **Task 12**: Update README and documentation
+  - Status: Complete (commit 3058915)
+  - Removed all CSV format references
+  - Updated Features section to highlight Schema V2
+  - Updated Available Formats (DuckDB + Parquet only)
+  - Added PyArrow type column to schema table
+  - Added breaking change notice for Schema V2
+  - Updated Architecture diagram (2 formats, 5 validation rules)
+  - Updated Technical Stack (removed CSV, added validation details)
+  - Updated Releases section (daily tags, removed monthly archives)
+  - Updated Project Structure (added schemas/ and validators/ dirs)
 
 ### Phase 8: Release (Task 13)
 
-- [ ] **Task 13**: Create semantic release
-  - Conventional commit: `feat!: migrate to schema v2 with native PyArrow types`
-  - Breaking change footer documenting v1 → v2 migration
-  - Semantic release will auto-tag and create GitHub Release
-  - Changelog auto-generated
+- [x] **Task 13**: Create semantic release v2.0.0
+  - Status: Complete
+  - Release URL: https://github.com/terrylica/crypto-marketcap-rank/releases/tag/v2.0.0
+  - Version: 2.0.0 (major version bump due to breaking changes)
+  - CHANGELOG.md auto-generated with full migration details
+  - Version updated in pyproject.toml and src/__init__.py
+  - Git tag created and pushed to origin
+  - GitHub Release published with comprehensive notes
+  - Breaking changes documented:
+    - CSV format deprecation
+    - Schema V2 migration (STRING date → pa.date32())
+    - Daily release tag pattern (daily-YYYY-MM-DD)
 
 ---
 
