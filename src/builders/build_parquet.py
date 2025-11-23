@@ -177,6 +177,12 @@ class ParquetBuilder(DatabaseBuilder):
             )
 
         except Exception as e:
+            import traceback
+            print(f"DIAGNOSTIC: Exception during Parquet creation:")
+            print(f"  Type: {type(e).__name__}")
+            print(f"  Message: {e}")
+            print(f"DIAGNOSTIC: Full traceback:")
+            traceback.print_exc()
             raise BuildError(f"Parquet creation failed: {e}") from e
 
     def validate(self, database_dir: Path) -> bool:
