@@ -88,17 +88,17 @@ print(df)
 
 **Schema V2** (November 2025): All formats share the same PyArrow-native schema:
 
-| Column                 | Type    | PyArrow Type  | Description                  |
-| ---------------------- | ------- | ------------- | ---------------------------- |
-| `date`                 | DATE    | `pa.date32()` | Collection date (YYYY-MM-DD) |
-| `rank`                 | BIGINT  | `pa.int64()`  | Market cap rank (1-based)    |
-| `coin_id`              | VARCHAR | `pa.string()` | CoinGecko coin identifier    |
-| `symbol`               | VARCHAR | `pa.string()` | Ticker symbol (e.g., BTC)    |
-| `name`                 | VARCHAR | `pa.string()` | Full coin name               |
-| `market_cap`           | DOUBLE  | `pa.float64()`| Market capitalization (USD)  |
-| `price`                | DOUBLE  | `pa.float64()`| Current price (USD)          |
-| `volume_24h`           | DOUBLE  | `pa.float64()`| 24-hour trading volume (USD) |
-| `price_change_24h_pct` | DOUBLE  | `pa.float64()`| 24-hour price change (%)     |
+| Column                 | Type    | PyArrow Type   | Description                  |
+| ---------------------- | ------- | -------------- | ---------------------------- |
+| `date`                 | DATE    | `pa.date32()`  | Collection date (YYYY-MM-DD) |
+| `rank`                 | BIGINT  | `pa.int64()`   | Market cap rank (1-based)    |
+| `coin_id`              | VARCHAR | `pa.string()`  | CoinGecko coin identifier    |
+| `symbol`               | VARCHAR | `pa.string()`  | Ticker symbol (e.g., BTC)    |
+| `name`                 | VARCHAR | `pa.string()`  | Full coin name               |
+| `market_cap`           | DOUBLE  | `pa.float64()` | Market capitalization (USD)  |
+| `price`                | DOUBLE  | `pa.float64()` | Current price (USD)          |
+| `volume_24h`           | DOUBLE  | `pa.float64()` | 24-hour trading volume (USD) |
+| `price_change_24h_pct` | DOUBLE  | `pa.float64()` | 24-hour price change (%)     |
 
 > **Breaking Change (v2.0.0)**: Schema V2 uses native DATE type instead of STRING. Historical data (pre-Nov 2025) uses Schema V1. DuckDB automatically handles type conversion in queries.
 

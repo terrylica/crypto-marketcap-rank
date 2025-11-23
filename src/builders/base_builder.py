@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional
 
 import pyarrow as pa
 
-from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
+from schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
 
 
 class BuildError(Exception):

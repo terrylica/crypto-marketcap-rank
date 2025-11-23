@@ -31,8 +31,8 @@ from typing import Optional
 import duckdb
 import pyarrow as pa
 
-from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
-from src.validators import validate_arrow_table
+from schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
+from validators import validate_arrow_table
 
 from .base_builder import BuildError, DatabaseBuilder
 

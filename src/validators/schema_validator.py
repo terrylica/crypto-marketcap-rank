@@ -15,7 +15,7 @@ from typing import List
 
 import pyarrow as pa
 
-from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
+from schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
 
 
 # Validation Error Classes

@@ -307,7 +307,7 @@ WHERE date = '2025-11-23'
   - Release URL: https://github.com/terrylica/crypto-marketcap-rank/releases/tag/v2.0.0
   - Version: 2.0.0 (major version bump due to breaking changes)
   - CHANGELOG.md auto-generated with full migration details
-  - Version updated in pyproject.toml and src/__init__.py
+  - Version updated in pyproject.toml and src/**init**.py
   - Git tag created and pushed to origin
   - GitHub Release published with comprehensive notes
   - Breaking changes documented:
