@@ -9,7 +9,8 @@ Daily automated collection of comprehensive cryptocurrency market cap rankings f
 
 - **Complete Coverage**: All 19,411+ ranked cryptocurrencies
 - **Daily Updates**: Automated collection at 6:00 AM UTC
-- **Multiple Formats**: DuckDB (SQL queries), Parquet (ClickHouse), CSV (universal)
+- **Multiple Formats**: DuckDB (SQL queries), Parquet (ClickHouse/analytics)
+- **Schema V2**: PyArrow native types with comprehensive validation
 - **Zero Cost**: Operates within free tiers (GitHub Actions + CoinGecko API)
 - **Public Dataset**: Research-ready, freely downloadable
 - **Production Quality**: Validated, versioned, and continuously monitored
@@ -69,56 +70,54 @@ print(df)
 
 - **File**: `crypto_rankings_YYYY-MM-DD.duckdb`
 - **Size**: ~150-200 MB compressed
+- **Schema**: Native DATE and BIGINT types (Schema V2)
 - **Use Case**: Instant SQL queries, data analysis, no setup required
 - **Best For**: Researchers, analysts, quick exploration
 
-### Parquet (ClickHouse Import)
+### Parquet (Analytics & Data Pipelines)
 
 - **Directory**: `crypto_rankings_YYYY-MM-DD.parquet/`
 - **Size**: ~50-150 MB compressed
-- **Partitioning**: `year=YYYY/month=MM/day=DD/`
-- **Use Case**: ClickHouse import, data pipelines, production systems
+- **Partitioning**: Hive-style `year=YYYY/month=MM/day=DD/`
+- **Schema**: PyArrow native types (pa.date32(), pa.int64(), pa.float64())
+- **Compression**: zstd level 3
+- **Use Case**: ClickHouse import, data pipelines, columnar analytics
 - **Best For**: Companies, data engineers, ETL workflows
-
-### CSV (Universal Compatibility)
-
-- **File**: `crypto_rankings_YYYY-MM-DD.csv.gz`
-- **Size**: ~50 MB compressed
-- **Use Case**: Spreadsheets, legacy tools, maximum compatibility
-- **Best For**: Excel users, non-technical users, quick viewing
 
 ## Schema
 
-All formats share the same schema:
+**Schema V2** (November 2025): All formats share the same PyArrow-native schema:
 
-| Column                 | Type    | Description                  |
-| ---------------------- | ------- | ---------------------------- |
-| `date`                 | DATE    | Collection date (YYYY-MM-DD) |
-| `rank`                 | INTEGER | Market cap rank (1-based)    |
-| `coin_id`              | VARCHAR | CoinGecko coin identifier    |
-| `symbol`               | VARCHAR | Ticker symbol (e.g., BTC)    |
-| `name`                 | VARCHAR | Full coin name               |
-| `market_cap`           | DOUBLE  | Market capitalization (USD)  |
-| `price`                | DOUBLE  | Current price (USD)          |
-| `volume_24h`           | DOUBLE  | 24-hour trading volume (USD) |
-| `price_change_24h_pct` | DOUBLE  | 24-hour price change (%)     |
+| Column                 | Type    | PyArrow Type  | Description                  |
+| ---------------------- | ------- | ------------- | ---------------------------- |
+| `date`                 | DATE    | `pa.date32()` | Collection date (YYYY-MM-DD) |
+| `rank`                 | BIGINT  | `pa.int64()`  | Market cap rank (1-based)    |
+| `coin_id`              | VARCHAR | `pa.string()` | CoinGecko coin identifier    |
+| `symbol`               | VARCHAR | `pa.string()` | Ticker symbol (e.g., BTC)    |
+| `name`                 | VARCHAR | `pa.string()` | Full coin name               |
+| `market_cap`           | DOUBLE  | `pa.float64()`| Market capitalization (USD)  |
+| `price`                | DOUBLE  | `pa.float64()`| Current price (USD)          |
+| `volume_24h`           | DOUBLE  | `pa.float64()`| 24-hour trading volume (USD) |
+| `price_change_24h_pct` | DOUBLE  | `pa.float64()`| 24-hour price change (%)     |
+
+> **Breaking Change (v2.0.0)**: Schema V2 uses native DATE type instead of STRING. Historical data (pre-Nov 2025) uses Schema V1. DuckDB automatically handles type conversion in queries.
 
 ## Architecture
 
 ```
 Collection → Build → Validate → Release
     ↓          ↓         ↓          ↓
-  78 API    3 formats  Quality   GitHub
-  calls     built      checks    Releases
+  78 API    2 formats  5 rules   Daily
+  calls     built      enforced   tags
 ```
 
 ### Technical Stack
 
 - **Collection**: Python + CoinGecko API (78 API calls/day)
-- **Databases**: DuckDB, Parquet (PyArrow), CSV
+- **Databases**: DuckDB, Parquet (PyArrow Schema V2)
+- **Validation**: Comprehensive schema validation (5 rules: schema conformance, duplicates, nulls, ranges, values)
 - **CI/CD**: GitHub Actions (daily cron + manual trigger)
-- **Distribution**: GitHub Releases ("latest" tag + monthly archives)
-- **Validation**: pytest + data quality checks
+- **Distribution**: GitHub Releases (daily tags: `daily-YYYY-MM-DD`)
 - **Versioning**: semantic-release (conventional commits)
 
 ## API Quota Usage
@@ -156,12 +155,13 @@ uv run src/main.py
 ```
 crypto-marketcap-rank/
 ├── .github/workflows/      # CI/CD automation
-│   ├── daily-collection.yml
-│   ├── monthly-archive.yml
-│   └── ci.yml
+│   ├── daily-collection.yml  # Daily data collection + release
+│   └── ci.yml                # Continuous integration
 ├── src/                    # Production code
 │   ├── collectors/         # CoinGecko API collector
-│   ├── builders/           # Database builders (DuckDB/Parquet/CSV)
+│   ├── builders/           # Database builders (DuckDB/Parquet)
+│   ├── schemas/            # PyArrow Schema V2 definition
+│   ├── validators/         # Comprehensive validation layer
 │   ├── utils/              # RateLimiter, CheckpointManager
 │   └── main.py             # Entry point
 ├── tests/                  # Unit tests
@@ -175,17 +175,23 @@ crypto-marketcap-rank/
 
 ## Releases
 
-### Latest Release
+### Daily Releases
 
-- **Tag**: `latest`
+- **Tag Pattern**: `daily-YYYY-MM-DD` (perpetual storage)
+- **Latest Tag**: Points to most recent release (`make_latest: true`)
 - **Updated**: Daily at 6:00 AM UTC
-- **Contents**: DuckDB, Parquet, CSV for most recent collection date
+- **Contents**: DuckDB + Parquet for each collection date
+- **Retention**: Perpetual (all daily releases kept indefinitely)
 
-### Monthly Archives
+### Example
 
-- **Tags**: `v2025-11`, `v2025-12`, etc.
-- **Created**: 1st of every month
-- **Contents**: Compressed archive of previous month's daily collections
+```bash
+# Download specific date
+wget https://github.com/terrylica/crypto-marketcap-rank/releases/download/daily-2025-11-22/crypto_rankings_2025-11-22.duckdb
+
+# Download latest
+wget https://github.com/terrylica/crypto-marketcap-rank/releases/latest/download/crypto_rankings_YYYY-MM-DD.duckdb
+```
 
 ## Quality Assurance
 
