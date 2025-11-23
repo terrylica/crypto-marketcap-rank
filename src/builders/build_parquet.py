@@ -106,28 +106,6 @@ class ParquetBuilder(DatabaseBuilder):
             BuildError: If Parquet creation fails
         """
         try:
-            # DIAGNOSTIC: Check first 3 rows for type information
-            print(f"DIAGNOSTIC: Checking data types in first 3 rows:")
-            for i, row in enumerate(rows[:3], 1):
-                print(f"  Row {i}:")
-                print(f"    rank: {row['rank']} (type: {type(row['rank']).__name__})")
-                print(f"    market_cap: {row['market_cap']} (type: {type(row['market_cap']).__name__})")
-                print(f"    price: {row['price']} (type: {type(row['price']).__name__})")
-
-            # DIAGNOSTIC: Check for any string values in rank column
-            rank_types = {}
-            for row in rows:
-                rank_type = type(row["rank"]).__name__
-                rank_types[rank_type] = rank_types.get(rank_type, 0) + 1
-            print(f"DIAGNOSTIC: Rank field type distribution: {rank_types}")
-
-            # DIAGNOSTIC: Find first row with string rank if any
-            for i, row in enumerate(rows):
-                if isinstance(row["rank"], str):
-                    print(f"DIAGNOSTIC: Found string rank at index {i}: {row['rank']}")
-                    print(f"  coin_id: {row['coin_id']}, symbol: {row['symbol']}")
-                    break
-
             # Define PyArrow schema (date as string for simplicity)
             schema = pa.schema([
                 ("date", pa.string()),
@@ -142,7 +120,6 @@ class ParquetBuilder(DatabaseBuilder):
             ])
 
             # Convert rows to PyArrow table
-            print(f"DIAGNOSTIC: Creating PyArrow table with {len(rows)} rows...")
             table = pa.table({
                 "date": [row["date"] for row in rows],
                 "rank": [row["rank"] for row in rows],
@@ -154,7 +131,6 @@ class ParquetBuilder(DatabaseBuilder):
                 "volume_24h": [row["volume_24h"] for row in rows],
                 "price_change_24h_pct": [row["price_change_24h_pct"] for row in rows],
             }, schema=schema)
-            print(f"DIAGNOSTIC: PyArrow table created successfully")
 
             # Parse date for partitioning
             date_obj = datetime.strptime(collection_date, "%Y-%m-%d")
@@ -177,12 +153,6 @@ class ParquetBuilder(DatabaseBuilder):
             )
 
         except Exception as e:
-            import traceback
-            print(f"DIAGNOSTIC: Exception during Parquet creation:")
-            print(f"  Type: {type(e).__name__}")
-            print(f"  Message: {e}")
-            print(f"DIAGNOSTIC: Full traceback:")
-            traceback.print_exc()
             raise BuildError(f"Parquet creation failed: {e}") from e
 
     def validate(self, database_dir: Path) -> bool:
