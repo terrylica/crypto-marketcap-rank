@@ -1,7 +1,7 @@
 # Inline configuration
 # Level: Project (standalone)
 
-repositoryUrl: https://github.com/terrylica/crypto-marketcap-rank
+repositoryUrl: git@github.com:terrylica/crypto-marketcap-rank.git
 
 branches:
   - main
