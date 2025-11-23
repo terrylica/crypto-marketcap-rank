@@ -12,8 +12,8 @@ Adheres to SLO:
 """
 
 from typing import List
+
 import pyarrow as pa
-import pandas as pd
 
 from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
 
@@ -21,31 +21,37 @@ from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
 # Validation Error Classes
 class ValidationError(Exception):
     """Base class for all validation errors."""
+
     pass
 
 
 class SchemaError(ValidationError):
     """Schema conformance error."""
+
     pass
 
 
 class DuplicateError(ValidationError):
     """Duplicate record error."""
+
     pass
 
 
 class NullError(ValidationError):
     """NULL value in required field error."""
+
     pass
 
 
 class RangeError(ValidationError):
     """Value out of valid range error."""
+
     pass
 
 
 class ValueError(ValidationError):
     """Invalid value error."""
+
     pass
 
 
@@ -91,10 +97,11 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
                 if field.name in actual_names:
                     actual_type = table.schema.field(field.name).type
                     if actual_type != field.type:
-                        errors.append(SchemaError(
-                            f"Column '{field.name}' type mismatch: "
-                            f"expected {field.type}, got {actual_type}"
-                        ))
+                        errors.append(
+                            SchemaError(
+                                f"Column '{field.name}' type mismatch: expected {field.type}, got {actual_type}"
+                            )
+                        )
     except Exception as e:
         errors.append(SchemaError(f"Schema validation failed: {e}"))
 
@@ -105,10 +112,7 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
         if not duplicates.empty:
             dup_count = len(duplicates)
             sample = duplicates[["date", "coin_id", "rank"]].head(5).to_dict("records")
-            errors.append(DuplicateError(
-                f"Found {dup_count} duplicate (date, coin_id) pairs. "
-                f"Sample: {sample}"
-            ))
+            errors.append(DuplicateError(f"Found {dup_count} duplicate (date, coin_id) pairs. Sample: {sample}"))
     except Exception as e:
         errors.append(DuplicateError(f"Duplicate check failed: {e}"))
 
@@ -122,10 +126,9 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
                 df = table.to_pandas()
                 null_rows = df[df[field].isnull()].head(5)
                 sample = null_rows[["date", "rank", "coin_id"]].to_dict("records")
-                errors.append(NullError(
-                    f"Found {null_count} NULL values in required field '{field}'. "
-                    f"Sample: {sample}"
-                ))
+                errors.append(
+                    NullError(f"Found {null_count} NULL values in required field '{field}'. Sample: {sample}")
+                )
         except Exception as e:
             errors.append(NullError(f"NULL check failed for '{field}': {e}"))
 
@@ -138,23 +141,17 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
             expected_max = len(ranks)
 
             if min_rank < 1:
-                errors.append(RangeError(
-                    f"Rank minimum is {min_rank}, expected >= 1"
-                ))
+                errors.append(RangeError(f"Rank minimum is {min_rank}, expected >= 1"))
 
             if max_rank != expected_max:
-                errors.append(RangeError(
-                    f"Rank maximum is {max_rank}, expected {expected_max} (row count)"
-                ))
+                errors.append(RangeError(f"Rank maximum is {max_rank}, expected {expected_max} (row count)"))
 
             # Check for gaps (optional - may be too strict)
             rank_set = set(ranks)
             expected_ranks = set(range(1, expected_max + 1))
             missing_ranks = expected_ranks - rank_set
             if missing_ranks and len(missing_ranks) < 10:  # Only report if < 10 gaps
-                errors.append(RangeError(
-                    f"Missing ranks in sequence: {sorted(missing_ranks)}"
-                ))
+                errors.append(RangeError(f"Missing ranks in sequence: {sorted(missing_ranks)}"))
     except Exception as e:
         errors.append(RangeError(f"Rank validation failed: {e}"))
 
@@ -164,10 +161,9 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
         if market_caps:
             negative_caps = [c for c in market_caps if c < 0]
             if negative_caps:
-                errors.append(ValueError(
-                    f"Found {len(negative_caps)} negative market_cap values. "
-                    f"Sample: {negative_caps[:5]}"
-                ))
+                errors.append(
+                    ValueError(f"Found {len(negative_caps)} negative market_cap values. Sample: {negative_caps[:5]}")
+                )
     except Exception as e:
         errors.append(ValueError(f"Market cap validation failed: {e}"))
 
@@ -190,14 +186,13 @@ def validate_and_raise(table: pa.Table) -> None:
     errors = validate_arrow_table(table)
     if errors:
         error_messages = "\n".join([f"  - {e}" for e in errors])
-        raise ValidationError(
-            f"Validation failed with {len(errors)} error(s):\n{error_messages}"
-        )
+        raise ValidationError(f"Validation failed with {len(errors)} error(s):\n{error_messages}")
 
 
 if __name__ == "__main__":
-    import pyarrow as pa
     from datetime import date
+
+    import pyarrow as pa
 
     # Test validation with valid data
     print("Testing schema validator...")

@@ -8,16 +8,17 @@
 Parquet Database Builder
 
 Builds partitioned Parquet files from raw JSON collector output.
-Optimized for ClickHouse import (smallest size, native format).
+Uses Schema V2 with native PyArrow types (pa.date32(), pa.int64()).
 
 Features:
-- Date partitioning: year=YYYY/month=MM/day=DD/
+- Schema V2: Native DATE type, INT64 ranks
+- Hive-style partitioning: year=/month=/day=/
 - zstd compression level 3
-- 50-150 MB/year compressed
+- Comprehensive validation before write
 - ClickHouse-native format
 
 Adheres to SLO:
-- Correctness: Schema validation, raise on build errors
+- Correctness: PyArrow schema enforcement + comprehensive validation
 - Observability: Progress logging for build operations
 """
 
@@ -28,7 +29,10 @@ from typing import Optional
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from .base_builder import BuildError, DatabaseBuilder, DatabaseSchema
+from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
+from src.validators import validate_arrow_table
+
+from .base_builder import BuildError, DatabaseBuilder
 
 
 class ParquetBuilder(DatabaseBuilder):
@@ -43,7 +47,7 @@ class ParquetBuilder(DatabaseBuilder):
 
     def build(self, input_file: Path, output_file: Optional[Path] = None) -> Path:
         """
-        Build Parquet files from raw JSON file.
+        Build Parquet files from raw JSON file using Schema V2.
 
         Args:
             input_file: Path to raw JSON file from collector
@@ -64,10 +68,18 @@ class ParquetBuilder(DatabaseBuilder):
             collection_date, coins = self._parse_raw_json(input_file)
             print(f"  Date: {collection_date}, Coins: {len(coins)}")
 
-            # Transform to rows
-            print("Transforming to database rows...")
-            rows = self._transform_to_rows(collection_date, coins)
-            print(f"  Rows: {len(rows)}")
+            # Transform to PyArrow Table
+            print("Transforming to PyArrow Table...")
+            table = self._transform_to_rows(collection_date, coins)
+            print(f"  Rows: {len(table)}")
+
+            # Validate table before writing
+            print("Validating table...")
+            errors = validate_arrow_table(table)
+            if errors:
+                error_messages = "\n".join([f"  - {e}" for e in errors])
+                raise BuildError(f"Validation failed with {len(errors)} error(s):\n{error_messages}")
+            print("  ✅ Validation passed")
 
             # Generate output directory
             if output_file is None:
@@ -79,7 +91,7 @@ class ParquetBuilder(DatabaseBuilder):
 
             # Build Parquet files
             print(f"Building Parquet files: {output_file}")
-            self._build_parquet(rows, output_file, collection_date)
+            self._build_parquet(table, output_file, collection_date)
 
             # Get total size
             total_size = sum(f.stat().st_size for f in output_file.rglob("*.parquet"))
@@ -93,12 +105,12 @@ class ParquetBuilder(DatabaseBuilder):
         except Exception as e:
             raise BuildError(f"Failed to build Parquet files: {e}") from e
 
-    def _build_parquet(self, rows: list, output_dir: Path, collection_date: str) -> None:
+    def _build_parquet(self, table: pa.Table, output_dir: Path, collection_date: str) -> None:
         """
-        Build Parquet files with partitioning.
+        Build Parquet files with Hive-style partitioning.
 
         Args:
-            rows: List of row dictionaries
+            table: PyArrow Table with Schema V2
             output_dir: Path to output directory
             collection_date: Collection date (YYYY-MM-DD)
 
@@ -106,39 +118,13 @@ class ParquetBuilder(DatabaseBuilder):
             BuildError: If Parquet creation fails
         """
         try:
-            # Define PyArrow schema (date as string for simplicity)
-            schema = pa.schema([
-                ("date", pa.string()),
-                ("rank", pa.int32()),
-                ("coin_id", pa.string()),
-                ("symbol", pa.string()),
-                ("name", pa.string()),
-                ("market_cap", pa.float64()),
-                ("price", pa.float64()),
-                ("volume_24h", pa.float64()),
-                ("price_change_24h_pct", pa.float64()),
-            ])
-
-            # Convert rows to PyArrow table
-            table = pa.table({
-                "date": [row["date"] for row in rows],
-                "rank": [row["rank"] for row in rows],
-                "coin_id": [row["coin_id"] for row in rows],
-                "symbol": [row["symbol"] for row in rows],
-                "name": [row["name"] for row in rows],
-                "market_cap": [row["market_cap"] for row in rows],
-                "price": [row["price"] for row in rows],
-                "volume_24h": [row["volume_24h"] for row in rows],
-                "price_change_24h_pct": [row["price_change_24h_pct"] for row in rows],
-            }, schema=schema)
-
             # Parse date for partitioning
             date_obj = datetime.strptime(collection_date, "%Y-%m-%d")
             year = date_obj.year
             month = date_obj.month
             day = date_obj.day
 
-            # Create partition directory
+            # Create Hive-style partition directory (year=/month=/day=/)
             partition_dir = output_dir / f"year={year}" / f"month={month:02d}" / f"day={day:02d}"
             partition_dir.mkdir(parents=True, exist_ok=True)
 
@@ -147,17 +133,19 @@ class ParquetBuilder(DatabaseBuilder):
             pq.write_table(
                 table,
                 parquet_file,
-                compression='zstd',
+                compression="zstd",
                 compression_level=3,
                 use_dictionary=True,
             )
+
+            print(f"  Wrote: {parquet_file.relative_to(output_dir)}")
 
         except Exception as e:
             raise BuildError(f"Parquet creation failed: {e}") from e
 
     def validate(self, database_dir: Path) -> bool:
         """
-        Validate built Parquet directory.
+        Validate built Parquet directory using comprehensive Schema V2 validation.
 
         Args:
             database_dir: Path to Parquet directory
@@ -182,32 +170,31 @@ class ParquetBuilder(DatabaseBuilder):
             print(f"  Parquet files: {len(parquet_files)}")
 
             total_rows = 0
+            all_errors = []
+
             for pf in parquet_files:
                 # Read Parquet file
                 table = pq.read_table(pf)
                 total_rows += len(table)
 
-                # Check schema
-                expected_columns = [col[0] for col in DatabaseSchema.COLUMNS]
-                actual_columns = table.schema.names
+                # Comprehensive validation
+                errors = validate_arrow_table(table)
+                if errors:
+                    all_errors.extend([f"{pf.name}: {e}" for e in errors])
 
-                missing = set(expected_columns) - set(actual_columns)
-                if missing:
-                    raise BuildError(f"Missing columns in {pf.name}: {missing}")
+                # Print summary
+                if not errors:
+                    rank_column = table.column("rank")
+                    ranks = rank_column.to_pylist()
+                    if ranks:
+                        min_val = min(ranks)
+                        max_val = max(ranks)
+                        print(f"  {pf.name}: {len(table)} rows, rank range {min_val}-{max_val}")
 
-                # Check for nulls in required fields
-                for field in ["date", "rank", "coin_id"]:
-                    null_count = table.column(field).null_count
-                    if null_count > 0:
-                        raise BuildError(f"Found {null_count} NULL values in required field: {field}")
-
-                # Check rank range
-                rank_column = table.column("rank")
-                min_rank = rank_column.to_pylist()
-                if min_rank:
-                    min_val = min(min_rank)
-                    max_val = max(min_rank)
-                    print(f"  {pf.name}: {len(table)} rows, rank range {min_val}-{max_val}")
+            # Check if any errors found
+            if all_errors:
+                error_messages = "\n".join([f"  - {e}" for e in all_errors])
+                raise BuildError(f"Validation failed with {len(all_errors)} error(s):\n{error_messages}")
 
             print(f"  Total rows: {total_rows}")
 
@@ -244,13 +231,13 @@ if __name__ == "__main__":
         total_size = sum(f.stat().st_size for f in parquet_dir.rglob("*.parquet"))
         size_mb = total_size / (1024 * 1024)
 
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("✅ Build successful!")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
         print(f"  Input: {input_file}")
         print(f"  Output: {parquet_dir}")
         print(f"  Size: {size_mb:.1f} MB")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
 
     except BuildError as e:
         print(f"\n❌ Build failed: {e}")

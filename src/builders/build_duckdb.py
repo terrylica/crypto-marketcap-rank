@@ -2,22 +2,25 @@
 # /// script
 # dependencies = [
 #   "duckdb>=1.0.0",
+#   "pyarrow>=15.0.0",
 # ]
 # ///
 """
 DuckDB Database Builder
 
 Builds single-file DuckDB database from raw JSON collector output.
-Primary format for public distribution (instant queryability).
+Uses Schema V2 with zero-copy PyArrow → DuckDB integration.
 
 Features:
+- Schema V2: Native DATE type, BIGINT ranks (INT64)
+- Zero-copy Arrow integration (instant, memory-efficient)
 - Native compression (150-200 MB/year)
 - Indexed for fast rank/date queries
-- SQL interface
+- Comprehensive validation
 - Single-file distribution
 
 Adheres to SLO:
-- Correctness: Schema validation, raise on build errors
+- Correctness: PyArrow schema enforcement + comprehensive validation
 - Observability: Progress logging for build operations
 """
 
@@ -26,8 +29,12 @@ from pathlib import Path
 from typing import Optional
 
 import duckdb
+import pyarrow as pa
 
-from .base_builder import BuildError, DatabaseBuilder, DatabaseSchema
+from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
+from src.validators import validate_arrow_table
+
+from .base_builder import BuildError, DatabaseBuilder
 
 
 class DuckDBBuilder(DatabaseBuilder):
@@ -42,7 +49,7 @@ class DuckDBBuilder(DatabaseBuilder):
 
     def build(self, input_file: Path, output_file: Optional[Path] = None) -> Path:
         """
-        Build DuckDB database from raw JSON file.
+        Build DuckDB database from raw JSON file using Schema V2.
 
         Args:
             input_file: Path to raw JSON file from collector
@@ -63,10 +70,18 @@ class DuckDBBuilder(DatabaseBuilder):
             collection_date, coins = self._parse_raw_json(input_file)
             print(f"  Date: {collection_date}, Coins: {len(coins)}")
 
-            # Transform to rows
-            print("Transforming to database rows...")
-            rows = self._transform_to_rows(collection_date, coins)
-            print(f"  Rows: {len(rows)}")
+            # Transform to PyArrow Table
+            print("Transforming to PyArrow Table...")
+            table = self._transform_to_rows(collection_date, coins)
+            print(f"  Rows: {len(table)}")
+
+            # Validate table before writing
+            print("Validating table...")
+            errors = validate_arrow_table(table)
+            if errors:
+                error_messages = "\n".join([f"  - {e}" for e in errors])
+                raise BuildError(f"Validation failed with {len(errors)} error(s):\n{error_messages}")
+            print("  ✅ Validation passed")
 
             # Generate output filename
             if output_file is None:
@@ -76,7 +91,7 @@ class DuckDBBuilder(DatabaseBuilder):
 
             # Build DuckDB database
             print(f"Building DuckDB database: {output_file}")
-            self._build_duckdb(rows, output_file)
+            self._build_duckdb(table, output_file)
 
             # Get file size
             file_size_mb = output_file.stat().st_size / (1024 * 1024)
@@ -89,12 +104,15 @@ class DuckDBBuilder(DatabaseBuilder):
         except Exception as e:
             raise BuildError(f"Failed to build DuckDB database: {e}") from e
 
-    def _build_duckdb(self, rows: list, output_file: Path) -> None:
+    def _build_duckdb(self, table: pa.Table, output_file: Path) -> None:
         """
-        Build DuckDB database file with schema and indexes.
+        Build DuckDB database file using zero-copy Arrow integration.
+
+        Uses DuckDB's native Arrow C Data Interface for instant, memory-efficient
+        table creation without serialization overhead.
 
         Args:
-            rows: List of row dictionaries
+            table: PyArrow Table with Schema V2
             output_file: Path to output .duckdb file
 
         Raises:
@@ -104,40 +122,26 @@ class DuckDBBuilder(DatabaseBuilder):
             # Create database
             con = duckdb.connect(str(output_file))
 
-            # Create table with schema
+            # Zero-copy Arrow → DuckDB via Arrow C Data Interface
+            # Register PyArrow table as temp view
+            con.register("arrow_temp", table)
+
+            # Create table from Arrow data (zero-copy, instant)
+            # DuckDB automatically maps Arrow types to SQL types:
+            # - pa.date32() → DATE
+            # - pa.int64() → BIGINT
+            # - pa.float64() → DOUBLE
+            # - pa.string() → VARCHAR
             con.execute("""
-                CREATE TABLE rankings (
-                    date DATE NOT NULL,
-                    rank INTEGER NOT NULL,
-                    coin_id VARCHAR NOT NULL,
-                    symbol VARCHAR,
-                    name VARCHAR,
-                    market_cap DOUBLE,
-                    price DOUBLE,
-                    volume_24h DOUBLE,
-                    price_change_24h_pct DOUBLE
-                )
+                CREATE TABLE rankings AS
+                SELECT * FROM arrow_temp
             """)
 
-            # Insert data
-            con.executemany("""
-                INSERT INTO rankings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, [
-                (
-                    row["date"],
-                    row["rank"],
-                    row["coin_id"],
-                    row["symbol"],
-                    row["name"],
-                    row["market_cap"],
-                    row["price"],
-                    row["volume_24h"],
-                    row["price_change_24h_pct"],
-                )
-                for row in rows
-            ])
+            # Unregister temp view
+            con.unregister("arrow_temp")
 
             # Create indexes for fast queries
+            print("  Creating indexes...")
             con.execute("CREATE INDEX idx_date ON rankings(date)")
             con.execute("CREATE INDEX idx_rank ON rankings(rank)")
             con.execute("CREATE INDEX idx_coin_id ON rankings(coin_id)")
@@ -155,7 +159,7 @@ class DuckDBBuilder(DatabaseBuilder):
 
     def validate(self, database_file: Path) -> bool:
         """
-        Validate built DuckDB database.
+        Validate built DuckDB database using comprehensive Schema V2 validation.
 
         Args:
             database_file: Path to .duckdb file
@@ -184,46 +188,20 @@ class DuckDBBuilder(DatabaseBuilder):
             if row_count == 0:
                 raise BuildError("Database is empty")
 
-            # Check schema
-            schema = con.execute("DESCRIBE rankings").fetchall()
-            expected_columns = [col[0] for col in DatabaseSchema.COLUMNS]
-            actual_columns = [row[0] for row in schema]
+            # Convert DuckDB table to Arrow for comprehensive validation
+            print("  Reading table for validation...")
+            arrow_table = con.execute("SELECT * FROM rankings").fetch_arrow_table()
 
-            missing = set(expected_columns) - set(actual_columns)
-            if missing:
-                raise BuildError(f"Missing columns in database: {missing}")
+            # Comprehensive validation using shared validator
+            errors = validate_arrow_table(arrow_table)
+            if errors:
+                error_messages = "\n".join([f"  - {e}" for e in errors])
+                raise BuildError(f"Validation failed with {len(errors)} error(s):\n{error_messages}")
 
-            # Check for nulls in required fields
-            null_checks = [
-                ("date", con.execute("SELECT COUNT(*) FROM rankings WHERE date IS NULL").fetchone()[0]),
-                ("rank", con.execute("SELECT COUNT(*) FROM rankings WHERE rank IS NULL").fetchone()[0]),
-                ("coin_id", con.execute("SELECT COUNT(*) FROM rankings WHERE coin_id IS NULL").fetchone()[0]),
-            ]
-
-            for field, null_count in null_checks:
-                if null_count > 0:
-                    raise BuildError(f"Found {null_count} NULL values in required field: {field}")
-
-            # Check rank sequence
+            # Print summary
             min_rank = con.execute("SELECT MIN(rank) FROM rankings").fetchone()[0]
             max_rank = con.execute("SELECT MAX(rank) FROM rankings").fetchone()[0]
             print(f"  Rank range: {min_rank} to {max_rank}")
-
-            if min_rank != 1:
-                raise BuildError(f"Invalid minimum rank: {min_rank} (expected 1)")
-
-            # Check for duplicate coins (same coin appearing multiple times on same date)
-            dup_count = con.execute("""
-                SELECT COUNT(*) FROM (
-                    SELECT date, coin_id, COUNT(*) as cnt
-                    FROM rankings
-                    GROUP BY date, coin_id
-                    HAVING cnt > 1
-                )
-            """).fetchone()[0]
-
-            if dup_count > 0:
-                raise BuildError(f"Found {dup_count} duplicate (date, coin_id) pairs")
 
             con.close()
 
@@ -253,13 +231,13 @@ if __name__ == "__main__":
         # Validate
         builder.validate(db_file)
 
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("✅ Build successful!")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
         print(f"  Input: {input_file}")
         print(f"  Output: {db_file}")
-        print(f"  Size: {db_file.stat().st_size / (1024*1024):.1f} MB")
-        print(f"{'='*80}")
+        print(f"  Size: {db_file.stat().st_size / (1024 * 1024):.1f} MB")
+        print(f"{'=' * 80}")
 
     except BuildError as e:
         print(f"\n❌ Build failed: {e}")

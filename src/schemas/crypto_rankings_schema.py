@@ -17,67 +17,84 @@ Adheres to SLO:
 """
 
 import json
-from typing import Dict, Any
+from typing import Any, Dict
 
 import pyarrow as pa
-
 
 # Schema Version
 SCHEMA_VERSION = "2.0.0"
 
 
 # PyArrow Schema - Source of Truth
-CRYPTO_RANKINGS_SCHEMA_V2 = pa.schema([
-    # Core identification fields (required)
-    pa.field("date", pa.date32(), nullable=False, metadata={
-        "description": "Collection date (native DATE type, days since epoch)",
-        "format": "YYYY-MM-DD",
-        "example": "2025-11-23"
-    }),
-    pa.field("rank", pa.int64(), nullable=False, metadata={
-        "description": "Global market cap rank (1=highest)",
-        "range": "1 to N",
-        "example": "1"
-    }),
-    pa.field("coin_id", pa.string(), nullable=False, metadata={
-        "description": "CoinGecko coin identifier (unique per coin)",
-        "format": "lowercase-slug",
-        "example": "bitcoin"
-    }),
-
-    # Coin metadata fields (optional)
-    pa.field("symbol", pa.string(), nullable=True, metadata={
-        "description": "Ticker symbol",
-        "format": "uppercase",
-        "example": "BTC"
-    }),
-    pa.field("name", pa.string(), nullable=True, metadata={
-        "description": "Human-readable coin name",
-        "example": "Bitcoin"
-    }),
-
-    # Market data fields (optional, allow NULL for inactive/delisted coins)
-    pa.field("market_cap", pa.float64(), nullable=True, metadata={
-        "description": "Total market capitalization in USD",
-        "unit": "USD",
-        "example": "1693396618542.0"
-    }),
-    pa.field("price", pa.float64(), nullable=True, metadata={
-        "description": "Current price per coin in USD",
-        "unit": "USD",
-        "example": "84921.0"
-    }),
-    pa.field("volume_24h", pa.float64(), nullable=True, metadata={
-        "description": "24-hour trading volume in USD",
-        "unit": "USD",
-        "example": "132655185022.0"
-    }),
-    pa.field("price_change_24h_pct", pa.float64(), nullable=True, metadata={
-        "description": "24-hour price change percentage",
-        "unit": "percent",
-        "example": "-2.38937"
-    }),
-])
+CRYPTO_RANKINGS_SCHEMA_V2 = pa.schema(
+    [
+        # Core identification fields (required)
+        pa.field(
+            "date",
+            pa.date32(),
+            nullable=False,
+            metadata={
+                "description": "Collection date (native DATE type, days since epoch)",
+                "format": "YYYY-MM-DD",
+                "example": "2025-11-23",
+            },
+        ),
+        pa.field(
+            "rank",
+            pa.int64(),
+            nullable=False,
+            metadata={"description": "Global market cap rank (1=highest)", "range": "1 to N", "example": "1"},
+        ),
+        pa.field(
+            "coin_id",
+            pa.string(),
+            nullable=False,
+            metadata={
+                "description": "CoinGecko coin identifier (unique per coin)",
+                "format": "lowercase-slug",
+                "example": "bitcoin",
+            },
+        ),
+        # Coin metadata fields (optional)
+        pa.field(
+            "symbol",
+            pa.string(),
+            nullable=True,
+            metadata={"description": "Ticker symbol", "format": "uppercase", "example": "BTC"},
+        ),
+        pa.field(
+            "name",
+            pa.string(),
+            nullable=True,
+            metadata={"description": "Human-readable coin name", "example": "Bitcoin"},
+        ),
+        # Market data fields (optional, allow NULL for inactive/delisted coins)
+        pa.field(
+            "market_cap",
+            pa.float64(),
+            nullable=True,
+            metadata={"description": "Total market capitalization in USD", "unit": "USD", "example": "1693396618542.0"},
+        ),
+        pa.field(
+            "price",
+            pa.float64(),
+            nullable=True,
+            metadata={"description": "Current price per coin in USD", "unit": "USD", "example": "84921.0"},
+        ),
+        pa.field(
+            "volume_24h",
+            pa.float64(),
+            nullable=True,
+            metadata={"description": "24-hour trading volume in USD", "unit": "USD", "example": "132655185022.0"},
+        ),
+        pa.field(
+            "price_change_24h_pct",
+            pa.float64(),
+            nullable=True,
+            metadata={"description": "24-hour price change percentage", "unit": "percent", "example": "-2.38937"},
+        ),
+    ]
+)
 
 
 # Type mapping for documentation
@@ -109,54 +126,46 @@ def export_json_schema() -> Dict[str, Any]:
                 "type": "string",
                 "format": "date",
                 "description": "Collection date (YYYY-MM-DD)",
-                "example": "2025-11-23"
+                "example": "2025-11-23",
             },
             "rank": {
                 "type": "integer",
                 "minimum": 1,
                 "description": "Global market cap rank (1=highest)",
-                "example": 1
+                "example": 1,
             },
             "coin_id": {
                 "type": "string",
                 "pattern": "^[a-z0-9-]+$",
                 "description": "CoinGecko coin identifier",
-                "example": "bitcoin"
+                "example": "bitcoin",
             },
-            "symbol": {
-                "type": ["string", "null"],
-                "description": "Ticker symbol (uppercase)",
-                "example": "BTC"
-            },
-            "name": {
-                "type": ["string", "null"],
-                "description": "Human-readable coin name",
-                "example": "Bitcoin"
-            },
+            "symbol": {"type": ["string", "null"], "description": "Ticker symbol (uppercase)", "example": "BTC"},
+            "name": {"type": ["string", "null"], "description": "Human-readable coin name", "example": "Bitcoin"},
             "market_cap": {
                 "type": ["number", "null"],
                 "minimum": 0,
                 "description": "Total market capitalization in USD",
-                "example": 1693396618542.0
+                "example": 1693396618542.0,
             },
             "price": {
                 "type": ["number", "null"],
                 "minimum": 0,
                 "description": "Current price per coin in USD",
-                "example": 84921.0
+                "example": 84921.0,
             },
             "volume_24h": {
                 "type": ["number", "null"],
                 "minimum": 0,
                 "description": "24-hour trading volume in USD",
-                "example": 132655185022.0
+                "example": 132655185022.0,
             },
             "price_change_24h_pct": {
                 "type": ["number", "null"],
                 "description": "24-hour price change percentage",
-                "example": -2.38937
-            }
-        }
+                "example": -2.38937,
+            },
+        },
     }
 
 

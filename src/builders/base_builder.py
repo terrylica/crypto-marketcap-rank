@@ -2,75 +2,27 @@
 """
 Base Database Builder
 
-Abstract base class for all database builders (DuckDB, Parquet, CSV).
-Defines shared schema and validation logic.
+Abstract base class for all database builders (DuckDB, Parquet).
+Transforms API responses to PyArrow Tables using Schema V2.
 
 Adheres to SLO:
-- Correctness: Schema validation, raise on invalid data
+- Correctness: PyArrow schema enforcement, comprehensive validation
 - Observability: Progress logging for build operations
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from datetime import date as date_type
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+import pyarrow as pa
 
-@dataclass
-class DatabaseSchema:
-    """
-    Standard schema for all database formats.
-
-    Fields:
-    - date: Collection date (YYYY-MM-DD)
-    - rank: Market cap rank (1-based)
-    - coin_id: CoinGecko coin ID
-    - symbol: Ticker symbol
-    - name: Coin name
-    - market_cap: Market capitalization in USD
-    - price: Current price in USD
-    - volume_24h: 24-hour trading volume in USD
-    - price_change_24h_pct: 24-hour price change percentage
-    """
-
-    COLUMNS = [
-        ("date", "DATE"),
-        ("rank", "INTEGER"),
-        ("coin_id", "VARCHAR"),
-        ("symbol", "VARCHAR"),
-        ("name", "VARCHAR"),
-        ("market_cap", "DOUBLE"),
-        ("price", "DOUBLE"),
-        ("volume_24h", "DOUBLE"),
-        ("price_change_24h_pct", "DOUBLE"),
-    ]
-
-    @classmethod
-    def validate_row(cls, row: Dict[str, Any]) -> None:
-        """
-        Validate single row against schema.
-
-        Args:
-            row: Dictionary with column values
-
-        Raises:
-            ValueError: If row is invalid
-        """
-        required_fields = [col[0] for col in cls.COLUMNS]
-        missing = [f for f in required_fields if f not in row]
-        if missing:
-            raise ValueError(f"Row missing required fields: {missing}")
-
-        # Validate types
-        if row["rank"] is not None and (not isinstance(row["rank"], int) or row["rank"] < 1):
-            raise ValueError(f"Invalid rank: {row['rank']}")
-
-        if row["market_cap"] is not None and row["market_cap"] < 0:
-            raise ValueError(f"Invalid market_cap: {row['market_cap']}")
+from src.schemas.crypto_rankings_schema import CRYPTO_RANKINGS_SCHEMA_V2
 
 
 class BuildError(Exception):
     """Raised when database build fails."""
+
     pass
 
 
@@ -142,7 +94,7 @@ class DatabaseBuilder(ABC):
         import json
 
         try:
-            with open(input_file, 'r') as f:
+            with open(input_file, "r") as f:
                 data = json.load(f)
 
             if "metadata" not in data or "coins" not in data:
@@ -206,38 +158,71 @@ class DatabaseBuilder(ABC):
         except (ValueError, TypeError, AttributeError):
             return None
 
-    def _transform_to_rows(self, collection_date: str, coins: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _transform_to_rows(self, collection_date: str, coins: List[Dict[str, Any]]) -> pa.Table:
         """
-        Transform API response coins to database rows.
+        Transform API response coins to PyArrow Table.
+
+        This method performs defensive type coercion to handle mixed types
+        from the CoinGecko API (int/float/string variants).
 
         Args:
             collection_date: Collection date (YYYY-MM-DD)
             coins: List of coin dictionaries from API
 
         Returns:
-            List of row dictionaries matching DatabaseSchema
+            PyArrow Table conforming to CRYPTO_RANKINGS_SCHEMA_V2
+
+        Raises:
+            BuildError: If table construction fails
         """
-        rows = []
+        # Parse date string to Python date object
+        try:
+            date_obj = date_type.fromisoformat(collection_date)
+        except ValueError as e:
+            raise BuildError(f"Invalid collection_date format: {collection_date}") from e
+
+        # Pre-allocate lists for each column (more efficient than row-by-row)
+        dates = []
+        ranks = []
+        coin_ids = []
+        symbols = []
+        names = []
+        market_caps = []
+        prices = []
+        volumes_24h = []
+        price_changes_24h_pct = []
 
         for idx, coin in enumerate(coins, start=1):
             # Explicit type coercion for all numeric fields
             # API may return strings, especially for lower-ranked coins
             rank = self._safe_int(coin.get("market_cap_rank"), fallback=idx)
 
-            row = {
-                "date": collection_date,
-                "rank": rank,
-                "coin_id": coin.get("id"),
-                "symbol": coin.get("symbol"),
-                "name": coin.get("name"),
-                "market_cap": self._safe_float(coin.get("market_cap")),
-                "price": self._safe_float(coin.get("current_price")),
-                "volume_24h": self._safe_float(coin.get("total_volume")),
-                "price_change_24h_pct": self._safe_float(coin.get("price_change_percentage_24h")),
-            }
+            dates.append(date_obj)
+            ranks.append(rank)
+            coin_ids.append(coin.get("id"))
+            symbols.append(coin.get("symbol"))
+            names.append(coin.get("name"))
+            market_caps.append(self._safe_float(coin.get("market_cap")))
+            prices.append(self._safe_float(coin.get("current_price")))
+            volumes_24h.append(self._safe_float(coin.get("total_volume")))
+            price_changes_24h_pct.append(self._safe_float(coin.get("price_change_percentage_24h")))
 
-            # Validate row
-            DatabaseSchema.validate_row(row)
-            rows.append(row)
-
-        return rows
+        # Construct PyArrow Table with strict schema enforcement
+        try:
+            table = pa.table(
+                {
+                    "date": dates,
+                    "rank": ranks,
+                    "coin_id": coin_ids,
+                    "symbol": symbols,
+                    "name": names,
+                    "market_cap": market_caps,
+                    "price": prices,
+                    "volume_24h": volumes_24h,
+                    "price_change_24h_pct": price_changes_24h_pct,
+                },
+                schema=CRYPTO_RANKINGS_SCHEMA_V2,
+            )
+            return table
+        except Exception as e:
+            raise BuildError(f"Failed to construct PyArrow table: {e}") from e
