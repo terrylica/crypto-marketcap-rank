@@ -158,6 +158,54 @@ class DatabaseBuilder(ABC):
         except Exception as e:
             raise BuildError(f"Failed to parse raw JSON: {e}") from e
 
+    def _safe_int(self, value, fallback=None):
+        """
+        Safely convert value to int with fallback.
+
+        Args:
+            value: Value to convert (can be int, str, float, or None)
+            fallback: Fallback value if conversion fails
+
+        Returns:
+            int or fallback value
+        """
+        if value is None:
+            return fallback
+        if isinstance(value, int):
+            return value
+        try:
+            # Handle string, float, or other types
+            if isinstance(value, str):
+                value = value.strip()
+                if not value:  # Empty string
+                    return fallback
+            return int(float(value))  # Convert via float to handle "123.45" -> 123
+        except (ValueError, TypeError, AttributeError):
+            return fallback
+
+    def _safe_float(self, value):
+        """
+        Safely convert value to float, return None if invalid.
+
+        Args:
+            value: Value to convert (can be int, str, float, or None)
+
+        Returns:
+            float or None
+        """
+        if value is None:
+            return None
+        if isinstance(value, (int, float)):
+            return float(value)
+        try:
+            if isinstance(value, str):
+                value = value.strip()
+                if not value:  # Empty string
+                    return None
+            return float(value)
+        except (ValueError, TypeError, AttributeError):
+            return None
+
     def _transform_to_rows(self, collection_date: str, coins: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Transform API response coins to database rows.
@@ -172,15 +220,9 @@ class DatabaseBuilder(ABC):
         rows = []
 
         for idx, coin in enumerate(coins, start=1):
-            # Explicit type coercion for rank (API may return string or int)
-            rank_value = coin.get("market_cap_rank")
-            if rank_value is not None:
-                try:
-                    rank = int(rank_value)
-                except (ValueError, TypeError):
-                    rank = idx  # Fallback to enumeration index
-            else:
-                rank = idx
+            # Explicit type coercion for all numeric fields
+            # API may return strings, especially for lower-ranked coins
+            rank = self._safe_int(coin.get("market_cap_rank"), fallback=idx)
 
             row = {
                 "date": collection_date,
@@ -188,10 +230,10 @@ class DatabaseBuilder(ABC):
                 "coin_id": coin.get("id"),
                 "symbol": coin.get("symbol"),
                 "name": coin.get("name"),
-                "market_cap": coin.get("market_cap"),
-                "price": coin.get("current_price"),
-                "volume_24h": coin.get("total_volume"),
-                "price_change_24h_pct": coin.get("price_change_percentage_24h"),
+                "market_cap": self._safe_float(coin.get("market_cap")),
+                "price": self._safe_float(coin.get("current_price")),
+                "volume_24h": self._safe_float(coin.get("total_volume")),
+                "price_change_24h_pct": self._safe_float(coin.get("price_change_percentage_24h")),
             }
 
             # Validate row
