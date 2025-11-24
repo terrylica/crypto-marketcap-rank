@@ -46,10 +46,10 @@ def fetch_current_rankings(top_n: int = 500, use_api_key: bool = True):
     print(f"   Pages needed: {pages_needed} (250 coins per page)")
 
     if api_key:
-        print(f"   ✅ Using Demo API key")
+        print("   ✅ Using Demo API key")
         delay = 4  # 4 seconds between calls
     else:
-        print(f"   ⚠️  No API key (using free tier)")
+        print("   ⚠️  No API key (using free tier)")
         delay = 20  # 20 seconds between calls
 
     for page in range(1, pages_needed + 1):
@@ -72,7 +72,7 @@ def fetch_current_rankings(top_n: int = 500, use_api_key: bool = True):
             response = requests.get(url, params=params, timeout=30)
 
             if response.status_code == 429:
-                print(f"   ⚠️  Rate limit hit, waiting 60 seconds...")
+                print("   ⚠️  Rate limit hit, waiting 60 seconds...")
                 time.sleep(60)
                 response = requests.get(url, params=params, timeout=30)
 
@@ -158,7 +158,7 @@ def main():
         if arg == "all":
             top_n = 13000  # Maximum ranked coins on CoinGecko
             print("="*80)
-            print(f"FETCH ALL RANKED COINS (~13,000 coins)")
+            print("FETCH ALL RANKED COINS (~13,000 coins)")
             print("="*80)
         else:
             top_n = int(sys.argv[1])
@@ -210,7 +210,7 @@ def main():
     print("   for each date and calculate rankings ourselves.")
 
     print("\n" + "="*80)
-    print(f"📊 Files saved in: data/rankings/")
+    print("📊 Files saved in: data/rankings/")
     print("="*80)
 
 

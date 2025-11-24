@@ -28,14 +28,13 @@ Exit Codes:
 """
 
 import argparse
-import json
 import logging
 import os
 import sys
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import pandas as pd
 import requests
@@ -80,7 +79,7 @@ class CoinGeckoCollector:
             ]
         )
         self.logger = logging.getLogger(__name__)
-        self.logger.info(f"CoinGecko Data Collection")
+        self.logger.info("CoinGecko Data Collection")
         self.logger.info(f"Log file: {log_file}")
         self.logger.info("")
 
@@ -198,7 +197,7 @@ class CoinGeckoCollector:
         all_coins = all_coins[:top_n]
 
         self.logger.info(f"✅ Retrieved {len(all_coins)} coins")
-        self.logger.info(f"  Sample coins:")
+        self.logger.info("  Sample coins:")
         for coin in all_coins[:5]:
             self.logger.info(f"    Rank {coin.get('market_cap_rank', 'N/A'):3d}: {coin['id']:20s} ({coin['symbol'].upper()})")
         self.logger.info("")
@@ -290,18 +289,18 @@ class CoinGeckoCollector:
         # Step 2: Estimate collection time
         estimated_seconds = len(coins) * self.rate_limit_delay
         estimated_minutes = estimated_seconds / 60
-        self.logger.info(f"Step 2: Estimation")
+        self.logger.info("Step 2: Estimation")
         self.logger.info(f"  Coins to collect: {len(coins)}")
         self.logger.info(f"  Rate limiting: {self.rate_limit_delay}s between requests")
         if self.api_key:
-            self.logger.info(f"  API authentication: Demo API key (registered)")
+            self.logger.info("  API authentication: Demo API key (registered)")
         else:
-            self.logger.info(f"  API authentication: None (no registration)")
+            self.logger.info("  API authentication: None (no registration)")
         self.logger.info(f"  Estimated time: {estimated_minutes:.1f} minutes")
         self.logger.info("")
 
         # Step 3: Collect historical data
-        self.logger.info(f"Step 3: Collecting historical data...")
+        self.logger.info("Step 3: Collecting historical data...")
         self.logger.info(f"  (This may take {estimated_minutes:.0f} minutes)")
         self.logger.info("")
 
@@ -333,7 +332,7 @@ class CoinGeckoCollector:
             )
 
         # Step 4: Save to CSV
-        self.logger.info(f"Step 4: Saving data...")
+        self.logger.info("Step 4: Saving data...")
 
         df = pd.DataFrame(self.collected_data)
 
@@ -380,7 +379,7 @@ class CoinGeckoCollector:
 
         self.logger.info("NEXT STEPS:")
         self.logger.info(f"  1. Validate data: uv run validation/scripts/validate_coingecko.py {output_file}")
-        self.logger.info(f"  2. Merge with crypto2: uv run tools/merge_datasets.py")
+        self.logger.info("  2. Merge with crypto2: uv run tools/merge_datasets.py")
         self.logger.info("")
         self.logger.info("Collection complete! 🚀")
 
@@ -434,7 +433,7 @@ def main():
         output_file = collector.run_collection(top_n=args.top_n, test_mode=args.test)
 
         print("")
-        print(f"✅ Collection successful!")
+        print("✅ Collection successful!")
         print(f"   Output: {output_file}")
         return 0
 

@@ -36,16 +36,16 @@ Exit Codes:
     1: Error during merge
 """
 
-import sys
-import logging
 import argparse
 import json
+import logging
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 class DatasetMerger:
@@ -132,7 +132,7 @@ class DatasetMerger:
                 df['circulating_supply'] = df['market_cap_usd'] / df['price_usd']
                 logger.info("  Calculated circulating_supply from market_cap / price")
 
-            logger.info(f"  ✅ Kaggle dataset standardized")
+            logger.info("  ✅ Kaggle dataset standardized")
 
             self.metadata['sources']['kaggle'] = {
                 'file': str(csv_path),
@@ -210,7 +210,7 @@ class DatasetMerger:
                 df['circulating_supply'] = np.nan
                 df['quality_tier'] = 'unverified'
 
-            logger.info(f"  ✅ crypto2 dataset standardized")
+            logger.info("  ✅ crypto2 dataset standardized")
 
             self.metadata['sources']['crypto2'] = {
                 'file': str(csv_path),
@@ -278,8 +278,8 @@ class DatasetMerger:
             if 'circulating_supply' not in df.columns:
                 df['circulating_supply'] = np.nan
 
-            logger.info(f"  ✅ CoinGecko dataset standardized")
-            logger.info(f"  ⚠️  Quality tier: unverified (no circulating_supply)")
+            logger.info("  ✅ CoinGecko dataset standardized")
+            logger.info("  ⚠️  Quality tier: unverified (no circulating_supply)")
 
             self.metadata['sources']['coingecko'] = {
                 'file': str(csv_path),
@@ -434,7 +434,7 @@ class DatasetMerger:
         with open(metadata_path, 'w') as f:
             json.dump(self.metadata, f, indent=2)
 
-        logger.info(f"  ✅ Metadata saved")
+        logger.info("  ✅ Metadata saved")
 
     def run(self, kaggle_path: Optional[str], crypto2_path: Optional[str],
             coingecko_path: Optional[str], output_path: str) -> bool:

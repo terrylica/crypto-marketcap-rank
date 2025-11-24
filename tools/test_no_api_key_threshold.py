@@ -32,7 +32,7 @@ def test_no_api_key_collection(delay_seconds: float, num_coins: int = 20):
     Returns:
         dict: Results including success rate and errors
     """
-    print(f"Testing NO-API-KEY collection")
+    print("Testing NO-API-KEY collection")
     print(f"Delay: {delay_seconds}s between requests ({60/delay_seconds:.1f} calls/min)")
     print(f"Test coins: {num_coins}")
     print(f"Estimated time: {(num_coins * delay_seconds / 60):.1f} minutes")

@@ -16,7 +16,6 @@ Shows rankings for specific dates to prove we understand the requirement.
 """
 
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -122,7 +121,7 @@ def main():
     print("For example, if a coin was #5 on 2017-12-17 but dead today, it still shows as #5.")
     print("\nTo get more comprehensive rankings, we need to collect more coins' historical data.")
     print(f"Currently have: {df['symbol'].nunique()} coins")
-    print(f"Available in CoinGecko: 19,410 coins (see data/coin_ids/)")
+    print("Available in CoinGecko: 19,410 coins (see data/coin_ids/)")
 
 
 if __name__ == "__main__":

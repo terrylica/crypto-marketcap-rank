@@ -25,12 +25,12 @@ params = {'include_platform': 'false'}
 
 if api_key:
     params['x_cg_demo_api_key'] = api_key
-    print(f"✅ Using Demo API key")
+    print("✅ Using Demo API key")
 else:
     print("⚠️  No API key (using free tier)")
     time.sleep(60)  # Wait to avoid rate limit
 
-print(f"Fetching all active coins from CoinGecko...")
+print("Fetching all active coins from CoinGecko...")
 
 response = requests.get(url, params=params, timeout=30)
 
@@ -51,12 +51,12 @@ with open(output_file, 'w') as f:
 print(f"✅ Saved to: {output_file}")
 
 # Show sample
-print(f"\nSample coins:")
+print("\nSample coins:")
 for coin in coins[:10]:
     print(f"  {coin['id']:30s} {coin['symbol']:10s} {coin['name']}")
 
 # Look for old/dead coins
-print(f"\nSearching for historically important dead coins...")
+print("\nSearching for historically important dead coins...")
 targets = ['namecoin', 'peercoin', 'terracoin', 'novacoin', 'feathercoin']
 found = [c for c in coins if c['id'] in targets]
 
@@ -67,6 +67,6 @@ if found:
 else:
     print("❌ None found - might be in 'inactive' list (paid only)")
 
-print(f"\n📊 Summary:")
+print("\n📊 Summary:")
 print(f"  Total active coins: {len(coins):,}")
 print(f"  Output file: {output_file}")

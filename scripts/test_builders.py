@@ -34,8 +34,9 @@ def collect_sample_data() -> Path:
     """Collect sample data using tools/fetch_current_rankings.py logic."""
     import json
     import os
-    import requests
     from datetime import datetime
+
+    import requests
 
     output_dir = Path("data/raw")
     output_dir.mkdir(parents=True, exist_ok=True)

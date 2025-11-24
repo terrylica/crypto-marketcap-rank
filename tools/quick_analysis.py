@@ -5,6 +5,7 @@
 """Quick analysis of crypto2 collected data."""
 
 import sys
+
 import pandas as pd
 
 if len(sys.argv) < 2:
@@ -26,18 +27,18 @@ for col in ['timestamp', 'symbol', 'price', 'market_cap', 'circulating_supply', 
         non_null_pct = (df[col].notna().sum() / len(df)) * 100
         print(f"  {col:20s}: {non_null_pct:6.2f}% present")
 
-print(f"\nData Summary:")
+print("\nData Summary:")
 print(f"  Unique coins: {df['symbol'].nunique()}")
 print(f"  Date range: {df['timestamp'].min()} to {df['timestamp'].max()}")
 
 # Top 10 coins by record count
-print(f"\nTop 10 Coins by Record Count:")
+print("\nTop 10 Coins by Record Count:")
 top_coins = df['symbol'].value_counts().head(10)
 for symbol, count in top_coins.items():
     print(f"  {symbol:10s}: {count:,} records")
 
 # Bottom 10 coins by record count
-print(f"\nBottom 10 Coins by Record Count:")
+print("\nBottom 10 Coins by Record Count:")
 bottom_coins = df['symbol'].value_counts().tail(10)
 for symbol, count in bottom_coins.items():
     print(f"  {symbol:10s}: {count:,} records")
