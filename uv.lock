@@ -83,7 +83,6 @@ version = "2.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "duckdb" },
-    { name = "numpy" },
     { name = "pandas" },
     { name = "pyarrow" },
     { name = "python-dateutil" },
@@ -99,7 +98,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "duckdb", specifier = ">=1.0.0" },
-    { name = "numpy", specifier = ">=1.24.0" },
     { name = "pandas", specifier = ">=2.0.0" },
     { name = "pyarrow", specifier = ">=15.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
