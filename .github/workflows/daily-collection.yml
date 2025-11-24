@@ -36,15 +36,6 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra dev
 
-      - name: Restore checkpoint cache
-        id: restore-checkpoint
-        uses: actions/cache/restore@v4
-        with:
-          path: data/.checkpoints
-          key: checkpoint-${{ github.run_id }}
-          restore-keys: |
-            checkpoint-
-
       - name: Run collection and build
         env:
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
@@ -55,13 +46,6 @@ jobs:
           else
             uv run src/main.py "$DATE"
           fi
-
-      - name: Save checkpoint cache
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: data/.checkpoints
-          key: checkpoint-${{ github.run_id }}
 
       - name: Upload DuckDB artifact
         if: success()
@@ -76,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: parquet-database
-          path: data/processed/*.parquet/
+          path: data/processed/*.parquet
           retention-days: 7
 
       - name: Get collection date
@@ -143,7 +127,7 @@ jobs:
             *Automated daily collection via GitHub Actions*
           files: |
             artifacts/duckdb-database/*.duckdb
-            artifacts/parquet-database/*.parquet/
+            artifacts/parquet-database/*.parquet
           draft: false
           prerelease: false
           make_latest: true
