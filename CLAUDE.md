@@ -4,35 +4,74 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Goal:** Download and rank all cryptocurrencies by daily market cap across 15 years of historical data (2010-2025).
+**Goal:** Daily automated collection of comprehensive cryptocurrency market cap rankings for all 19,411+ CoinGecko coins.
 
-**Approach:** Hybrid strategy combining:
+**Current Status:** Production-ready system with daily GitHub Actions automation.
 
-- **Kaggle dataset** (verified market cap, 2013-2021, 4K coins)
-- **CryptoCompare API** (estimated market cap, 2010-2025, 18K+ coins)
+**Distribution:** DuckDB and Parquet databases via GitHub Releases (daily tags).
 
-**Expected Output:** 100-150M row CSV file with daily market cap rankings for all cryptocurrencies.
+## Architecture
+
+```
+Collection → Build → Validate → Release
+    ↓          ↓         ↓          ↓
+  78 API    2 formats  5 rules   Daily
+  calls     built      enforced   tags
+```
+
+### Technical Stack
+
+- **Collection**: Python + CoinGecko API (78 API calls/day)
+- **Databases**: DuckDB (primary), Parquet (analytics)
+- **Schema**: PyArrow Schema V2 (native DATE and BIGINT types)
+- **Validation**: Comprehensive validation layer (5 rules)
+- **CI/CD**: GitHub Actions (daily cron + manual trigger)
+- **Distribution**: GitHub Releases (daily tags: `daily-YYYY-MM-DD`)
+- **Versioning**: semantic-release (conventional commits)
 
 ## Repository Structure
 
 ```
 crypto-marketcap-rank/
-├── research/                    # API investigation & prototypes
-│   ├── coinpaprika-probe/       # CoinPaprika API tests (❌ 24hr limit)
-│   ├── coingecko-marketcap-probe/ # CoinGecko tests (❌ 365-day limit)
-│   ├── coincap-probe/           # CoinCap tests (❌ no market cap field)
-│   ├── messari-probe/           # Messari tests (❌ paid only)
-│   ├── free-crypto-historical/  # CryptoCompare tests (⚠️ estimated)
-│   ├── historical-marketcap-all-coins/ # Production implementations
-│   ├── kaggle-datasets-search/  # Kaggle dataset catalog
-│   ├── cryptodatadownload-search/
-│   └── academic-sources-search/ # 50+ source catalog
-├── scripts/                     # (To be created) Production scripts
-├── data/                        # (To be created) Downloaded data
-├── PROJECT_PLAN.md              # Complete implementation plan
-├── RESEARCH_SUMMARY.md          # Research findings summary
-└── README.md                    # Quick start guide
+├── .github/workflows/      # CI/CD automation
+│   ├── daily-collection.yml  # Daily data collection + release
+│   └── ci.yml                # Continuous integration
+├── src/                    # Production code
+│   ├── collectors/         # CoinGecko API collector
+│   ├── builders/           # Database builders (DuckDB/Parquet)
+│   ├── schemas/            # PyArrow Schema V2 definition
+│   ├── validators/         # Comprehensive validation layer
+│   ├── utils/              # RateLimiter, CheckpointManager
+│   └── main.py             # Entry point
+├── tests/                  # Unit tests
+├── docs/                   # Architecture decisions & plans
+├── data/                   # Data storage (gitignored)
+│   ├── raw/               # Raw JSON from API
+│   ├── processed/         # Built databases
+│   └── .checkpoints/      # Resume checkpoints
+├── logs/                   # Execution logs
+└── research/              # Historical research (archived)
 ```
+
+## Schema V2
+
+All formats share the same PyArrow-native schema (single source of truth):
+
+| Column                 | Type    | PyArrow Type   | Description                  |
+| ---------------------- | ------- | -------------- | ---------------------------- |
+| `date`                 | DATE    | `pa.date32()`  | Collection date (YYYY-MM-DD) |
+| `rank`                 | BIGINT  | `pa.int64()`   | Market cap rank (1-based)    |
+| `coin_id`              | VARCHAR | `pa.string()`  | CoinGecko coin identifier    |
+| `symbol`               | VARCHAR | `pa.string()`  | Ticker symbol (lowercase)    |
+| `name`                 | VARCHAR | `pa.string()`  | Full coin name               |
+| `market_cap`           | DOUBLE  | `pa.float64()` | Market capitalization (USD)  |
+| `price`                | DOUBLE  | `pa.float64()` | Current price (USD)          |
+| `volume_24h`           | DOUBLE  | `pa.float64()` | 24-hour trading volume (USD) |
+| `price_change_24h_pct` | DOUBLE  | `pa.float64()` | 24-hour price change (%)     |
+
+**Source of Truth:** `/Users/terryli/eon/crypto-marketcap-rank/src/schemas/crypto_rankings_schema.py`
+
+**Breaking Change (v2.0.0):** Schema V2 uses native DATE type instead of STRING.
 
 ## Python Execution Standard
 
@@ -53,191 +92,232 @@ All scripts include PEP 723 metadata at the top:
 # /// script
 # dependencies = [
 #   "requests>=2.31.0",
-#   "pandas",
+#   "pyarrow>=15.0.0",
 # ]
 # ///
 ```
 
-## Research Scripts Organization
-
-### Naming Convention
-
-Scripts follow numbered progression showing iteration:
-
-- `01_*.py` - Initial feasibility/testing
-- `02_*.py` - Second iteration/alternative approach
-- `03_*.py` - Optimized implementation
-- `04_*.py` - Production refinement
-- `05_*.py` - Final production version
-
-### Key Research Artifacts
-
-**Production-Ready Collectors:**
-
-- `research/historical-marketcap-all-coins/05_production_implementation.py` - Complete storage system with tiered retention
-- `research/free-crypto-historical/get_all_coins_history_final.py` - CryptoCompare batch downloader
-- `research/historical-marketcap-all-coins/04_production_collector.py` - Optimized collector with resume capability
-
-**Query/Analysis Tools:**
-
-- `research/historical-marketcap-all-coins/query_basic.py` - Basic JSONL querying
-- `research/historical-marketcap-all-coins/advanced_query.py` - Advanced analytics
-- `research/historical-marketcap-all-coins/visualize.py` - Data visualization
-- `research/historical-marketcap-all-coins/export.py` - CSV export utilities
-
-**Architecture Analysis:**
-
-- `research/historical-marketcap-all-coins/01_storage_analysis.py` - Storage requirements
-- `research/historical-marketcap-all-coins/02_storage_engine.py` - Storage engine design
-- `research/historical-marketcap-all-coins/04_comprehensive_benchmarks.py` - Performance benchmarks
-
-## Architecture Principles
-
-### Data Storage Strategy
-
-**Tiered Retention System:**
-
-- **HOT** (0-30 days): SQLite with WAL mode, optimized for writes
-- **WARM** (30 days - 1 year): Compressed JSONL files
-- **COLD** (1-5 years): Gzip-compressed archives
-- **ARCHIVE** (5+ years): High compression, infrequent access
-
-### API Rate Limiting
-
-**CryptoCompare (Free Tier):**
-
-- No authentication required
-- ~300 requests/hour safe limit
-- 100ms delay between requests recommended
-- Single-threaded mandatory
-
-**CoinPaprika (Free Tier):**
-
-- 20,000 monthly calls limit
-- No authentication required
-- Rate limit: ~1 req/sec
-
-### Market Cap Data Quality
-
-| Period    | Source        | Accuracy     | Notes                    |
-| --------- | ------------- | ------------ | ------------------------ |
-| 2013-2021 | Kaggle        | ✅ HIGH      | Real verified market cap |
-| 2010-2013 | CryptoCompare | ⚠️ ESTIMATED | Price × current supply   |
-| 2021-2025 | CryptoCompare | ⚠️ ESTIMATED | Price × current supply   |
-
 ## Common Development Tasks
 
-### Running Research Scripts
+### Run Full Collection Pipeline
 
 ```bash
-# Test API connectivity
-cd research/free-crypto-historical
-uv run test_cryptocompare.py
-
-# Run production collector
-cd research/historical-marketcap-all-coins
-uv run 05_production_implementation.py
-
-# Query collected data
-uv run query_basic.py
-
-# Generate visualizations
-uv run visualize.py
+# Run from repository root
+uv run src/main.py
 ```
 
-### Testing Individual APIs
+This executes:
+1. CoinGecko API collection (78 paginated requests)
+2. DuckDB database build
+3. Parquet dataset build
+4. Comprehensive validation (5 rules)
+
+### Run Individual Components
 
 ```bash
-# CoinGecko (365-day limit test)
-cd research/coingecko-marketcap-probe
-uv run test_coingecko.py
+# Collector only (saves raw JSON)
+uv run src/collectors/coingecko_collector.py
 
-# CoinCap (price history test)
-cd research/coincap-probe
-uv run 01_test_history_endpoint.py
+# Build DuckDB from raw JSON
+uv run src/builders/build_duckdb.py data/raw/coingecko_rankings_2025-11-24.json
 
-# Messari (enterprise restriction verification)
-cd research/messari-probe
-uv run test_messari_api.py
+# Build Parquet from raw JSON
+uv run src/builders/build_parquet.py data/raw/coingecko_rankings_2025-11-24.json
+
+# Validate existing database
+uv run src/validators/validator.py data/processed/crypto_rankings_2025-11-24.duckdb
 ```
 
-### Data Analysis
+### Run Tests
 
 ```bash
-# Basic querying
-cd research/historical-marketcap-all-coins
-uv run query_basic.py
+# Run all tests
+uv run pytest tests/ -v
 
-# Advanced analytics with date ranges
-uv run advanced_query.py
-
-# Export to CSV
-uv run export.py
+# Run specific test file
+uv run pytest tests/test_schema.py -v
 ```
+
+## Data Flow
+
+### Collection Phase
+
+**CoinGecko API:**
+- Endpoint: `/coins/markets`
+- Pagination: 250 coins per page (API hard limit)
+- Total API calls: ⌈19,411 ÷ 250⌉ = 78
+- Rate limiting: 4s delay with API key, 20s without
+- Output: `data/raw/coingecko_rankings_YYYY-MM-DD.json`
+
+### Build Phase
+
+**DuckDB Builder:**
+- Input: Raw JSON from collector
+- Transformation: PyArrow Table with Schema V2
+- Output: `data/processed/crypto_rankings_YYYY-MM-DD.duckdb`
+- Size: ~150-200 MB compressed
+- Features: Indexed (date, rank, coin_id), zero-copy Arrow integration
+
+**Parquet Builder:**
+- Input: Same raw JSON
+- Partitioning: Hive-style `year=YYYY/month=MM/day=DD/`
+- Output: `data/processed/crypto_rankings_YYYY-MM-DD.parquet/`
+- Compression: zstd level 3
+- Size: ~50-150 MB
+
+### Validation Phase
+
+Comprehensive validation enforces 5 rules:
+
+1. **Schema Conformance**: Exact PyArrow Schema V2 match
+2. **Duplicate Detection**: No duplicate (date, rank) pairs
+3. **NULL Checks**: Required fields (date, rank, coin_id) non-null
+4. **Range Validation**: Ranks sequential (1 to N, no gaps)
+5. **Value Constraints**: market_cap, price, volume_24h ≥ 0
+
+## API Quota Usage
+
+- **Daily API Calls**: 78 (⌈19,411 ÷ 250⌉ per page limit)
+- **Monthly Usage**: 2,340 calls (23% of 10,000 free tier limit)
+- **Safety Margin**: 77% quota remaining for errors/retries
+
+## CI/CD Automation
+
+### Daily Collection Workflow
+
+**File:** `.github/workflows/daily-collection.yml`
+
+**Schedule:** Daily at 6:00 AM UTC (cron: `0 6 * * *`)
+
+**Steps:**
+1. Run collection pipeline (`uv run src/main.py`)
+2. Validate databases (5-rule validation)
+3. Create GitHub Release (tag: `daily-YYYY-MM-DD`)
+4. Upload DuckDB and Parquet as release assets
+
+**Manual Trigger:** Supports `workflow_dispatch` for on-demand collection
+
+### Continuous Integration
+
+**File:** `.github/workflows/ci.yml`
+
+**Triggers:** Pull requests to main branch
+
+**Checks:**
+- Lint code with ruff
+- Run unit tests with pytest
+
+**Note:** NO testing or linting in GitHub Actions per workspace policy (local-first development)
+
+## Release Strategy
+
+### Daily Releases
+
+- **Tag Pattern**: `daily-YYYY-MM-DD` (perpetual storage)
+- **Latest Tag**: Points to most recent release (`make_latest: true`)
+- **Contents**: DuckDB + Parquet for each collection date
+- **Retention**: Perpetual (all daily releases kept indefinitely)
+
+### Semantic Versioning
+
+- **Tool**: semantic-release (conventional commits)
+- **Major version bumps**: Breaking schema changes (e.g., v2.0.0 for Schema V2)
+- **Minor version bumps**: New features
+- **Patch version bumps**: Bug fixes
 
 ## Critical Implementation Notes
 
-### Resume Capability Required
+### Schema V2 Migration (Completed)
 
-All production collectors **must** implement checkpointing:
+**Commit:** `a5597cd` (Nov 2025)
 
-- Save progress after each coin
+**Changes:**
+- `date`: STRING → pa.date32() (native DATE type)
+- `rank`: pa.int32() → pa.int64() (BIGINT)
+- DuckDB zero-copy Arrow integration
+- Removed CSV format (deprecated)
+
+**Migration Plan:** `docs/development/plan/0003-schema-v2-migration/plan.md`
+
+### Resume Capability
+
+All production collectors implement checkpointing:
+- Save progress after each page
 - Store last successful timestamp
 - Allow restart from checkpoint
-- Expected runtime: 50-100 hours for 18K+ coins
+- Checkpoint location: `data/.checkpoints/`
 
-### Data Validation
+### Data Validation Rules
 
-Before accepting any market cap data:
+Before accepting any data:
+- ✅ Row count verification (19,411+ coins)
+- ✅ Rank sequence validation (1 to N, no gaps)
+- ✅ Duplicate detection (date, rank pairs)
+- ✅ NULL check on required fields
+- ✅ Schema compliance (exact PyArrow match)
 
-- Check for zero values (invalid)
-- Verify timestamps are sequential
-- Detect anomalous jumps (>1000% daily change)
-- Log missing data points
+## Project Evolution
 
-### File Size Expectations
+### Research Phase (Archived)
 
-**Raw Downloads:**
+The `research/` directory contains historical API investigations:
+- CoinPaprika, CoinGecko, CoinCap, Messari, CryptoCompare tests
+- Historical market cap data exploration
+- Kaggle dataset analysis
 
-- Kaggle: 820 MB compressed
-- CryptoCompare: ~15-20 GB JSONL
+**Note:** This research informed the current production implementation but is no longer actively used.
 
-**Final Output:**
+### Production Phase (Current)
 
-- Uncompressed CSV: 8-12 GB
-- Gzip compressed: 1-2 GB
-- Expected rows: 100-150 million
+**Pivot:** From historical data collection → daily automated rankings
 
-## Project Timeline
+**Key Decision:** Focus on CoinGecko API for current market cap rankings instead of 15-year historical data.
 
-| Phase           | Duration     | Type    |
-| --------------- | ------------ | ------- |
-| Setup scripts   | 2-4 hours    | Active  |
-| Download Kaggle | 10 minutes   | Passive |
-| Download APIs   | 50-100 hours | Passive |
-| Merge & rank    | 1 hour       | Active  |
-| **Total**       | **3-5 days** | Mixed   |
+**Rationale:**
+- CoinGecko provides comprehensive coverage (19,411+ coins)
+- Free tier supports daily automation (78 API calls/day)
+- Real-time market cap data (not estimated)
+- Established reliability and data quality
 
-## Key Findings from Research
+## Troubleshooting
 
-### APIs Tested (5 Total)
+### Collection Failures
 
-❌ **CoinGecko:** 365-day limit on free tier
-❌ **CoinCap:** No market cap field in responses
-❌ **Messari:** Enterprise plan required ($5K+/year)
-⚠️ **CryptoCompare:** 18,637 coins, estimated market cap
-✅ **Kaggle:** Real market cap, 4K coins, 2013-2021
+**Symptom:** API rate limiting (429 errors)
 
-### Critical Insight
+**Solution:** Collector auto-retries with exponential backoff (60s wait)
 
-**No single free source provides historical market cap for all coins.** The hybrid approach (Kaggle + CryptoCompare) is the only viable free solution for complete historical coverage.
+### Validation Failures
 
-## Next Implementation Phase
+**Symptom:** Schema mismatch errors
 
-Three production scripts need to be created in `scripts/`:
+**Solution:** Check `CRYPTO_RANKINGS_SCHEMA_V2` definition matches actual data
 
-1. **download_kaggle.py** - Download and standardize Kaggle dataset
-2. **download_cryptocompare.py** - Fetch all 18K+ coins with resume capability
-3. **merge_and_rank.py** - Combine datasets, calculate daily rankings, export final CSV
+### Build Failures
 
-Refer to `PROJECT_PLAN.md` for detailed specifications.
+**Symptom:** Type conversion errors
+
+**Solution:** Verify raw JSON contains expected field types
+
+## Documentation
+
+### Architecture Decisions
+
+See `docs/architecture/decisions/` for detailed ADRs:
+- ADR-0002: CI/CD Daily Rankings Database
+- ADR-0007: GitHub Actions Prohibition of Testing and Linting
+
+### Development Plans
+
+See `docs/development/plan/` for implementation plans:
+- 0003-schema-v2-migration: Schema V2 migration plan (completed)
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/terrylica/crypto-marketcap-rank/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/terrylica/crypto-marketcap-rank/discussions)
+- **API Docs**: [CoinGecko API](https://docs.coingecko.com/reference/coins-markets)
+
+---
+
+**Status**: ✅ Production-ready (Daily automated collections active)

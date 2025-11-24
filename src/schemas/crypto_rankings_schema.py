@@ -60,7 +60,7 @@ CRYPTO_RANKINGS_SCHEMA_V2 = pa.schema(
             "symbol",
             pa.string(),
             nullable=True,
-            metadata={"description": "Ticker symbol", "format": "uppercase", "example": "BTC"},
+            metadata={"description": "Ticker symbol", "format": "lowercase", "example": "btc"},
         ),
         pa.field(
             "name",
@@ -140,7 +140,7 @@ def export_json_schema() -> Dict[str, Any]:
                 "description": "CoinGecko coin identifier",
                 "example": "bitcoin",
             },
-            "symbol": {"type": ["string", "null"], "description": "Ticker symbol (uppercase)", "example": "BTC"},
+            "symbol": {"type": ["string", "null"], "description": "Ticker symbol (lowercase)", "example": "btc"},
             "name": {"type": ["string", "null"], "description": "Human-readable coin name", "example": "Bitcoin"},
             "market_cap": {
                 "type": ["number", "null"],

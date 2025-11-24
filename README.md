@@ -37,7 +37,7 @@ ORDER BY rank
 LIMIT 10;
 
 -- Find specific coin
-SELECT * FROM rankings WHERE symbol = 'BTC';
+SELECT * FROM rankings WHERE symbol = 'btc';
 
 -- Filter by market cap range
 SELECT COUNT(*) as coin_count
