@@ -107,6 +107,7 @@ uv run src/main.py
 ```
 
 This executes:
+
 1. CoinGecko API collection (78 paginated requests)
 2. DuckDB database build
 3. Parquet dataset build
@@ -143,6 +144,7 @@ uv run pytest tests/test_schema.py -v
 ### Collection Phase
 
 **CoinGecko API:**
+
 - Endpoint: `/coins/markets`
 - Pagination: 250 coins per page (API hard limit)
 - Total API calls: ⌈19,411 ÷ 250⌉ = 78
@@ -152,6 +154,7 @@ uv run pytest tests/test_schema.py -v
 ### Build Phase
 
 **DuckDB Builder:**
+
 - Input: Raw JSON from collector
 - Transformation: PyArrow Table with Schema V2
 - Output: `data/processed/crypto_rankings_YYYY-MM-DD.duckdb`
@@ -159,6 +162,7 @@ uv run pytest tests/test_schema.py -v
 - Features: Indexed (date, rank, coin_id), zero-copy Arrow integration
 
 **Parquet Builder:**
+
 - Input: Same raw JSON
 - Partitioning: Hive-style `year=YYYY/month=MM/day=DD/`
 - Output: `data/processed/crypto_rankings_YYYY-MM-DD.parquet/`
@@ -190,6 +194,7 @@ Comprehensive validation enforces 5 rules:
 **Schedule:** Daily at 6:00 AM UTC (cron: `0 6 * * *`)
 
 **Steps:**
+
 1. Run collection pipeline (`uv run src/main.py`)
 2. Validate databases (5-rule validation)
 3. Create GitHub Release (tag: `daily-YYYY-MM-DD`)
@@ -204,6 +209,7 @@ Comprehensive validation enforces 5 rules:
 **Triggers:** Pull requests to main branch
 
 **Checks:**
+
 - Lint code with ruff
 - Run unit tests with pytest
 
@@ -232,6 +238,7 @@ Comprehensive validation enforces 5 rules:
 **Commit:** `a5597cd` (Nov 2025)
 
 **Changes:**
+
 - `date`: STRING → pa.date32() (native DATE type)
 - `rank`: pa.int32() → pa.int64() (BIGINT)
 - DuckDB zero-copy Arrow integration
@@ -242,6 +249,7 @@ Comprehensive validation enforces 5 rules:
 ### Resume Capability
 
 All production collectors implement checkpointing:
+
 - Save progress after each page
 - Store last successful timestamp
 - Allow restart from checkpoint
@@ -250,6 +258,7 @@ All production collectors implement checkpointing:
 ### Data Validation Rules
 
 Before accepting any data:
+
 - ✅ Row count verification (19,411+ coins)
 - ✅ Rank sequence validation (1 to N, no gaps)
 - ✅ Duplicate detection (date, rank pairs)
@@ -261,6 +270,7 @@ Before accepting any data:
 ### Research Phase (Archived)
 
 The `research/` directory contains historical API investigations:
+
 - CoinPaprika, CoinGecko, CoinCap, Messari, CryptoCompare tests
 - Historical market cap data exploration
 - Kaggle dataset analysis
@@ -274,6 +284,7 @@ The `research/` directory contains historical API investigations:
 **Key Decision:** Focus on CoinGecko API for current market cap rankings instead of 15-year historical data.
 
 **Rationale:**
+
 - CoinGecko provides comprehensive coverage (19,411+ coins)
 - Free tier supports daily automation (78 API calls/day)
 - Real-time market cap data (not estimated)
@@ -304,12 +315,14 @@ The `research/` directory contains historical API investigations:
 ### Architecture Decisions
 
 See `docs/architecture/decisions/` for detailed ADRs:
+
 - ADR-0002: CI/CD Daily Rankings Database
 - ADR-0007: GitHub Actions Prohibition of Testing and Linting
 
 ### Development Plans
 
 See `docs/development/plan/` for implementation plans:
+
 - 0003-schema-v2-migration: Schema V2 migration plan (completed)
 
 ## Support

@@ -37,6 +37,12 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.ruff_cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
 
 # Virtual environments
 .venv/
