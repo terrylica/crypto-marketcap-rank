@@ -34,15 +34,15 @@ Collection → Build → Validate → Release
 
 ### Technical Stack
 
-| Component | Technology |
-|-----------|------------|
-| Collection | Python + CoinGecko API |
-| Databases | DuckDB (primary), Parquet (analytics) |
-| Schema | PyArrow Schema V2 (native DATE, BIGINT) |
-| Validation | 5-rule validation layer |
-| CI/CD | GitHub Actions (daily cron + manual trigger) |
-| Distribution | GitHub Releases (daily tags) |
-| Versioning | semantic-release (conventional commits) |
+| Component    | Technology                                   |
+| ------------ | -------------------------------------------- |
+| Collection   | Python + CoinGecko API                       |
+| Databases    | DuckDB (primary), Parquet (analytics)        |
+| Schema       | PyArrow Schema V2 (native DATE, BIGINT)      |
+| Validation   | 5-rule validation layer                      |
+| CI/CD        | GitHub Actions (daily cron + manual trigger) |
+| Distribution | GitHub Releases (daily tags)                 |
+| Versioning   | semantic-release (conventional commits)      |
 
 ---
 
@@ -61,17 +61,17 @@ gh release download daily-2025-11-24 -p "*.duckdb" -D ./data/
 
 ### Schema V2 (PyArrow Native Types) ✅
 
-| Column | Type | Description |
-|--------|------|-------------|
-| date | DATE | Collection date (YYYY-MM-DD) |
-| rank | BIGINT | Market cap rank (1-based) |
-| coin_id | VARCHAR | CoinGecko coin identifier |
-| symbol | VARCHAR | Ticker symbol (lowercase) |
-| name | VARCHAR | Full coin name |
-| market_cap | DOUBLE | Market capitalization (USD) |
-| price | DOUBLE | Current price (USD) |
-| volume_24h | DOUBLE | 24-hour trading volume (USD) |
-| price_change_24h_pct | DOUBLE | 24-hour price change (%) |
+| Column               | Type    | Description                  |
+| -------------------- | ------- | ---------------------------- |
+| date                 | DATE    | Collection date (YYYY-MM-DD) |
+| rank                 | BIGINT  | Market cap rank (1-based)    |
+| coin_id              | VARCHAR | CoinGecko coin identifier    |
+| symbol               | VARCHAR | Ticker symbol (lowercase)    |
+| name                 | VARCHAR | Full coin name               |
+| market_cap           | DOUBLE  | Market capitalization (USD)  |
+| price                | DOUBLE  | Current price (USD)          |
+| volume_24h           | DOUBLE  | 24-hour trading volume (USD) |
+| price_change_24h_pct | DOUBLE  | 24-hour price change (%)     |
 
 ### Validation (5 Rules) ✅
 
@@ -85,12 +85,12 @@ gh release download daily-2025-11-24 -p "*.duckdb" -D ./data/
 
 ## API Usage
 
-| Metric | Value |
-|--------|-------|
-| Daily API Calls | 78 (⌈19,411 ÷ 250⌉ per page limit) |
-| Monthly Usage | ~2,340 calls (23% of 10,000 free tier) |
-| Rate Limiting | 4s delay with API key |
-| Safety Margin | 77% quota remaining for errors/retries |
+| Metric          | Value                                  |
+| --------------- | -------------------------------------- |
+| Daily API Calls | 78 (⌈19,411 ÷ 250⌉ per page limit)     |
+| Monthly Usage   | ~2,340 calls (23% of 10,000 free tier) |
+| Rate Limiting   | 4s delay with API key                  |
+| Safety Margin   | 77% quota remaining for errors/retries |
 
 ---
 
@@ -160,10 +160,10 @@ uv run ruff check src/ tests/
 
 ## Architecture Decisions
 
-| ADR | Title | Status |
-|-----|-------|--------|
-| ADR-0002 | CI/CD Daily Rankings Database | Accepted |
-| ADR-0003 | Schema V2 Migration - PyArrow Native Types | Accepted |
+| ADR      | Title                                            | Status   |
+| -------- | ------------------------------------------------ | -------- |
+| ADR-0002 | CI/CD Daily Rankings Database                    | Accepted |
+| ADR-0003 | Schema V2 Migration - PyArrow Native Types       | Accepted |
 | ADR-0008 | Repository Housekeeping and Standards Compliance | Accepted |
 
 ---
@@ -171,25 +171,30 @@ uv run ruff check src/ tests/
 ## Decision Log
 
 **2025-11-19**: Project started
+
 - Investigated 7 cryptocurrency data APIs
 - Selected CoinGecko as sole data source
 
 **2025-11-20**: Research phase complete
+
 - Collected all 19,410 coin IDs
 - Discovered maximum ranking depth (~13,000 coins)
 - Documented canonical workflow
 
 **2025-11-22**: Production implementation
+
 - Implemented automated daily collection
 - Created DuckDB + Parquet builders
 - Set up GitHub Actions workflows
 
 **2025-11-23**: v2.0.0 released
+
 - Schema V2 migration (PyArrow native types)
 - Comprehensive validation layer
 - First daily release: daily-2025-11-23
 
 **2025-11-24**: Repository housekeeping (ADR-0008)
+
 - Security: CVE-2025-64756 mitigated
 - Policy: CI workflow aligned with local-first development
 - Documentation: Cleaned up redundant files
