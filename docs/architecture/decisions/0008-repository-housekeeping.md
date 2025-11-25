@@ -11,22 +11,27 @@
 Following Schema V2 migration (ADR-0003) completion and v2.0.0 release, comprehensive repository audit revealed multiple housekeeping issues affecting security, policy compliance, documentation consistency, and repository hygiene:
 
 **Critical Security**:
+
 - CVE-2025-64756 (GHSA-5j98-mcp5-4vw2): HIGH severity command injection vulnerability in semantic-release dependency chain (glob@11.0.3)
 
 **Policy Violations**:
+
 - `.github/workflows/ci.yml` runs pytest/ruff in CI, violating workspace local-first development policy (documented in `~/.claude/CLAUDE.md`)
 
 **Documentation Drift**:
+
 - `PROJECT_STATUS.md` frozen at 2025-11-20, claims status "pending" when v2.0.0 released 2025-11-23
 - 4 root-level research docs (80 KB) redundant with README.md and docs/ directory
 - 2 broken internal links (non-existent `research/future-proof-schema-2024.md`, invalid ADR-0007 reference)
 
 **Git Hygiene**:
+
 - `latest` tag points to commit 11 commits behind HEAD (unmaintained, ambiguous)
 - `.ruff_cache/` directory exists but not in `.gitignore` (cache pollution risk)
 - `.env*` patterns missing from `.gitignore` (secret exposure risk)
 
 **Repository Clutter**:
+
 - 5 empty directories (`data/final/`, `data/releases/`, etc.)
 - Unused `pyproject.toml` packages configuration (`validation`, `tools` aren't Python packages)
 - Extraneous npm package (npm-normalize-package-bin@5.0.0)
@@ -46,6 +51,7 @@ Following Schema V2 migration (ADR-0003) completion and v2.0.0 release, comprehe
 **Description**: Address all 23 identified issues across 5 categories in single coordinated effort
 
 **Scope**:
+
 1. Security: Downgrade semantic-release to v24.2.9 (patched version)
 2. Policy: Remove test/lint jobs from CI workflow (align with local-first development)
 3. Documentation: Update PROJECT_STATUS.md, delete 4 redundant docs, fix broken links
@@ -53,11 +59,13 @@ Following Schema V2 migration (ADR-0003) completion and v2.0.0 release, comprehe
 5. Cleanup: Commit formatting, remove empty dirs, clean configs
 
 **Pros**:
+
 - Addresses all findings from systematic audit
 - Single release cycle vs. incremental fixes
 - Clean baseline for future development
 
 **Cons**:
+
 - Breaking change to semantic-release (requires workflow testing)
 - Multiple file changes (coordination overhead)
 
@@ -66,10 +74,12 @@ Following Schema V2 migration (ADR-0003) completion and v2.0.0 release, comprehe
 **Description**: Address issues gradually over multiple releases (security first, then docs, then cleanup)
 
 **Pros**:
+
 - Lower risk per change
 - Easier rollback if issues
 
 **Cons**:
+
 - Leaves known security vulnerability open during incremental work
 - Documentation remains stale during multi-week cleanup
 - Coordination complexity (tracking what's fixed vs. pending)
@@ -79,10 +89,12 @@ Following Schema V2 migration (ADR-0003) completion and v2.0.0 release, comprehe
 **Description**: Fix CVE-2025-64756 only, defer all other housekeeping
 
 **Pros**:
+
 - Minimal scope, lowest risk
 - Fast turnaround
 
 **Cons**:
+
 - Leaves policy violations, documentation drift, git hygiene issues unaddressed
 - Requires future housekeeping effort anyway
 
@@ -153,6 +165,7 @@ See: `docs/development/plan/0008-repository-housekeeping/plan.md`
 **Breaking Change**: v25→v24 is major version downgrade
 
 **Actual Risk Assessment**: LOW
+
 - CVE-2025-64756 affects glob CLI (`-c/--cmd` flag with `shell:true`)
 - Library API (`glob()`, `globSync()`, iterators) is NOT affected
 - Vulnerability exists in bundled npm dependencies (can't be overridden)
@@ -160,11 +173,13 @@ See: `docs/development/plan/0008-repository-housekeeping/plan.md`
 - Attack requires: malicious filenames + explicit `glob -c` usage
 
 **Mitigation**:
+
 - Downgraded semantic-release v25→v24
 - Added npm overrides for glob@^10.5.0 (forces patched version where possible)
 - Bundled dependencies in npm still show vulnerability but don't affect actual usage
 
 **Validation Command**:
+
 ```bash
 npm install semantic-release@^24.2.9 @semantic-release/npm@^13.1.2
 # npm audit will still show 4 HIGH (bundled deps), but actual risk is minimal
@@ -174,12 +189,14 @@ npx semantic-release --dry-run  # Should succeed
 ### CI Workflow Changes
 
 **Removed**:
+
 - "Test" job (pytest execution)
 - "Check code formatting" step (ruff check)
 - "Validate Python syntax" step (py_compile)
 - Integration test dry run
 
 **Retained**:
+
 - Python setup
 - Dependency installation
 - Security scanning (if present)
@@ -188,12 +205,14 @@ npx semantic-release --dry-run  # Should succeed
 ### Documentation Updates
 
 **PROJECT_STATUS.md Changes**:
+
 - Status: "Core infrastructure complete, daily collection ready" → "Production-ready (v2.0.0)"
 - What We Have: Add "Automated daily collection", "Schema V2 migration", "Daily release tags"
 - Mark: "CSV format deprecated"
 - Timeline: Add completion dates
 
 **Deleted Files**:
+
 - `API_INVESTIGATIONS_SUMMARY.md` (research findings now in docs/)
 - `CANONICAL_WORKFLOW.md` (manual workflow superseded by GitHub Actions)
 - `KAGGLE_INVESTIGATION.md` (research artifact, no ongoing value)

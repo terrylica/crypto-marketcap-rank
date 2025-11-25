@@ -20,8 +20,8 @@ categories:
   - documentation
   - repository-hygiene
 dependencies:
-  - adr-0003  # Schema V2 (completed)
-  - adr-0002  # CI/CD Daily Collection (completed)
+  - adr-0003 # Schema V2 (completed)
+  - adr-0002 # CI/CD Daily Collection (completed)
 ```
 
 ---
@@ -41,22 +41,26 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 ### Problem Statement
 
 **Critical Security Vulnerability**:
+
 - CVE-2025-64756 (GHSA-5j98-mcp5-4vw2): Command injection in glob@11.0.3 (semantic-release dependency)
 - CVSS 7.5 (HIGH severity)
 - Attack vector: Malicious filenames with shell metacharacters in PRs
 
 **Policy Violation**:
+
 - `.github/workflows/ci.yml` runs pytest and ruff in GitHub Actions
 - Contradicts workspace policy: "NO unit testing or code formatting in GitHub Actions workflows"
 - Rationale: Local-first development (instant feedback vs. 2-5min CI delay)
 
 **Documentation Drift**:
+
 - `PROJECT_STATUS.md` claims status "pending" (dated 2025-11-20)
 - Actual status: v2.0.0 production-ready (released 2025-11-23)
 - 4 root-level docs (80 KB) redundant with README.md and docs/
 - 2 broken internal links pointing to non-existent files
 
 **Git Hygiene Issues**:
+
 - `latest` tag 11 commits stale (points to debugging commit, not release)
 - `.ruff_cache/` directory not ignored (cache pollution risk)
 - `.env*` patterns missing (secret exposure risk)
@@ -94,6 +98,7 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 **Objective**: Eliminate CVE-2025-64756 before any other changes
 
 **Actions**:
+
 1. Downgrade semantic-release: v25.0.2 → v24.2.9
    ```bash
    npm install semantic-release@^24.2.9
@@ -103,6 +108,7 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 3. Test release workflow: `npx semantic-release --dry-run`
 
 **Validation**:
+
 - npm audit output confirms glob vulnerability resolved
 - Dry-run completes without errors
 
@@ -115,6 +121,7 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 **Objective**: Align CI workflow with workspace local-first development policy
 
 **Actions**:
+
 1. Remove from `.github/workflows/ci.yml`:
    - "Test" job (lines 27-42): pytest execution
    - "Check code formatting" step (lines 37-38): ruff check
@@ -124,11 +131,13 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 2. Retain: Python setup, dependency installation, deployment validation
 
 **Rationale**:
+
 - Policy: Tests/linting run locally via pre-commit hooks, not in CI
 - Benefit: Instant feedback (local) vs. 2-5 minute delay (CI)
 - Trade-off: Requires developer discipline (run checks before push)
 
 **Validation**:
+
 - Manual workflow trigger: `gh workflow run ci.yml --ref main`
 - Workflow completes faster (no test/lint steps)
 - Local checks still pass: `uv run pytest tests/ && uv run ruff check`
@@ -144,6 +153,7 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 #### 3.1 Update PROJECT_STATUS.md
 
 **Changes**:
+
 - **Line 4**: Status → "Production-ready (v2.0.0 released 2025-11-23)"
 - **Lines 17-19**: Remove "pending" items, add completed features:
   - ✅ Automated daily collection (GitHub Actions)
@@ -155,12 +165,14 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 #### 3.2 Delete Redundant Documentation
 
 **Files to Remove**:
+
 1. `API_INVESTIGATIONS_SUMMARY.md` (9 KB) - Research findings, content in docs/
 2. `CANONICAL_WORKFLOW.md` (16 KB) - Manual workflow, superseded by GitHub Actions
 3. `KAGGLE_INVESTIGATION.md` (15 KB) - Research artifact, no ongoing value
 4. `LESSONS_LEARNED.md` (9 KB) - Can be integrated into docs/ if needed
 
 **Rationale**:
+
 - User decision: Update PROJECT_STATUS.md only, delete the rest
 - Reduces root clutter: 5 docs → 1 (+ README.md)
 - Historical context preserved in git history
@@ -168,12 +180,15 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 #### 3.3 Fix Broken Links
 
 **File**: `docs/architecture/decisions/0003-schema-v2-migration.md`
+
 - **Line 142**: Remove reference to `research/future-proof-schema-2024.md` (non-existent)
 
 **File**: `CLAUDE.md`
+
 - **Line 320**: Remove ADR-0007 reference (workspace-wide policy, not project-specific)
 
 **Validation**:
+
 - Search for broken links: `grep -r "future-proof-schema-2024" docs/`
 - Verify no matches after fix
 
@@ -188,23 +203,27 @@ Following successful Schema V2 migration (ADR-0003) and v2.0.0 release on 2025-1
 #### 4.1 Delete Stale 'latest' Tag
 
 **Actions**:
+
 ```bash
 git tag -d latest
 git push --delete origin latest
 ```
 
 **Rationale**:
+
 - Tag points to commit 11 commits behind HEAD
 - Ambiguous meaning (latest semantic version? latest daily release?)
 - Project uses daily-YYYY-MM-DD tags for daily releases
 
 **Impact**:
+
 - External systems using `latest` tag will break (acceptable per user decision)
 - Clearer tag strategy: semantic versions only
 
 #### 4.2 Fetch Missing Daily Tags
 
 **Action**:
+
 ```bash
 git fetch --tags
 ```
@@ -222,6 +241,7 @@ git fetch --tags
 **Actions**:
 
 Add to `.gitignore`:
+
 ```gitignore
 # Python cache (add to existing section)
 .ruff_cache/
@@ -233,10 +253,12 @@ Add to `.gitignore`:
 ```
 
 **Rationale**:
+
 - `.ruff_cache/` directory exists (76 KB) but not ignored → cache pollution risk
 - `.env*` patterns prevent accidental secret commits (standard best practice)
 
 **Validation**:
+
 - `git status` should not show `.ruff_cache/` as untracked
 - Create test `.env` file, verify it's ignored
 
@@ -257,6 +279,7 @@ Add to `.gitignore`:
 #### 6.2 Remove Empty Directories
 
 **Actions**:
+
 ```bash
 rmdir data/final/ data/releases/ research/agent-outputs/sources/ research/agent-outputs/tests/ validation/test-results/
 ```
@@ -266,6 +289,7 @@ rmdir data/final/ data/releases/ research/agent-outputs/sources/ research/agent-
 #### 6.3 Clean pyproject.toml
 
 **Remove**:
+
 ```toml
 [tool.hatch.build.targets.wheel]
 packages = ["validation", "tools"]  # These aren't Python packages
@@ -276,6 +300,7 @@ packages = ["validation", "tools"]  # These aren't Python packages
 #### 6.4 Clean npm Dependencies
 
 **Action**:
+
 ```bash
 npm prune
 ```
@@ -329,11 +354,13 @@ gh workflow run ci.yml --ref main  # Triggers streamlined workflow
 **Objective**: Create semantic release for housekeeping changes
 
 **Actions**:
+
 1. Use semantic-release skill to create release
 2. Conventional commits trigger MINOR version bump (v2.1.0)
 3. GitHub release created with changelog
 
 **Validation**:
+
 - Release tag created: v2.1.0
 - Changelog includes all commits from this plan
 - GitHub release published
@@ -389,7 +416,7 @@ gh workflow run ci.yml --ref main  # Triggers streamlined workflow
 ### 6. Phase 5: .gitignore Improvements ⏸️ PENDING
 
 - [ ] Add .ruff_cache/ to .gitignore
-- [ ] Add .env* patterns to .gitignore
+- [ ] Add .env\* patterns to .gitignore
 - [ ] Validate: git status doesn't show .ruff_cache/
 - [ ] Commit: chore: improve .gitignore
 
@@ -439,11 +466,11 @@ gh workflow run ci.yml --ref main  # Triggers streamlined workflow
 
 ### Critical Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|------------|--------|------------|
-| semantic-release v24 breaks release workflow | Medium | High | Dry-run before commit, have rollback plan |
-| Deleting 'latest' tag breaks external systems | Low | Medium | User accepted risk, daily tags preferred |
-| Removing CI tests allows broken code to merge | Low | Medium | Rely on developer discipline + pre-commit hooks |
+| Risk                                          | Probability | Impact | Mitigation                                      |
+| --------------------------------------------- | ----------- | ------ | ----------------------------------------------- |
+| semantic-release v24 breaks release workflow  | Medium      | High   | Dry-run before commit, have rollback plan       |
+| Deleting 'latest' tag breaks external systems | Low         | Medium | User accepted risk, daily tags preferred        |
+| Removing CI tests allows broken code to merge | Low         | Medium | Rely on developer discipline + pre-commit hooks |
 
 ### Assumptions
 
@@ -505,6 +532,7 @@ gh workflow run ci.yml --ref main  # Triggers streamlined workflow
 **16:00-16:10 UTC**: All phases completed successfully
 
 **Commits Created**:
+
 1. `59348cb` - fix(security): mitigate CVE-2025-64756 in glob dependency chain
 2. `92aedf2` - refactor(ci): remove test/lint workflow (align with local-first policy)
 3. `ef312e4` - docs: update PROJECT_STATUS.md to v2.0.0 and remove redundant docs
@@ -512,18 +540,20 @@ gh workflow run ci.yml --ref main  # Triggers streamlined workflow
 5. `abd04fb` - fix(build): specify src package for hatchling wheel build
 
 **Validation Results**:
+
 - ✅ pytest: 9 tests passed in 0.01s
 - ✅ ruff: All checks passed
 - ✅ Git operations: latest tag deleted, daily tags fetched
 - ✅ Build system: hatchling wheel build working
 
 **Success Criteria Verification**:
+
 - ✅ npm audit shows 4 HIGH (bundled deps only, actual risk LOW - CLI-only vuln)
 - ✅ CI workflow deleted (policy compliant - local-first development)
 - ✅ PROJECT_STATUS.md reflects v2.0.0 production state
 - ✅ Root directory: 1 status doc only (README.md + PROJECT_STATUS.md)
 - ✅ Broken internal links: None found (already fixed in previous commits)
-- ✅ .gitignore includes .ruff_cache/ and .env*
+- ✅ .gitignore includes .ruff_cache/ and .env\*
 - ✅ Only semantic (vX.Y.Z) and daily (daily-YYYY-MM-DD) tags exist
 - ✅ All local quality checks pass
 - ✅ Semantic release v24.2.9 dry-run succeeds
