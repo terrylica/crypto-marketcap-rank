@@ -225,6 +225,31 @@ npx semantic-release --dry-run  # Should succeed
 
 **Rationale**: "latest" tag is ambiguous (latest semantic version? latest daily release?) and creates maintenance burden (who updates it?)
 
+## Addendum: CI/CD Troubleshooting (2025-11-25)
+
+### Issue
+
+After initial completion, the Release workflow failed in GitHub Actions:
+
+```
+npm error `npm ci` can only install packages when your package-lock.json and package.json are in sync.
+```
+
+### Resolution
+
+Changed `release.yml` from `npm ci` to `npm install` (more forgiving across Node versions).
+
+### Earthly Local Testing
+
+Created Earthfile to mimic GitHub Actions locally before pushing:
+
+```bash
+earthly +npm-install-test      # Test npm install step
+earthly +release-test-full     # Full release workflow test
+```
+
+This enables local validation of CI/CD changes before pushing to GitHub Actions.
+
 ## References
 
 - [CVE-2025-64756: Command injection in glob CLI](https://nvd.nist.gov/vuln/detail/CVE-2025-64756)
@@ -232,3 +257,4 @@ npx semantic-release --dry-run  # Should succeed
 - Workspace Policy: `~/.claude/CLAUDE.md` § "GitHub Actions & CI/CD Standards"
 - ADR-0003: Schema V2 Migration (context for documentation updates)
 - ADR-0002: CI/CD Daily Rankings Database (context for workflow changes)
+- Earthly: [earthly.dev](https://earthly.dev/) (local CI/CD testing)

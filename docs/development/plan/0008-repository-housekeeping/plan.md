@@ -561,3 +561,56 @@ gh workflow run ci.yml --ref main  # Triggers streamlined workflow
 **Repository Health**: A+ (all 23 audit findings resolved)
 
 **Final Status**: All housekeeping tasks complete. Repository clean, secure, and policy-compliant.
+
+---
+
+## Addendum: CI/CD Troubleshooting (2025-11-25)
+
+### Issue Discovered
+
+After initial completion, the Release workflow in GitHub Actions failed:
+
+```
+npm error `npm ci` can only install packages when your package-lock.json and package.json are in sync.
+npm error Missing: nopt@8.1.0 from lock file
+```
+
+### Root Cause
+
+- `npm ci` is strict about lock file integrity
+- Lock file desync between local Node 25 and CI Node 24
+- npm overrides for glob@^10.5.0 caused additional complexity
+
+### Fix Applied
+
+Changed `release.yml` from `npm ci` to `npm install`:
+
+```yaml
+- name: Install dependencies
+  run: npm install  # Changed from: npm ci
+```
+
+**Commit**: Part of incremental fixes, v2.0.1 auto-released
+
+### Earthly Local CI/CD Testing
+
+To prevent future CI/CD issues, created Earthfile for local testing:
+
+```bash
+# Test npm install (the step that was failing)
+earthly +npm-install-test
+
+# Test full release workflow (dry-run mode)
+earthly +release-test-full
+```
+
+**Files Created**:
+- `Earthfile` - Mimics GitHub Actions release workflow
+- `.earthlyignore` - Excludes data/logs from container builds
+
+**Validation Results**:
+- ✅ `+npm-install-test`: npm install succeeds with Node 24
+- ✅ `+release-test-full`: All plugins load, audit passes
+- ⚠️ SSH auth error expected (container lacks GitHub credentials)
+
+**Benefit**: Can now test CI/CD changes locally before pushing to GitHub

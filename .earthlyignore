@@ -1,0 +1,25 @@
+# Earthly ignore file - exclude files from COPY . commands
+
+# Data and outputs
+data/
+logs/
+
+# Virtual environments
+.venv/
+__pycache__/
+*.pyc
+
+# Cache directories
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Lychee outputs
+.lychee*
+
+# Large/unnecessary for testing
+research/
