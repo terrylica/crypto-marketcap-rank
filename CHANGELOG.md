@@ -1,3 +1,19 @@
+## [2.0.1](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.0...v2.0.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* add pandas to PEP 723 script dependencies in main.py ([73f0043](https://github.com/terrylica/crypto-marketcap-rank/commit/73f004388018f9300dad9c0f227a8af5ecf97e90))
+* allow Hive partition columns in schema validation ([f31488e](https://github.com/terrylica/crypto-marketcap-rank/commit/f31488e75d76fded80c6c153180c3cc094acf0aa))
+* **build:** specify src package for hatchling wheel build ([abd04fb](https://github.com/terrylica/crypto-marketcap-rank/commit/abd04fb5bd6dd4381c09a1aec5f48ebb7cf784cb))
+* **ci:** remove non-existent checkpoint cache and fix Parquet path patterns ([1fba5ee](https://github.com/terrylica/crypto-marketcap-rank/commit/1fba5ee391c2c9469f0d904f29962208b011cbf4))
+* **ci:** use npm install instead of npm ci for cross-version compatibility ([59a496e](https://github.com/terrylica/crypto-marketcap-rank/commit/59a496e005e7305480069e21552c4ea63c0ee459))
+* correct module imports for CI/CD compatibility ([3a36cbf](https://github.com/terrylica/crypto-marketcap-rank/commit/3a36cbf596a455fddfb9451ac76b9e269ce9a98f))
+* **deps:** regenerate package-lock.json for npm ci compatibility ([9ab94dc](https://github.com/terrylica/crypto-marketcap-rank/commit/9ab94dc9debb946e69b0e6d9b86d97de0b6ad7c6))
+* **deps:** remove npm overrides breaking npm ci ([31af4de](https://github.com/terrylica/crypto-marketcap-rank/commit/31af4de1f914e3df3ada61e7d82fcb232edb9f08))
+* remove CSV builder from main.py pipeline ([5420fe2](https://github.com/terrylica/crypto-marketcap-rank/commit/5420fe293ee415c4f6a34cfe26d1f90e38c17a2b))
+* **security:** mitigate CVE-2025-64756 in glob dependency chain ([59348cb](https://github.com/terrylica/crypto-marketcap-rank/commit/59348cb7f4b0e22f7ff0b8466e0e3f89916f77b3))
+
 # [2.0.0](https://github.com/terrylica/crypto-marketcap-rank/compare/v1.0.0...v2.0.0) (2025-11-23)
 
 - feat!: deprecate CSV format and migrate to daily release tags ([99e2937](https://github.com/terrylica/crypto-marketcap-rank/commit/99e29379332e5c14dd69ca06a67b2792b33c7110))
