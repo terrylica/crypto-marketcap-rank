@@ -30,8 +30,5 @@
   },
   "dependencies": {
     "@semantic-release/npm": "^13.1.2"
-  },
-  "overrides": {
-    "glob": "^10.5.0"
   }
 }
