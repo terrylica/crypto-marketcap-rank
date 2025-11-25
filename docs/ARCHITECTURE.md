@@ -9,75 +9,73 @@
 ## System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                              SYSTEM ARCHITECTURE                                 │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                  │
-│  ┌────────────────────────────────────────────────────────────────────────────┐ │
-│  │                        GITHUB ACTIONS (Remote CI/CD)                        │ │
-│  │                                                                              │ │
-│  │  ┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────┐  │ │
-│  │  │    release.yml       │  │ daily-collection.yml │  │ monitor-coll.yml │  │ │
-│  │  │ ────────────────────│  │ ────────────────────│  │ ──────────────── │  │ │
-│  │  │ Trigger: push main   │  │ Trigger: 6:00 AM UTC │  │ Trigger: every 6h│  │ │
-│  │  │ • npm install        │  │ • uv run main.py     │  │ • Check status   │  │ │
-│  │  │ • npm audit sigs     │  │ • Build DuckDB       │  │ • Pushover alert │  │ │
-│  │  │ • semantic-release   │  │ • gh release create  │  │ • Doppler secrets│  │ │
-│  │  │         │            │  │         │            │  └──────────────────┘  │ │
-│  │  │         ▼            │  │         ▼            │                         │ │
-│  │  │   vX.Y.Z tags        │  │  daily-YYYY-MM-DD    │  test-pushover.yml     │ │
-│  │  └──────────────────────┘  └──────────────────────┘  (manual testing)      │ │
-│  │                                                                              │ │
-│  └────────────────────────────────────────────────────────────────────────────┘ │
-│                                        │                                         │
-│                              ┌─────────┴─────────┐                               │
-│                              │  GitHub Releases  │                               │
-│                              │  ├─ v2.0.1        │                               │
-│                              │  ├─ daily-11-25   │                               │
-│                              │  └─ daily-11-24   │                               │
-│                              └───────────────────┘                               │
-│                                                                                  │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│                          LOCAL DEVELOPMENT (Earthly)                             │
-│                                                                                  │
-│  ┌────────────────────────────────────────────────────────────────────────────┐ │
-│  │   Earthfile (Docker via Colima)                                             │ │
-│  │   ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────────┐  │ │
-│  │   │ +npm-install-test │  │ +release-test     │  │ +release-test-full    │  │ │
-│  │   │ Node 24 container │  │ Plugins load test │  │ Full git context test │  │ │
-│  │   └───────────────────┘  └───────────────────┘  └───────────────────────┘  │ │
-│  └────────────────────────────────────────────────────────────────────────────┘ │
-│  ┌────────────────────────────────────────────────────────────────────────────┐ │
-│  │   Local Python (uv run)                                                     │ │
-│  │   ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────────┐  │ │
-│  │   │ pytest tests/ -v  │  │ ruff check src/   │  │ npm run release:dry   │  │ │
-│  │   │ 9 tests (0.01s)   │  │ All checks pass   │  │ All plugins load      │  │ │
-│  │   └───────────────────┘  └───────────────────┘  └───────────────────────┘  │ │
-│  └────────────────────────────────────────────────────────────────────────────┘ │
-│                                                                                  │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│                              DATA PIPELINE FLOW                                  │
-│                                                                                  │
-│   CoinGecko API (/coins/markets)                                                │
-│        │                                                                         │
-│        ▼ (78 paginated requests, 250 coins/page, 4s rate limit)                 │
-│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐   │
-│   │  COLLECT    │────▶│   BUILD     │────▶│  VALIDATE   │────▶│  RELEASE    │   │
-│   │─────────────│     │─────────────│     │─────────────│     │─────────────│   │
-│   │ raw/*.json  │     │ *.duckdb    │     │ 5 rules:    │     │ gh release  │   │
-│   │ 19,400+     │     │ *.parquet   │     │ • schema    │     │ daily-*     │   │
-│   │ coins       │     │ (local)     │     │ • dupes     │     │ tags        │   │
-│   │             │     │             │     │ • nulls     │     │             │   │
-│   └─────────────┘     └─────────────┘     │ • range     │     └─────────────┘   │
-│                                           │ • values    │            │           │
-│                                           └─────────────┘            ▼           │
-│                                                              ┌─────────────┐     │
-│                                                              │ Assets:     │     │
-│                                                              │ • DuckDB    │     │
-│                                                              │ (Parquet    │     │
-│                                                              │  local only)│     │
-│                                                              └─────────────┘     │
-└─────────────────────────────────────────────────────────────────────────────────┘
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                           SYSTEM ARCHITECTURE                             ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║                                                                           ║
+║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+║  │                    GITHUB ACTIONS (Remote CI/CD)                    │  ║
+║  │                                                                     │  ║
+║  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐     │  ║
+║  │  │  release.yml    │  │ daily-coll.yml  │  │ monitor-coll.yml│     │  ║
+║  │  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤     │  ║
+║  │  │ push main/beta  │  │ 6:00 AM UTC     │  │ every 6 hours   │     │  ║
+║  │  │ • npm install   │  │ • uv run main.py│  │ • Check status  │     │  ║
+║  │  │ • npm audit     │  │ • Build DuckDB  │  │ • Pushover alert│     │  ║
+║  │  │ • sem-release   │  │ • gh release    │  │ • Doppler keys  │     │  ║
+║  │  │       │         │  │       │         │  └─────────────────┘     │  ║
+║  │  │       ▼         │  │       ▼         │                          │  ║
+║  │  │  vX.Y.Z tags    │  │ daily-YYYY-MM-DD│   test-pushover.yml      │  ║
+║  │  └─────────────────┘  └─────────────────┘   (manual testing)       │  ║
+║  │                                                                     │  ║
+║  └─────────────────────────────────────────────────────────────────────┘  ║
+║                                    │                                      ║
+║                          ┌─────────┴─────────┐                            ║
+║                          │  GitHub Releases  │                            ║
+║                          │  ├─ v2.0.1        │                            ║
+║                          │  ├─ daily-11-25   │                            ║
+║                          │  └─ daily-11-24   │                            ║
+║                          └───────────────────┘                            ║
+║                                                                           ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║                        LOCAL DEVELOPMENT (Earthly)                        ║
+║                                                                           ║
+║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+║  │  Earthfile (Docker via Colima)                                      │  ║
+║  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────┐  │  ║
+║  │  │+npm-install-test│  │ +release-test   │  │ +release-test-full  │  │  ║
+║  │  │ Node 24 image   │  │ Plugins load    │  │ Full git context    │  │  ║
+║  │  └─────────────────┘  └─────────────────┘  └─────────────────────┘  │  ║
+║  └─────────────────────────────────────────────────────────────────────┘  ║
+║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+║  │  Local Python (uv run)                                              │  ║
+║  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────┐  │  ║
+║  │  │ pytest tests/   │  │ ruff check src/ │  │ npm run release:dry │  │  ║
+║  │  │ 9 tests (0.01s) │  │ All checks pass │  │ All plugins load    │  │  ║
+║  │  └─────────────────┘  └─────────────────┘  └─────────────────────┘  │  ║
+║  └─────────────────────────────────────────────────────────────────────┘  ║
+║                                                                           ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║                           DATA PIPELINE FLOW                              ║
+║                                                                           ║
+║  CoinGecko API (/coins/markets)                                           ║
+║       │                                                                   ║
+║       ▼  78 requests × 250 coins/page × 4s delay                          ║
+║  ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐        ║
+║  │  COLLECT  │───▶│   BUILD   │───▶│ VALIDATE  │───▶│  RELEASE  │        ║
+║  ├───────────┤    ├───────────┤    ├───────────┤    ├───────────┤        ║
+║  │ raw/*.json│    │ *.duckdb  │    │ 5 rules:  │    │ gh release│        ║
+║  │ 19,400+   │    │ *.parquet │    │ • schema  │    │ daily-*   │        ║
+║  │ coins     │    │ (local)   │    │ • dupes   │    │ tags      │        ║
+║  └───────────┘    └───────────┘    │ • nulls   │    └─────┬─────┘        ║
+║                                    │ • range   │          │              ║
+║                                    │ • values  │          ▼              ║
+║                                    └───────────┘    ┌───────────┐        ║
+║                                                     │ DuckDB    │        ║
+║                                                     │ (Parquet  │        ║
+║                                                     │ local)    │        ║
+║                                                     └───────────┘        ║
+╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
@@ -160,24 +158,23 @@ crypto-marketcap-rank/
 ## Schema V2 (100% Validated)
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    PyArrow Schema V2 (v2.0.0)                    │
-├──────────────────────┬──────────────┬───────────────────────────┤
-│ Column               │ PyArrow Type │ SQL Type    │ Nullable    │
-├──────────────────────┼──────────────┼─────────────┼─────────────┤
-│ date                 │ pa.date32()  │ DATE        │ NO          │
-│ rank                 │ pa.int64()   │ BIGINT      │ NO          │
-│ coin_id              │ pa.string()  │ VARCHAR     │ NO          │
-├──────────────────────┼──────────────┼─────────────┼─────────────┤
-│ symbol               │ pa.string()  │ VARCHAR     │ YES         │
-│ name                 │ pa.string()  │ VARCHAR     │ YES         │
-│ market_cap           │ pa.float64() │ DOUBLE      │ YES         │
-│ price                │ pa.float64() │ DOUBLE      │ YES         │
-│ volume_24h           │ pa.float64() │ DOUBLE      │ YES         │
-│ price_change_24h_pct │ pa.float64() │ DOUBLE      │ YES         │
-└──────────────────────┴──────────────┴─────────────┴─────────────┘
+┌──────────────────────┬──────────────┬─────────────┬──────────┐
+│       Column         │ PyArrow Type │  SQL Type   │ Nullable │
+├──────────────────────┼──────────────┼─────────────┼──────────┤
+│ date                 │ pa.date32()  │ DATE        │ NO       │
+│ rank                 │ pa.int64()   │ BIGINT      │ NO       │
+│ coin_id              │ pa.string()  │ VARCHAR     │ NO       │
+├──────────────────────┼──────────────┼─────────────┼──────────┤
+│ symbol               │ pa.string()  │ VARCHAR     │ YES      │
+│ name                 │ pa.string()  │ VARCHAR     │ YES      │
+│ market_cap           │ pa.float64() │ DOUBLE      │ YES      │
+│ price                │ pa.float64() │ DOUBLE      │ YES      │
+│ volume_24h           │ pa.float64() │ DOUBLE      │ YES      │
+│ price_change_24h_pct │ pa.float64() │ DOUBLE      │ YES      │
+└──────────────────────┴──────────────┴─────────────┴──────────┘
 
-Source of Truth: src/schemas/crypto_rankings_schema.py
+PyArrow Schema V2 (v2.0.0)
+Source: src/schemas/crypto_rankings_schema.py
 ```
 
 ---
@@ -222,25 +219,24 @@ Output: Test notifications to verify setup
 ## Release Strategy (Validated)
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      RELEASE TAG PATTERNS                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  Semantic Versions           Daily Releases                      │
-│  ─────────────────           ──────────────                      │
-│  v2.0.1 (Latest)             daily-2025-11-25                    │
-│  v2.0.0                      daily-2025-11-24                    │
-│  v1.0.0                      daily-2025-11-23                    │
-│                                                                  │
-│  Trigger: Conventional       Trigger: 6:00 AM UTC                │
-│           commits on push              cron schedule             │
-│                                                                  │
-│  Assets:  None (code only)   Assets: DuckDB database             │
-│                                                                  │
-├─────────────────────────────────────────────────────────────────┤
-│  IMPORTANT: Parquet files are built locally but NOT uploaded    │
-│             to GitHub Releases (only DuckDB is distributed)      │
-└─────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────┐
+│                     RELEASE TAG PATTERNS                      │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  Semantic Versions           Daily Releases                   │
+│  ─────────────────           ──────────────                   │
+│  v2.0.1 (Latest)             daily-2025-11-25                 │
+│  v2.0.0                      daily-2025-11-24                 │
+│  v1.0.0                      daily-2025-11-23                 │
+│                                                               │
+│  Trigger: Conventional       Trigger: 6:00 AM UTC             │
+│           commits on push              cron schedule          │
+│                                                               │
+│  Assets:  None (code only)   Assets: DuckDB database          │
+│                                                               │
+├───────────────────────────────────────────────────────────────┤
+│  NOTE: Parquet built locally but NOT in release assets        │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -249,12 +245,12 @@ Output: Test notifications to verify setup
 
 ### Requirements
 
-| Tool   | Minimum Version | Current |
-|--------|-----------------|---------|
-| Python | >=3.12          | 3.14.0  |
-| Node   | >=22.14.0       | 25.2.1  |
-| uv     | any             | 0.9.10  |
-| Earthly| any             | 0.8.16  |
+| Tool    | Minimum Version | Current |
+| ------- | --------------- | ------- |
+| Python  | >=3.12          | 3.14.0  |
+| Node    | >=22.14.0       | 25.2.1  |
+| uv      | any             | 0.9.10  |
+| Earthly | any             | 0.8.16  |
 
 ### Commands
 
@@ -280,13 +276,13 @@ npm run release:dry
 
 ## Validation Summary
 
-| Component | Accuracy | Status |
-|-----------|----------|--------|
-| Schema V2 | 100% | ✅ Fully validated |
-| Workflows | 100% | ✅ All 4 documented |
-| Releases  | 100% | ✅ Patterns confirmed |
-| Structure | 100% | ✅ All directories documented |
-| Tooling   | 100% | ✅ All commands work |
+| Component | Accuracy | Status                        |
+| --------- | -------- | ----------------------------- |
+| Schema V2 | 100%     | ✅ Fully validated            |
+| Workflows | 100%     | ✅ All 4 documented           |
+| Releases  | 100%     | ✅ Patterns confirmed         |
+| Structure | 100%     | ✅ All directories documented |
+| Tooling   | 100%     | ✅ All commands work          |
 
 **Validation Date**: 2025-11-25
 **Method**: 5 parallel sub-agents using DCTL protocol
@@ -297,7 +293,7 @@ npm run release:dry
 ## API Usage
 
 | Metric          | Value                                  |
-|-----------------|----------------------------------------|
+| --------------- | -------------------------------------- |
 | Daily API Calls | 78 (⌈19,411 ÷ 250⌉ per page limit)     |
 | Monthly Usage   | ~2,340 calls (23% of 10,000 free tier) |
 | Rate Limiting   | 4s delay with API key                  |
@@ -307,11 +303,11 @@ npm run release:dry
 
 ## Architecture Decisions
 
-| ADR      | Title                                    | Status   |
-|----------|------------------------------------------|----------|
-| ADR-0002 | CI/CD Daily Rankings Database            | Accepted |
-| ADR-0003 | Schema V2 Migration                      | Accepted |
-| ADR-0008 | Repository Housekeeping                  | Accepted |
+| ADR      | Title                         | Status   |
+| -------- | ----------------------------- | -------- |
+| ADR-0002 | CI/CD Daily Rankings Database | Accepted |
+| ADR-0003 | Schema V2 Migration           | Accepted |
+| ADR-0008 | Repository Housekeeping       | Accepted |
 
 ---
 
