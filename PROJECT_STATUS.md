@@ -2,364 +2,206 @@
 
 **Last Updated**: 2025-11-24
 **Status**: ✅ Production-ready (v2.0.0 released 2025-11-23)
+**Version**: v2.0.0
 
 ---
 
 ## Quick Summary
 
-**Goal**: Comprehensive cryptocurrency market cap rankings (historical + current)
+**Goal**: Daily automated collection of comprehensive cryptocurrency market cap rankings.
 
-**Current State**:
+**Production State**:
 
 - ✅ Automated daily collection (GitHub Actions, 6:00 AM UTC)
 - ✅ Schema V2 migration complete (PyArrow native types)
 - ✅ DuckDB + Parquet database formats (CSV deprecated)
 - ✅ Daily release tags (`daily-YYYY-MM-DD` pattern)
-- ✅ Comprehensive validation (zero duplicate/null data)
+- ✅ Comprehensive validation (5 rules, zero duplicate/null data)
 - ✅ Production monitoring and error handling
 
-**Data Source**: CoinGecko API (selected after investigating 7 alternatives)
+**Data Source**: CoinGecko API (19,400+ ranked coins, 78 API calls/day)
 
 ---
 
-## What We Have
+## Architecture
 
-### 1. Complete Coin ID List ✅
-
-**File**: `data/coin_ids/coingecko_all_coin_ids.json`
-**Count**: 19,410 active coins
-**Includes**: Dead 2013-era coins (Namecoin, Peercoin, etc.) for historical accuracy
-
-### 2. Current Rankings Snapshot ✅
-
-**File**: `data/rankings/current_rankings_20251120_231108.csv`
-**Count**: 13,000 ranked coins (rank #1 to #12,991)
-**Date**: 2025-11-20 23:11:08
-**Coverage**: 67% of all CoinGecko coins
-
-### 3. Working Tools ✅
-
-**Location**: `tools/`
-
-- `fetch_all_coin_ids.py` - Get all CoinGecko coin IDs
-- `fetch_current_rankings.py` - Get current top N rankings
-- `calculate_point_in_time_rankings.py` - Calculate rankings from market_cap data
-- `lookup_rank_by_id_date.py` - Lookup specific coin rank on date
-
-### 4. Documentation ✅
-
-**Root Level**:
-
-- `README.md` - Project overview
-- `CLAUDE.md` - Working notes
-- `LESSONS_LEARNED.md` - Failed experiments & discoveries
-- `API_INVESTIGATIONS_SUMMARY.md` - API research results
-- `PROJECT_STATUS.md` - This file
-
-**Organized Docs**:
-
-- `docs/canonical/` - Working solutions
-- `docs/warnings/` - Failed approaches
-- `docs/investigations/` - Research findings
-- `docs/archive/` - Historical records
-
----
-
-## What We Learned
-
-### Critical Discoveries
-
-**1. CoinGecko is the Winner** (after testing 7 APIs)
-
-- Most comprehensive: 19,410 coins
-- Best free tier: 10,000 calls/month
-- No credit card required
-- See: `API_INVESTIGATIONS_SUMMARY.md`
-
-**2. Historical Rankings Don't Exist**
-
-- CoinGecko `/coins/{id}/history` returns market_cap but NOT rank
-- Must collect ALL coins' market_caps for a date to calculate rankings
-- See: `docs/warnings/COINGECKO_RANK_LIMITATION.md`
-
-**3. crypto2 R Package Insufficient**
-
-- Only 69 coins (missing Ethereum, BNB, Cardano, Solana, etc.)
-- Insufficient for comprehensive rankings
-- ❌ Deleted - no longer using
-- See: `LESSONS_LEARNED.md`
-
-**4. Rate Limiting Without API Key**
-
-- 20s delay = 100% success (3 calls/min)
-- 4s delay with free Demo API key = 100% success (15 calls/min)
-- Undocumented actual limits stricter than docs claim
-- See: `docs/warnings/NO_API_KEY_EXPERIMENT.md`
-
-**5. Maximum Ranking Depth**
-
-- CoinGecko ranks ~13,000 coins (67% of total)
-- Remaining 6,410 unranked (too low market cap / dead)
-- Last ranked: #12,991
-- See: `docs/canonical/MAXIMUM_RANKING_DEPTH.md`
-
----
-
-## Canonical Workflow
-
-**The ONLY way to get historical point-in-time rankings**:
-
-### Prerequisites
-
-✅ **Step 0**: Get coin IDs first (MANDATORY)
-
-```bash
-uv run tools/fetch_all_coin_ids.py
+```
+Collection → Build → Validate → Release
+    ↓          ↓         ↓          ↓
+  78 API    2 formats  5 rules   Daily
+  calls     built      enforced   tags
 ```
 
-**Decision point**: Which coins to rank?
+### Technical Stack
 
-- All 19,410? (comprehensive but slow)
-- Top 13,000 ranked? (faster, complete ranked set)
-- Top 500/1000? (very fast, major coins only)
-
-### Historical Collection (One-Time Backfill)
-
-⏳ **Step 1**: Collect historical market_cap for all target coins
-
-```bash
-# For each coin × each date:
-# GET /coins/{coin_id}/history?date=DD-MM-YYYY
-```
-
-**Time estimate** (500 coins × 365 days):
-
-- 182,500 API calls
-- With API key: ~8.5 days
-- Without API key: ~42 days
-
-⏳ **Step 2**: Calculate point-in-time rankings
-
-```bash
-uv run tools/calculate_point_in_time_rankings.py
-```
-
-### Daily Collection (Recommended Strategy)
-
-✅ **Daily**: Collect current rankings snapshot
-
-```bash
-# Automate with cron (once per day)
-uv run tools/fetch_current_rankings.py 1000
-```
-
-**Benefits**:
-
-- Only 4 API calls/day
-- 120 calls/month (1.2% of limit)
-- Builds comprehensive database over time
-- No survivorship bias
-- Sustainable within free tier
+| Component | Technology |
+|-----------|------------|
+| Collection | Python + CoinGecko API |
+| Databases | DuckDB (primary), Parquet (analytics) |
+| Schema | PyArrow Schema V2 (native DATE, BIGINT) |
+| Validation | 5-rule validation layer |
+| CI/CD | GitHub Actions (daily cron + manual trigger) |
+| Distribution | GitHub Releases (daily tags) |
+| Versioning | semantic-release (conventional commits) |
 
 ---
 
 ## Current Capabilities
 
-### What You Can Do RIGHT NOW ✅
+### Daily Automated Collection ✅
 
-**1. Get Current Rankings**
-
-```bash
-# Top 500 coins
-uv run tools/fetch_current_rankings.py 500
-
-# Top 1,000 coins
-uv run tools/fetch_current_rankings.py 1000
-
-# ALL ~13,000 ranked coins
-uv run tools/fetch_current_rankings.py all
-```
-
-**2. Get All Coin IDs**
+**Workflow**: `.github/workflows/daily-collection.yml`
+**Schedule**: Daily at 6:00 AM UTC
+**Output**: DuckDB + Parquet databases via GitHub Releases
 
 ```bash
-uv run tools/fetch_all_coin_ids.py
+# Download latest data
+gh release download daily-2025-11-24 -p "*.duckdb" -D ./data/
 ```
 
-**3. Explore Data**
+### Schema V2 (PyArrow Native Types) ✅
 
-```bash
-# View current rankings
-cat data/rankings/current_rankings_20251120_231108.csv | head -20
+| Column | Type | Description |
+|--------|------|-------------|
+| date | DATE | Collection date (YYYY-MM-DD) |
+| rank | BIGINT | Market cap rank (1-based) |
+| coin_id | VARCHAR | CoinGecko coin identifier |
+| symbol | VARCHAR | Ticker symbol (lowercase) |
+| name | VARCHAR | Full coin name |
+| market_cap | DOUBLE | Market capitalization (USD) |
+| price | DOUBLE | Current price (USD) |
+| volume_24h | DOUBLE | 24-hour trading volume (USD) |
+| price_change_24h_pct | DOUBLE | 24-hour price change (%) |
 
-# Check coin IDs
-cat data/coin_ids/all_coins.csv | grep -i ethereum
-```
+### Validation (5 Rules) ✅
 
-### What's Pending ⏳
-
-**1. Historical Backfill** (not started)
-
-- Collect market_cap for all target coins on past dates
-- Calculate historical rankings
-- Very slow (days/weeks depending on scope)
-
-**2. Daily Collection Automation** (not started)
-
-- Set up cron job for daily rankings
-- Gradually build historical database
-
-**3. Kaggle Dataset Investigation** (next task)
-
-- Check if existing Kaggle datasets useful
-- Verify quality, coverage, freshness
+1. **Schema Conformance**: Exact PyArrow Schema V2 match
+2. **Duplicate Detection**: No duplicate (date, rank) pairs
+3. **NULL Checks**: Required fields (date, rank, coin_id) non-null
+4. **Range Validation**: Ranks sequential (1 to N, no gaps)
+5. **Value Constraints**: market_cap, price, volume_24h ≥ 0
 
 ---
 
-## File Organization
+## API Usage
 
-### Project Structure
+| Metric | Value |
+|--------|-------|
+| Daily API Calls | 78 (⌈19,411 ÷ 250⌉ per page limit) |
+| Monthly Usage | ~2,340 calls (23% of 10,000 free tier) |
+| Rate Limiting | 4s delay with API key |
+| Safety Margin | 77% quota remaining for errors/retries |
+
+---
+
+## Release Strategy
+
+### Daily Releases
+
+- **Tag Pattern**: `daily-YYYY-MM-DD` (perpetual storage)
+- **Latest Tag**: Points to most recent release
+- **Contents**: DuckDB + Parquet for each collection date
+- **Retention**: Perpetual (all daily releases kept)
+
+### Semantic Versioning
+
+- **Current**: v2.0.0 (Schema V2 migration)
+- **Tool**: semantic-release (conventional commits)
+- **Major**: Breaking schema changes
+- **Minor**: New features
+- **Patch**: Bug fixes
+
+---
+
+## Repository Structure
 
 ```
 crypto-marketcap-rank/
-├── README.md                          # Project overview
-├── CLAUDE.md                          # Working notes
-├── PROJECT_STATUS.md                  # This file
-├── LESSONS_LEARNED.md                 # Failed experiments
-├── API_INVESTIGATIONS_SUMMARY.md      # API research
-│
-├── data/
-│   ├── README.md                      # Data index (to be created)
-│   ├── coin_ids/                      # All 19,410 coin IDs
-│   │   ├── README.md                  # Coin ID collection details
-│   │   ├── coingecko_all_coin_ids.json
-│   │   ├── all_coins.csv
-│   │   └── SUMMARY.json
-│   └── rankings/                      # Current rankings
-│       ├── README.md                  # Rankings collection details
-│       ├── current_rankings_*.csv     # Rankings CSV
-│       ├── current_rankings_*.json    # Full data
-│       ├── summary_*.json             # Metadata
-│       └── fetch_current_rankings.py  # Collection script
-│
-├── tools/                             # Working collection tools
-│   ├── fetch_all_coin_ids.py         # Get all coin IDs
-│   ├── fetch_current_rankings.py     # Get current rankings
-│   ├── calculate_point_in_time_rankings.py
-│   └── lookup_rank_by_id_date.py
-│
-├── docs/
-│   ├── canonical/                     # Working solutions
-│   │   ├── COIN_IDS_COMPLETE.md
-│   │   ├── CURRENT_RANKINGS_SOLUTION.md
-│   │   ├── MAXIMUM_RANKING_DEPTH.md
-│   │   └── RANK_LOOKUP_GUIDE.md
-│   ├── warnings/                      # Failed approaches
-│   │   ├── COINGECKO_RANK_LIMITATION.md
-│   │   ├── CRYPTO2_QUALITY_ANALYSIS.md
-│   │   ├── EXPERIMENT_FILES_GUIDE.md
-│   │   └── NO_API_KEY_EXPERIMENT.md
-│   ├── investigations/                # Research findings
-│   │   ├── COINGECKO_COLLECTION_STATUS.md
-│   │   ├── COINGECKO_COVERAGE_ANALYSIS.md
-│   │   ├── KAGGLE_VALIDATION_RESULTS.md
-│   │   └── RESEARCH_SUMMARY.md
-│   └── archive/                       # Historical records
-│       └── PROJECT_PLAN.md
-│
-├── logs/                              # Collection logs (if any)
-└── validation/                        # Validation scripts/reports
+├── .github/workflows/      # CI/CD automation
+│   ├── daily-collection.yml  # Daily collection + release
+│   └── release.yml           # Semantic release
+├── src/                    # Production code
+│   ├── collectors/         # CoinGecko API collector
+│   ├── builders/           # Database builders
+│   ├── schemas/            # PyArrow Schema V2
+│   ├── validators/         # Validation layer
+│   └── main.py             # Entry point
+├── tests/                  # Unit tests
+├── docs/                   # Architecture decisions & plans
+│   ├── architecture/decisions/  # ADRs (MADR format)
+│   └── development/plan/        # Implementation plans
+├── data/                   # Data storage (gitignored)
+└── logs/                   # Execution logs
 ```
 
 ---
 
-## Next Steps
+## Development Commands
 
-### Immediate (This Session)
+### Run Full Collection Pipeline
 
-- [x] Complete project cleanup
-- [x] Create comprehensive documentation
-- [ ] Create `data/README.md` as index
-- [ ] Create `CANONICAL_WORKFLOW.md` guide
-- [ ] Investigate Kaggle dataset
+```bash
+uv run src/main.py
+```
 
-### Short-Term (Next Session)
+### Run Tests
 
-- [ ] Set up daily collection automation (cron job)
-- [ ] Test daily collection workflow
-- [ ] Verify data consistency
+```bash
+uv run pytest tests/ -v
+```
 
-### Long-Term (Future)
+### Code Quality
 
-- [ ] Historical backfill strategy
-- [ ] Data storage optimization
-- [ ] Analysis tools development
-- [ ] Visualization/dashboard
+```bash
+uv run ruff check src/ tests/
+```
 
 ---
 
-## Key Files Reference
+## Architecture Decisions
 
-### Documentation
-
-| File                            | Purpose                                             |
-| ------------------------------- | --------------------------------------------------- |
-| `README.md`                     | Project overview, quick start                       |
-| `PROJECT_STATUS.md`             | Current state, capabilities, next steps (this file) |
-| `LESSONS_LEARNED.md`            | Failed experiments, warnings, discoveries           |
-| `API_INVESTIGATIONS_SUMMARY.md` | Why CoinGecko, API comparisons                      |
-
-### Data
-
-| Location         | Content                                   |
-| ---------------- | ----------------------------------------- |
-| `data/coin_ids/` | All 19,410 CoinGecko coin IDs             |
-| `data/rankings/` | Current rankings snapshot (~13,000 coins) |
-
-### Tools
-
-| Tool                                  | Function                     |
-| ------------------------------------- | ---------------------------- |
-| `fetch_all_coin_ids.py`               | Get complete coin ID list    |
-| `fetch_current_rankings.py`           | Get current top N rankings   |
-| `calculate_point_in_time_rankings.py` | Calculate rankings from data |
-| `lookup_rank_by_id_date.py`           | Lookup specific coin rank    |
+| ADR | Title | Status |
+|-----|-------|--------|
+| ADR-0002 | CI/CD Daily Rankings Database | Accepted |
+| ADR-0003 | Schema V2 Migration - PyArrow Native Types | Accepted |
+| ADR-0008 | Repository Housekeeping and Standards Compliance | Accepted |
 
 ---
 
 ## Decision Log
 
 **2025-11-19**: Project started
-
 - Investigated 7 cryptocurrency data APIs
+- Selected CoinGecko as sole data source
 
-**2025-11-20**: Major decisions made
+**2025-11-20**: Research phase complete
+- Collected all 19,410 coin IDs
+- Discovered maximum ranking depth (~13,000 coins)
+- Documented canonical workflow
 
-- ✅ Selected CoinGecko as sole data source
-- ✅ Collected all 19,410 coin IDs
-- ✅ Collected complete current rankings snapshot (~13,000 coins)
-- ❌ Rejected crypto2 R package (only 69 coins)
-- ❌ Rejected non-CoinGecko APIs (insufficient coverage)
-- ✅ Discovered rate limiting requirements (20s no-key, 4s with-key)
-- ✅ Discovered maximum ranking depth (~13,000 coins)
-- ✅ Documented canonical workflow (coin IDs → data collection → ranking calculation)
+**2025-11-22**: Production implementation
+- Implemented automated daily collection
+- Created DuckDB + Parquet builders
+- Set up GitHub Actions workflows
 
-**2025-11-20**: Project cleanup
+**2025-11-23**: v2.0.0 released
+- Schema V2 migration (PyArrow native types)
+- Comprehensive validation layer
+- First daily release: daily-2025-11-23
 
-- ✅ Deleted crypto2 data (61 MB)
-- ✅ Deleted non-CoinGecko research folders
-- ✅ Consolidated failed experiments into `LESSONS_LEARNED.md`
-- ✅ Organized documentation structure
-- ✅ Created comprehensive project status (this file)
+**2025-11-24**: Repository housekeeping (ADR-0008)
+- Security: CVE-2025-64756 mitigated
+- Policy: CI workflow aligned with local-first development
+- Documentation: Cleaned up redundant files
 
 ---
 
 ## Contact & Resources
 
-**Working Directory**: `~/eon/crypto-marketcap-rank/`
-**CoinGecko API Docs**: https://docs.coingecko.com/llms-full.txt
-**Demo API Key**: Free, no credit card required
+- **Repository**: https://github.com/terrylica/crypto-marketcap-rank
+- **Releases**: https://github.com/terrylica/crypto-marketcap-rank/releases
+- **CoinGecko API**: https://docs.coingecko.com/reference/coins-markets
 
 ---
 
-**Status**: ✅ Foundation complete, ready for historical collection or daily automation
+**Status**: ✅ Production-ready with daily automated collection
