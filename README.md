@@ -1,7 +1,6 @@
 # Cryptocurrency Market Cap Rankings Database
 
 [![Daily Collection](https://github.com/terrylica/crypto-marketcap-rank/actions/workflows/daily-collection.yml/badge.svg)](https://github.com/terrylica/crypto-marketcap-rank/actions/workflows/daily-collection.yml)
-[![CI Status](https://github.com/terrylica/crypto-marketcap-rank/actions/workflows/ci.yml/badge.svg)](https://github.com/terrylica/crypto-marketcap-rank/actions/workflows/ci.yml)
 
 Daily automated collection of comprehensive cryptocurrency market cap rankings for all 19,411+ CoinGecko coins. Distributed as queryable database artifacts via GitHub Releases.
 
