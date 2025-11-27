@@ -63,8 +63,8 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
     1. Schema conformance (exact match with CRYPTO_RANKINGS_SCHEMA_V2)
     2. No duplicate (date, coin_id) pairs
     3. No NULL values in required fields (date, rank, coin_id)
-    4. Rank range validation (1 to N, sequential)
-    5. Market cap > 0 for non-NULL values
+    4. Rank range validation (all >= 1, max reasonable)
+    5. Market cap >= 0 for non-NULL values
 
     Args:
         table: PyArrow Table to validate
@@ -137,9 +137,10 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
             errors.append(NullError(f"NULL check failed for '{field}': {e}"))
 
     # Validation 4: Rank Range Validation
-    # Note: CoinGecko API naturally has rank gaps when coins lack market cap data
-    # Note: Duplicate ranks are VALID - coins with identical market cap share the same rank
-    # We validate: (1) all ranks >= 1, (2) max rank reasonable
+    # Note: CoinGecko API has natural characteristics:
+    #   - Rank gaps: coins without market cap data skip rank numbers
+    #   - Rank ties: coins with equal market cap share the same rank
+    # We only validate: all ranks >= 1, max rank is reasonable
     try:
         ranks = table["rank"].to_pylist()
         if ranks:
@@ -149,16 +150,6 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
 
             if min_rank < 1:
                 errors.append(RangeError(f"Rank minimum is {min_rank}, expected >= 1"))
-
-            # Note: Duplicate ranks are expected when coins have identical market cap
-            # CoinGecko assigns the same rank to coins with equal market_cap
-            # This is NOT data corruption - just log for observability
-            rank_set = set(ranks)
-            if len(rank_set) != row_count:
-                dup_count = row_count - len(rank_set)
-                # Log but don't fail - this is expected behavior
-                import logging
-                logging.getLogger(__name__).info(f"Found {dup_count} duplicate rank(s) - expected for coins with identical market cap")
 
             # Max rank should be reasonable (within 2x of row count to allow for gaps)
             # CoinGecko has ~19,400 coins but gaps can push max_rank higher
