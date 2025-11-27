@@ -260,10 +260,12 @@ All production collectors implement checkpointing:
 Before accepting any data:
 
 - ✅ Row count verification (19,411+ coins)
-- ✅ Rank sequence validation (1 to N, no gaps)
-- ✅ Duplicate detection (date, rank pairs)
+- ✅ Rank validation (no duplicates, all >= 1, max reasonable)
+- ✅ Duplicate detection (date, coin_id pairs)
 - ✅ NULL check on required fields
 - ✅ Schema compliance (exact PyArrow match)
+
+> **Note**: CoinGecko API naturally has rank gaps when coins lack market cap data. Gaps are allowed; duplicate ranks are not.
 
 ## Project Evolution
 

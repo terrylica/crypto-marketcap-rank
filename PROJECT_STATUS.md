@@ -1,8 +1,8 @@
 # Crypto Market Cap Rankings - Project Status
 
-**Last Updated**: 2025-11-24
-**Status**: ✅ Production-ready (v2.0.0 released 2025-11-23)
-**Version**: v2.0.0
+**Last Updated**: 2025-11-25
+**Status**: ✅ Production-ready (v2.0.1 released 2025-11-25)
+**Version**: v2.0.1
 
 ---
 
@@ -105,7 +105,7 @@ gh release download daily-2025-11-24 -p "*.duckdb" -D ./data/
 
 ### Semantic Versioning
 
-- **Current**: v2.0.0 (Schema V2 migration)
+- **Current**: v2.0.1 (Documentation rectification)
 - **Tool**: semantic-release (conventional commits)
 - **Major**: Breaking schema changes
 - **Minor**: New features

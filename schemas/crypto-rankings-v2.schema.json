@@ -34,8 +34,8 @@
         "string",
         "null"
       ],
-      "description": "Ticker symbol (uppercase)",
-      "example": "BTC"
+      "description": "Ticker symbol (lowercase)",
+      "example": "btc"
     },
     "name": {
       "type": [

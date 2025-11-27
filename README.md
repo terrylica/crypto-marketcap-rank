@@ -19,11 +19,15 @@ Daily automated collection of comprehensive cryptocurrency market cap rankings f
 ### Download Latest Data
 
 ```bash
-# Download DuckDB database (recommended)
-wget https://github.com/terrylica/crypto-marketcap-rank/releases/download/latest/crypto_rankings_2025-11-21.duckdb
+# Download latest DuckDB database via GitHub API (always current)
+curl -sL https://api.github.com/repos/terrylica/crypto-marketcap-rank/releases/latest \
+  | grep -o 'https://.*\.duckdb' | head -1 | xargs wget
+
+# Or download specific date
+wget https://github.com/terrylica/crypto-marketcap-rank/releases/download/daily-2025-11-25/crypto_rankings_2025-11-25.duckdb
 
 # Query instantly with DuckDB
-duckdb crypto_rankings_2025-11-21.duckdb
+duckdb crypto_rankings_*.duckdb
 ```
 
 ### Query Examples
@@ -87,17 +91,17 @@ print(df)
 
 **Schema V2** (November 2025): All formats share the same PyArrow-native schema:
 
-| Column                 | Type    | PyArrow Type   | Description                  |
-| ---------------------- | ------- | -------------- | ---------------------------- |
-| `date`                 | DATE    | `pa.date32()`  | Collection date (YYYY-MM-DD) |
-| `rank`                 | BIGINT  | `pa.int64()`   | Market cap rank (1-based)    |
-| `coin_id`              | VARCHAR | `pa.string()`  | CoinGecko coin identifier    |
-| `symbol`               | VARCHAR | `pa.string()`  | Ticker symbol (e.g., BTC)    |
-| `name`                 | VARCHAR | `pa.string()`  | Full coin name               |
-| `market_cap`           | DOUBLE  | `pa.float64()` | Market capitalization (USD)  |
-| `price`                | DOUBLE  | `pa.float64()` | Current price (USD)          |
-| `volume_24h`           | DOUBLE  | `pa.float64()` | 24-hour trading volume (USD) |
-| `price_change_24h_pct` | DOUBLE  | `pa.float64()` | 24-hour price change (%)     |
+| Column                 | Type    | PyArrow Type   | Description                          |
+| ---------------------- | ------- | -------------- | ------------------------------------ |
+| `date`                 | DATE    | `pa.date32()`  | Collection date (YYYY-MM-DD)         |
+| `rank`                 | BIGINT  | `pa.int64()`   | Market cap rank (1-based)            |
+| `coin_id`              | VARCHAR | `pa.string()`  | CoinGecko coin identifier            |
+| `symbol`               | VARCHAR | `pa.string()`  | Ticker symbol (lowercase, e.g., btc) |
+| `name`                 | VARCHAR | `pa.string()`  | Full coin name                       |
+| `market_cap`           | DOUBLE  | `pa.float64()` | Market capitalization (USD)          |
+| `price`                | DOUBLE  | `pa.float64()` | Current price (USD)                  |
+| `volume_24h`           | DOUBLE  | `pa.float64()` | 24-hour trading volume (USD)         |
+| `price_change_24h_pct` | DOUBLE  | `pa.float64()` | 24-hour price change (%)             |
 
 > **Breaking Change (v2.0.0)**: Schema V2 uses native DATE type instead of STRING. Historical data (pre-Nov 2025) uses Schema V1. DuckDB automatically handles type conversion in queries.
 
@@ -115,9 +119,18 @@ Collection → Build → Validate → Release
 - **Collection**: Python + CoinGecko API (78 API calls/day)
 - **Databases**: DuckDB, Parquet (PyArrow Schema V2)
 - **Validation**: Comprehensive schema validation (5 rules: schema conformance, duplicates, nulls, ranges, values)
-- **CI/CD**: GitHub Actions (daily cron + manual trigger)
+- **CI/CD**: GitHub Actions (4 workflows)
 - **Distribution**: GitHub Releases (daily tags: `daily-YYYY-MM-DD`)
 - **Versioning**: semantic-release (conventional commits)
+
+### GitHub Actions Workflows
+
+| Workflow                 | Trigger           | Purpose                                       |
+| ------------------------ | ----------------- | --------------------------------------------- |
+| `daily-collection.yml`   | Daily 6:00 AM UTC | Collect data, build databases, create release |
+| `release.yml`            | Push to main/beta | Semantic versioning and changelog             |
+| `monitor-collection.yml` | Every 6 hours     | Health monitoring, Pushover alerts            |
+| `test-pushover.yml`      | Manual            | Test notification integration                 |
 
 ## API Quota Usage
 
@@ -130,6 +143,7 @@ Collection → Build → Validate → Release
 ### Prerequisites
 
 - Python 3.12+
+- Node.js >=22.14.0 (for semantic-release)
 - [uv](https://docs.astral.sh/uv/) (package manager)
 
 ### Setup
@@ -186,10 +200,11 @@ crypto-marketcap-rank/
 
 ```bash
 # Download specific date
-wget https://github.com/terrylica/crypto-marketcap-rank/releases/download/daily-2025-11-22/crypto_rankings_2025-11-22.duckdb
+wget https://github.com/terrylica/crypto-marketcap-rank/releases/download/daily-2025-11-25/crypto_rankings_2025-11-25.duckdb
 
-# Download latest
-wget https://github.com/terrylica/crypto-marketcap-rank/releases/latest/download/crypto_rankings_YYYY-MM-DD.duckdb
+# Download latest via GitHub API (recommended - always current)
+curl -sL https://api.github.com/repos/terrylica/crypto-marketcap-rank/releases/latest \
+  | grep -o 'https://.*\.duckdb' | head -1 | xargs wget
 ```
 
 ## Quality Assurance
@@ -283,7 +298,11 @@ MIT License - see LICENSE file for details.
 
 See [docs/architecture/decisions/](docs/architecture/decisions/) for detailed ADRs:
 
+- [ADR-0001: Hybrid Free Data Acquisition Strategy](docs/architecture/decisions/0001-hybrid-free-data-acquisition.md)
 - [ADR-0002: CI/CD Daily Rankings Database](docs/architecture/decisions/0002-cicd-daily-rankings-database.md)
+- [ADR-0003: Schema V2 Migration - PyArrow Native Types](docs/architecture/decisions/0003-schema-v2-migration.md)
+- [ADR-0008: Repository Housekeeping and Standards Compliance](docs/architecture/decisions/0008-repository-housekeeping.md)
+- [ADR-0009: Documentation Rectification](docs/architecture/decisions/0009-documentation-rectification.md)
 
 ## Support
 

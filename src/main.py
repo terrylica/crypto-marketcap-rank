@@ -37,6 +37,13 @@ def main(date: str = None):
 
     Args:
         date: Collection date (YYYY-MM-DD). Defaults to today.
+
+    Returns:
+        None. Exits with status code 0 on success, 1 on error.
+
+    Raises:
+        CollectionError: If data collection fails.
+        BuildError: If database building fails.
     """
     if date is None:
         date = datetime.now().strftime('%Y-%m-%d')

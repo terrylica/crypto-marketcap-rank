@@ -16,17 +16,17 @@
 ║  ┌─────────────────────────────────────────────────────────────────────┐  ║
 ║  │                    GITHUB ACTIONS (Remote CI/CD)                    │  ║
 ║  │                                                                     │  ║
-║  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐     │  ║
-║  │  │  release.yml    │  │ daily-coll.yml  │  │ monitor-coll.yml│     │  ║
-║  │  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤     │  ║
-║  │  │ push main/beta  │  │ 6:00 AM UTC     │  │ every 6 hours   │     │  ║
-║  │  │ • npm install   │  │ • uv run main.py│  │ • Check status  │     │  ║
-║  │  │ • npm audit     │  │ • Build DuckDB  │  │ • Pushover alert│     │  ║
-║  │  │ • sem-release   │  │ • gh release    │  │ • Doppler keys  │     │  ║
-║  │  │       │         │  │       │         │  └─────────────────┘     │  ║
-║  │  │       ▼         │  │       ▼         │                          │  ║
-║  │  │  vX.Y.Z tags    │  │ daily-YYYY-MM-DD│   test-pushover.yml      │  ║
-║  │  └─────────────────┘  └─────────────────┘   (manual testing)       │  ║
+║  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐      │  ║
+║  │  │  release.yml    │  │ daily-coll.yml  │  │ monitor-coll.yml│      │  ║
+║  │  ├─────────────────┤  ├─────────────────┤  ├─────────────────┤      │  ║
+║  │  │ push main/beta  │  │ 6:00 AM UTC     │  │ every 6 hours   │      │  ║
+║  │  │ • npm install   │  │ • uv run main.py│  │ • Check status  │      │  ║
+║  │  │ • npm audit     │  │ • Build DuckDB  │  │ • Pushover alert│      │  ║
+║  │  │ • sem-release   │  │ • gh release    │  │ • Doppler keys  │      │  ║
+║  │  │       │         │  │       │         │  └─────────────────┘      │  ║
+║  │  │       ▼         │  │       ▼         │                           │  ║
+║  │  │  vX.Y.Z tags    │  │ daily-YYYY-MM-DD│   test-pushover.yml       │  ║
+║  │  └─────────────────┘  └─────────────────┘   (manual testing)        │  ║
 ║  │                                                                     │  ║
 ║  └─────────────────────────────────────────────────────────────────────┘  ║
 ║                                    │                                      ║
@@ -61,20 +61,20 @@
 ║  CoinGecko API (/coins/markets)                                           ║
 ║       │                                                                   ║
 ║       ▼  78 requests × 250 coins/page × 4s delay                          ║
-║  ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐        ║
-║  │  COLLECT  │───▶│   BUILD   │───▶│ VALIDATE  │───▶│  RELEASE  │        ║
-║  ├───────────┤    ├───────────┤    ├───────────┤    ├───────────┤        ║
-║  │ raw/*.json│    │ *.duckdb  │    │ 5 rules:  │    │ gh release│        ║
-║  │ 19,400+   │    │ *.parquet │    │ • schema  │    │ daily-*   │        ║
-║  │ coins     │    │ (local)   │    │ • dupes   │    │ tags      │        ║
-║  └───────────┘    └───────────┘    │ • nulls   │    └─────┬─────┘        ║
-║                                    │ • range   │          │              ║
-║                                    │ • values  │          ▼              ║
-║                                    └───────────┘    ┌───────────┐        ║
-║                                                     │ DuckDB    │        ║
-║                                                     │ (Parquet  │        ║
-║                                                     │ local)    │        ║
-║                                                     └───────────┘        ║
+║  ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐         ║
+║  │  COLLECT  │───▶│   BUILD   │───▶│ VALIDATE  │───▶│  RELEASE  │         ║
+║  ├───────────┤    ├───────────┤    ├───────────┤    ├───────────┤         ║
+║  │ raw/*.json│    │ *.duckdb  │    │ 5 rules:  │    │ gh release│         ║
+║  │ 19,400+   │    │ *.parquet │    │ • schema  │    │ daily-*   │         ║
+║  │ coins     │    │ (local)   │    │ • dupes   │    │ tags      │         ║
+║  └───────────┘    └───────────┘    │ • nulls   │    └─────┬─────┘         ║
+║                                    │ • range   │          │               ║
+║                                    │ • values  │          ▼               ║
+║                                    └───────────┘    ┌───────────┐         ║
+║                                                     │ DuckDB    │         ║
+║                                                     │ (Parquet  │         ║
+║                                                     │ local)    │         ║
+║                                                     └───────────┘         ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -131,7 +131,7 @@ crypto-marketcap-rank/
 ├── scripts/                     # Standalone scripts
 │   └── test_builders.py
 │
-├── tools/                       # Utility scripts (17 scripts)
+├── tools/                       # Utility scripts (15 scripts)
 │   ├── collect_coingecko.py
 │   ├── merge_datasets.py
 │   └── validate_all.sh

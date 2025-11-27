@@ -12,7 +12,7 @@
 ```yaml
 adr-id: "0008"
 plan-id: "0008-repository-housekeeping"
-status: "in_progress"
+status: "complete"
 priority: "critical"
 categories:
   - security
@@ -587,7 +587,7 @@ Changed `release.yml` from `npm ci` to `npm install`:
 
 ```yaml
 - name: Install dependencies
-  run: npm install  # Changed from: npm ci
+  run: npm install # Changed from: npm ci
 ```
 
 **Commit**: Part of incremental fixes, v2.0.1 auto-released
@@ -605,10 +605,12 @@ earthly +release-test-full
 ```
 
 **Files Created**:
+
 - `Earthfile` - Mimics GitHub Actions release workflow
 - `.earthlyignore` - Excludes data/logs from container builds
 
 **Validation Results**:
+
 - ✅ `+npm-install-test`: npm install succeeds with Node 24
 - ✅ `+release-test-full`: All plugins load, audit passes
 - ⚠️ SSH auth error expected (container lacks GitHub credentials)

@@ -1,28 +1,51 @@
-# Inline configuration
-# Level: Project (standalone)
+# semantic-release configuration
+# Repository: crypto-marketcap-rank
+# Level: Project (standalone, not shared)
+#
+# Plugin execution order:
+#   1. commit-analyzer: Parse conventional commits to determine version bump
+#   2. release-notes-generator: Generate release notes from commits
+#   3. changelog: Update CHANGELOG.md with release notes
+#   4. exec: Update version in Python files (pyproject.toml, src/__init__.py)
+#   5. git: Commit and push version changes
+#   6. github: Create GitHub release with assets
 
 repositoryUrl: git@github.com:terrylica/crypto-marketcap-rank.git
 
+# Branch configuration: main for stable, beta for pre-releases
 branches:
   - main
   - name: beta
     prerelease: true
 
 plugins:
+  # Step 1: Analyze commits using conventional-commits format
+  # Determines: major (BREAKING), minor (feat), patch (fix)
   - "@semantic-release/commit-analyzer"
+
+  # Step 2: Generate release notes from analyzed commits
   - "@semantic-release/release-notes-generator"
+
+  # Step 3: Update CHANGELOG.md with generated notes
   - - "@semantic-release/changelog"
     - changelogFile: CHANGELOG.md
+
+  # Step 4: Update version in Python configuration files
+  # Uses sed to replace version strings with ${nextRelease.version}
   - - "@semantic-release/exec"
     - prepareCmd: |
-        # Update Python version in pyproject.toml
+        # Update Python version in pyproject.toml (project.version field)
         sed -i.bak 's/^version = .*/version = "${nextRelease.version}"/' pyproject.toml && rm pyproject.toml.bak
-        # Update Python version in src/__init__.py
+        # Update Python version in src/__init__.py (__version__ constant)
         sed -i.bak 's/^__version__ = .*/__version__ = "${nextRelease.version}"/' src/__init__.py && rm src/__init__.py.bak
+
+  # Step 5: Commit version changes and push to repository
   - - "@semantic-release/git"
     - assets:
         - CHANGELOG.md
         - package.json
         - pyproject.toml
         - src/__init__.py
+
+  # Step 6: Create GitHub release with tag and release notes
   - "@semantic-release/github"

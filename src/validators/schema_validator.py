@@ -137,25 +137,28 @@ def validate_arrow_table(table: pa.Table) -> List[ValidationError]:
             errors.append(NullError(f"NULL check failed for '{field}': {e}"))
 
     # Validation 4: Rank Range Validation
+    # Note: CoinGecko API naturally has rank gaps when coins lack market cap data
+    # We validate: (1) no duplicate ranks, (2) all ranks >= 1, (3) max rank reasonable
     try:
         ranks = table["rank"].to_pylist()
         if ranks:
             min_rank = min(ranks)
             max_rank = max(ranks)
-            expected_max = len(ranks)
+            row_count = len(ranks)
 
             if min_rank < 1:
                 errors.append(RangeError(f"Rank minimum is {min_rank}, expected >= 1"))
 
-            if max_rank != expected_max:
-                errors.append(RangeError(f"Rank maximum is {max_rank}, expected {expected_max} (row count)"))
-
-            # Check for gaps (optional - may be too strict)
+            # Check for duplicate ranks (indicates data corruption)
             rank_set = set(ranks)
-            expected_ranks = set(range(1, expected_max + 1))
-            missing_ranks = expected_ranks - rank_set
-            if missing_ranks and len(missing_ranks) < 10:  # Only report if < 10 gaps
-                errors.append(RangeError(f"Missing ranks in sequence: {sorted(missing_ranks)}"))
+            if len(rank_set) != row_count:
+                dup_count = row_count - len(rank_set)
+                errors.append(RangeError(f"Found {dup_count} duplicate rank(s) - data corruption"))
+
+            # Max rank should be reasonable (within 2x of row count to allow for gaps)
+            # CoinGecko has ~19,400 coins but gaps can push max_rank higher
+            if max_rank > row_count * 2:
+                errors.append(RangeError(f"Rank maximum {max_rank} too high for {row_count} rows"))
     except Exception as e:
         errors.append(RangeError(f"Rank validation failed: {e}"))
 
