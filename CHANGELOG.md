@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.1...v2.0.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* allow duplicate ranks in validation (CoinGecko expected behavior) ([5622c01](https://github.com/terrylica/crypto-marketcap-rank/commit/5622c01cac32c8ff493dde58a3169b5b639628de))
+
 ## [2.0.1](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.0...v2.0.1) (2025-11-25)
 
 ### Bug Fixes
