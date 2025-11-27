@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.2...v2.0.3) (2025-11-27)
+
+
+### Bug Fixes
+
+* allow rank ties in validation for CoinGecko API ([751f3a3](https://github.com/terrylica/crypto-marketcap-rank/commit/751f3a3fb657b0926cfb8fdb497c1858cde1b634))
+
 ## [2.0.2](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.1...v2.0.2) (2025-11-27)
 
 
