@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.3...v2.1.0) (2025-12-04)
+
+
+### Features
+
+* migrate Pushover notifications to dedicated Doppler project ([edbf5e2](https://github.com/terrylica/crypto-marketcap-rank/commit/edbf5e2f1536ac456cf6195bbeee63f329c8d82a))
+
 ## [2.0.3](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.2...v2.0.3) (2025-11-27)
 
 
