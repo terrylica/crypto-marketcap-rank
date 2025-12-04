@@ -472,9 +472,9 @@ if errors:
 
 ### Related Documents
 
-- [ADR-0003: Schema V2 Migration](../../architecture/decisions/0003-schema-v2-migration.md)
-- [ADR-0002: CI/CD Daily Rankings](../../architecture/decisions/0002-cicd-daily-rankings-database.md)
-- [Future-Proof Schema Research](../../../research/future-proof-schema-2024.md)
+- [ADR-0003: Schema V2 Migration](/docs/architecture/decisions/0003-schema-v2-migration.md)
+- [ADR-0002: CI/CD Daily Rankings](/docs/architecture/decisions/0002-cicd-daily-rankings-database.md)
+- [Future-Proof Schema Research](/research/future-proof-schema-2024.md)
 
 ### External References
 

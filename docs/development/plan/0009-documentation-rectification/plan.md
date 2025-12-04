@@ -165,5 +165,5 @@ The audit was conducted using Dynamic Todo List Creation (DCTL) methodology with
 
 ## Related Documents
 
-- ADR: [docs/architecture/decisions/0009-documentation-rectification.md](../../architecture/decisions/0009-documentation-rectification.md)
-- Previous: [ADR-0008: Repository Housekeeping](../../architecture/decisions/0008-repository-housekeeping.md)
+- ADR: [ADR-0009: Documentation Rectification](/docs/architecture/decisions/0009-documentation-rectification.md)
+- Previous: [ADR-0008: Repository Housekeeping](/docs/architecture/decisions/0008-repository-housekeeping.md)

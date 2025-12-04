@@ -517,7 +517,7 @@ gh workflow run ci.yml --ref main  # Triggers streamlined workflow
 
 ## References
 
-- [ADR-0008: Repository Housekeeping](../../architecture/decisions/0008-repository-housekeeping.md)
+- [ADR-0008: Repository Housekeeping](/docs/architecture/decisions/0008-repository-housekeeping.md)
 - [CVE-2025-64756: glob CLI Command Injection](https://nvd.nist.gov/vuln/detail/CVE-2025-64756)
 - [GHSA-5j98-mcp5-4vw2: glob Security Advisory](https://github.com/isaacs/node-glob/security/advisories/GHSA-5j98-mcp5-4vw2)
 - Workspace Policy: `~/.claude/CLAUDE.md` § GitHub Actions & CI/CD Standards

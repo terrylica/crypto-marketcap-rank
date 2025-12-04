@@ -57,7 +57,7 @@ grep -i "ethereum" data/coin_ids/all_coins.csv
 wc -l data/coin_ids/all_coins.csv
 ```
 
-**Details**: See [`coin_ids/README.md`](coin_ids/README.md)
+**Details**: See [`coin_ids/README.md`](/data/coin_ids/README.md)
 
 ---
 
@@ -127,7 +127,7 @@ uv run tools/fetch_current_rankings.py 500
 uv run tools/fetch_current_rankings.py all
 ```
 
-**Details**: See [`rankings/README.md`](rankings/README.md)
+**Details**: See [`rankings/README.md`](/data/rankings/README.md)
 
 ---
 
@@ -399,20 +399,20 @@ plt.show()
 
 **Project Level**:
 
-- [`../README.md`](../README.md) - Project overview
-- [`../PROJECT_STATUS.md`](../PROJECT_STATUS.md) - Current status, next steps
-- [`../LESSONS_LEARNED.md`](../LESSONS_LEARNED.md) - Failed experiments, discoveries
+- [Project README](/README.md) - Project overview
+- [PROJECT_STATUS.md](/PROJECT_STATUS.md) - Current status, next steps
+- [LESSONS_LEARNED.md](/LESSONS_LEARNED.md) - Failed experiments, discoveries
 
 **Data Specific**:
 
-- [`coin_ids/README.md`](coin_ids/README.md) - Coin ID collection details
-- [`rankings/README.md`](rankings/README.md) - Rankings collection details
+- [`coin_ids/README.md`](/data/coin_ids/README.md) - Coin ID collection details
+- [`rankings/README.md`](/data/rankings/README.md) - Rankings collection details
 
 **Canonical Workflows**:
 
-- [`../docs/canonical/COIN_IDS_COMPLETE.md`](../docs/canonical/COIN_IDS_COMPLETE.md)
-- [`../docs/canonical/CURRENT_RANKINGS_SOLUTION.md`](../docs/canonical/CURRENT_RANKINGS_SOLUTION.md)
-- [`../docs/canonical/MAXIMUM_RANKING_DEPTH.md`](../docs/canonical/MAXIMUM_RANKING_DEPTH.md)
+- [COIN_IDS_COMPLETE.md](/docs/canonical/COIN_IDS_COMPLETE.md)
+- [CURRENT_RANKINGS_SOLUTION.md](/docs/canonical/CURRENT_RANKINGS_SOLUTION.md)
+- [MAXIMUM_RANKING_DEPTH.md](/docs/canonical/MAXIMUM_RANKING_DEPTH.md)
 
 ---
 

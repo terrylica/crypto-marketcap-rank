@@ -101,8 +101,8 @@ A comprehensive 9-agent DCTL (Dynamic Todo List Creation) audit identified docum
 
 ## Related Decisions
 
-- [ADR-0008: Repository Housekeeping](0008-repository-housekeeping.md) - Previous cleanup effort
-- [ADR-0003: Schema V2 Migration](0003-schema-v2-migration.md) - Source of truth for schema
+- [ADR-0008: Repository Housekeeping](/docs/architecture/decisions/0008-repository-housekeeping.md) - Previous cleanup effort
+- [ADR-0003: Schema V2 Migration](/docs/architecture/decisions/0003-schema-v2-migration.md) - Source of truth for schema
 
 ## References
 

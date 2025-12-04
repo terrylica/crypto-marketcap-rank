@@ -10,14 +10,14 @@
 
 ### For Immediate Implementation
 
-1. **START HERE:** [`QUICK_START.md`](QUICK_START.md) - 3-step guide (5 min read)
-2. **THE CODE:** [`04_scheduler_implementation.py`](04_scheduler_implementation.py) - Copy this file
-3. **VERIFY TODAY:** [`today_schedule.json`](today_schedule.json) - Your first day's coins
+1. **START HERE:** [`QUICK_START.md`](/research/historical-marketcap-all-coins/QUICK_START.md) - 3-step guide (5 min read)
+2. **THE CODE:** [`04_scheduler_implementation.py`](/research/historical-marketcap-all-coins/04_scheduler_implementation.py) - Copy this file
+3. **VERIFY TODAY:** [`today_schedule.json`](/research/historical-marketcap-all-coins/today_schedule.json) - Your first day's coins
 
 ### For Complete Understanding
 
-1. **THE FULL REPORT:** [`FINAL_REPORT.md`](FINAL_REPORT.md) - 13-section technical document (comprehensive)
-2. **THE SUMMARY:** [`IMPLEMENTATION_SUMMARY.txt`](IMPLEMENTATION_SUMMARY.txt) - Executive overview
+1. **THE FULL REPORT:** [`FINAL_REPORT.md`](/research/historical-marketcap-all-coins/FINAL_REPORT.md) - 13-section technical document (comprehensive)
+2. **THE SUMMARY:** [`IMPLEMENTATION_SUMMARY.txt`](/research/historical-marketcap-all-coins/IMPLEMENTATION_SUMMARY.txt) - Executive overview
 3. **THIS INDEX:** You are here
 
 ---
@@ -47,38 +47,38 @@
 
 ### Category 1: Getting Started (Read These First)
 
-| File                                                       | Purpose                          | Time   | Audience        |
-| ---------------------------------------------------------- | -------------------------------- | ------ | --------------- |
-| [`QUICK_START.md`](QUICK_START.md)                         | 3-step implementation guide      | 5 min  | Everyone        |
-| [`IMPLEMENTATION_SUMMARY.txt`](IMPLEMENTATION_SUMMARY.txt) | Executive summary with checklist | 10 min | Decision makers |
-| This file                                                  | Navigation guide                 | 3 min  | Current reader  |
+| File                                                                                                | Purpose                          | Time   | Audience        |
+| --------------------------------------------------------------------------------------------------- | -------------------------------- | ------ | --------------- |
+| [`QUICK_START.md`](/research/historical-marketcap-all-coins/QUICK_START.md)                         | 3-step implementation guide      | 5 min  | Everyone        |
+| [`IMPLEMENTATION_SUMMARY.txt`](/research/historical-marketcap-all-coins/IMPLEMENTATION_SUMMARY.txt) | Executive summary with checklist | 10 min | Decision makers |
+| This file                                                                                           | Navigation guide                 | 3 min  | Current reader  |
 
 ### Category 2: Complete Reference
 
-| File                                 | Purpose                              | Length    | Audience        |
-| ------------------------------------ | ------------------------------------ | --------- | --------------- |
-| [`FINAL_REPORT.md`](FINAL_REPORT.md) | Complete 13-section technical report | 489 lines | Technical leads |
-| Mathematical Model                   | Coverage equations and validation    | See below | Data scientists |
-| Trade-off Analysis                   | Freshness vs completeness breakdown  | See below | Architects      |
+| File                                                                          | Purpose                              | Length    | Audience        |
+| ----------------------------------------------------------------------------- | ------------------------------------ | --------- | --------------- |
+| [`FINAL_REPORT.md`](/research/historical-marketcap-all-coins/FINAL_REPORT.md) | Complete 13-section technical report | 489 lines | Technical leads |
+| Mathematical Model                                                            | Coverage equations and validation    | See below | Data scientists |
+| Trade-off Analysis                                                            | Freshness vs completeness breakdown  | See below | Architects      |
 
 ### Category 3: Implementation Files
 
-| File                                                               | Purpose                     | Type   | Status         |
-| ------------------------------------------------------------------ | --------------------------- | ------ | -------------- |
-| [`04_scheduler_implementation.py`](04_scheduler_implementation.py) | Production-ready scheduler  | Python | ✓ Ready to use |
-| [`01_prioritization_strategy.py`](01_prioritization_strategy.py)   | Strategy design validation  | Python | ✓ Reference    |
-| [`03_improved_scheduler.py`](03_improved_scheduler.py)             | Enhanced rotation algorithm | Python | ✓ Reference    |
-| [`05_mathematical_model.py`](05_mathematical_model.py)             | Coverage math & analysis    | Python | ✓ Reference    |
+| File                                                                                                        | Purpose                     | Type   | Status         |
+| ----------------------------------------------------------------------------------------------------------- | --------------------------- | ------ | -------------- |
+| [`04_scheduler_implementation.py`](/research/historical-marketcap-all-coins/04_scheduler_implementation.py) | Production-ready scheduler  | Python | ✓ Ready to use |
+| [`01_prioritization_strategy.py`](/research/historical-marketcap-all-coins/01_prioritization_strategy.py)   | Strategy design validation  | Python | ✓ Reference    |
+| [`03_improved_scheduler.py`](/research/historical-marketcap-all-coins/03_improved_scheduler.py)             | Enhanced rotation algorithm | Python | ✓ Reference    |
+| [`05_mathematical_model.py`](/research/historical-marketcap-all-coins/05_mathematical_model.py)             | Coverage math & analysis    | Python | ✓ Reference    |
 
 ### Category 4: Data & Analysis Outputs
 
-| File                                                 | Purpose                                 | Format | Key Metric            |
-| ---------------------------------------------------- | --------------------------------------- | ------ | --------------------- |
-| [`strategy.json`](strategy.json)                     | Initial strategy validation             | JSON   | 469 calls/day         |
-| [`improved_scheduler.json`](improved_scheduler.json) | Coverage analysis (90/180/365/450 days) | JSON   | 11.06% after 90d      |
-| [`mathematical_model.json`](mathematical_model.json) | Complete math validation                | JSON   | All formulas verified |
-| [`today_schedule.json`](today_schedule.json)         | Today's sampling schedule               | JSON   | 125 calls today       |
-| [`today_coins.csv`](today_coins.csv)                 | Today's coins in CSV                    | CSV    | Tier-ordered list     |
+| File                                                                                          | Purpose                                 | Format | Key Metric            |
+| --------------------------------------------------------------------------------------------- | --------------------------------------- | ------ | --------------------- |
+| [`strategy.json`](/research/historical-marketcap-all-coins/strategy.json)                     | Initial strategy validation             | JSON   | 469 calls/day         |
+| [`improved_scheduler.json`](/research/historical-marketcap-all-coins/improved_scheduler.json) | Coverage analysis (90/180/365/450 days) | JSON   | 11.06% after 90d      |
+| [`mathematical_model.json`](/research/historical-marketcap-all-coins/mathematical_model.json) | Complete math validation                | JSON   | All formulas verified |
+| [`today_schedule.json`](/research/historical-marketcap-all-coins/today_schedule.json)         | Today's sampling schedule               | JSON   | 125 calls today       |
+| [`today_coins.csv`](/research/historical-marketcap-all-coins/today_coins.csv)                 | Today's coins in CSV                    | CSV    | Tier-ordered list     |
 
 ---
 
@@ -244,7 +244,7 @@ No neglected coins:  Minimum 4 samples/year per coin
 ## FAQ - Answers Here First
 
 **Q: What file do I copy to my project?**
-A: [`04_scheduler_implementation.py`](04_scheduler_implementation.py) - Single file, no dependencies
+A: [`04_scheduler_implementation.py`](/research/historical-marketcap-all-coins/04_scheduler_implementation.py) - Single file, no dependencies
 
 **Q: How do I get today's coins?**
 A: `api = SchedulerAPI(); schedule = api.get_today_schedule()`

@@ -296,13 +296,13 @@ MIT License - see LICENSE file for details.
 
 ## Architecture Decisions
 
-See [docs/architecture/decisions/](docs/architecture/decisions/) for detailed ADRs:
+See [Architecture Decisions](/docs/architecture/decisions/) for detailed ADRs:
 
-- [ADR-0001: Hybrid Free Data Acquisition Strategy](docs/architecture/decisions/0001-hybrid-free-data-acquisition.md)
-- [ADR-0002: CI/CD Daily Rankings Database](docs/architecture/decisions/0002-cicd-daily-rankings-database.md)
-- [ADR-0003: Schema V2 Migration - PyArrow Native Types](docs/architecture/decisions/0003-schema-v2-migration.md)
-- [ADR-0008: Repository Housekeeping and Standards Compliance](docs/architecture/decisions/0008-repository-housekeeping.md)
-- [ADR-0009: Documentation Rectification](docs/architecture/decisions/0009-documentation-rectification.md)
+- [ADR-0001: Hybrid Free Data Acquisition Strategy](/docs/architecture/decisions/0001-hybrid-free-data-acquisition.md)
+- [ADR-0002: CI/CD Daily Rankings Database](/docs/architecture/decisions/0002-cicd-daily-rankings-database.md)
+- [ADR-0003: Schema V2 Migration - PyArrow Native Types](/docs/architecture/decisions/0003-schema-v2-migration.md)
+- [ADR-0008: Repository Housekeeping and Standards Compliance](/docs/architecture/decisions/0008-repository-housekeeping.md)
+- [ADR-0009: Documentation Rectification](/docs/architecture/decisions/0009-documentation-rectification.md)
 
 ## Support
 

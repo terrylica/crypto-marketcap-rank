@@ -139,7 +139,7 @@ If critical issues discovered:
 
 ## References
 
-- [Apache Arrow Future-Proof Analysis](../../../research/future-proof-schema-2024.md) (internal research)
+- [Apache Arrow Future-Proof Analysis](/research/future-proof-schema-2024.md) (internal research)
 - [DuckDB CSV vs Parquet Benchmark 2024](https://duckdb.org/2024/12/05/csv-files-dethroning-parquet-or-not)
 - [PyArrow Schema Documentation](https://arrow.apache.org/docs/python/api/datatypes.html)
 - [Parquet Type System](https://parquet.apache.org/docs/file-format/types/)

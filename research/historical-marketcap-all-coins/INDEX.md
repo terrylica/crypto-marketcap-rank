@@ -10,13 +10,13 @@
 
 ### For First-Time Users
 
-1. Start: [README.md](README.md) - Overview and quick start
-2. Review: [FINAL_REPORT.md](FINAL_REPORT.md) - Complete results and test data
+1. Start: [README.md](/research/historical-marketcap-all-coins/README.md) - Overview and quick start
+2. Review: [FINAL_REPORT.md](/research/historical-marketcap-all-coins/FINAL_REPORT.md) - Complete results and test data
 3. Run: `uv run 02_fetch_all_market_caps.py` - Collect initial data
 
 ### For Production Deployment
 
-1. Read: [README.md](README.md) - Setup instructions
+1. Read: [README.md](/research/historical-marketcap-all-coins/README.md) - Setup instructions
 2. Run: `uv run 04_production_collector.py` - Use production script
 3. Schedule: Add to crontab for automated collection
 4. Monitor: Check logs and statistics
@@ -25,7 +25,7 @@
 
 1. Check: `market_cap_snapshot.json` - Current data (JSON)
 2. Query: `history/market_cap_history.jsonl` - Time-series data
-3. Use: Python examples in [README.md](README.md)
+3. Use: Python examples in [README.md](/research/historical-marketcap-all-coins/README.md)
 
 ---
 
@@ -391,7 +391,7 @@ if len(lines) >= 2:
 
 ### Questions About Usage
 
-- See [README.md](README.md) for setup and usage
+- See [README.md](/research/historical-marketcap-all-coins/README.md) for setup and usage
 - Check FINAL_REPORT.md for detailed results
 
 ### Questions About Scripts
@@ -452,12 +452,12 @@ if len(lines) >= 2:
 **Choose your path:**
 
 1. **Quick Start:** Run `uv run 02_fetch_all_market_caps.py` now
-2. **Production:** Set up cron job following [README.md](README.md)
+2. **Production:** Set up cron job following [README.md](/research/historical-marketcap-all-coins/README.md)
 3. **Analysis:** Use provided Python examples to query data
 4. **Integration:** Connect to your own systems using APIs
 
 ---
 
-**Start here:** [README.md](README.md)  
-**Full results:** [FINAL_REPORT.md](FINAL_REPORT.md)  
+**Start here:** [README.md](/research/historical-marketcap-all-coins/README.md)
+**Full results:** [FINAL_REPORT.md](/research/historical-marketcap-all-coins/FINAL_REPORT.md)  
 **Production ready:** ✓
