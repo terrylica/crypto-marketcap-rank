@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.1.0...v2.1.1) (2025-12-04)
+
+
+### Bug Fixes
+
+* convert relative markdown links to repo-relative paths ([d7dea2e](https://github.com/terrylica/crypto-marketcap-rank/commit/d7dea2e48a58422cea067e52daeea9c22494c1fb))
+
 # [2.1.0](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.0.3...v2.1.0) (2025-12-04)
 
 
