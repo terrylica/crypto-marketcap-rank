@@ -26,15 +26,16 @@ jobs:
       - name: Test Success Notification
         if: github.event.inputs.notification_type == 'success' || github.event.inputs.notification_type == 'both'
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          # ADR: 2025-12-03-pushover-doppler-integration - dedicated Doppler project for repo-specific notifications
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_CMR }}
         run: |
           echo "Testing SUCCESS notification..."
 
-          # Fetch credentials from Doppler
+          # Fetch credentials from Doppler (ADR: 2025-12-03-pushover-doppler-integration)
           PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN \
-            --project notifications --config dev --plain)
+            --project crypto-marketcap-rank --config prd --plain)
           PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY \
-            --project notifications --config dev --plain)
+            --project crypto-marketcap-rank --config prd --plain)
 
           # Build message
           MESSAGE="🧪 Test Notification - SUCCESS
@@ -73,15 +74,16 @@ jobs:
       - name: Test Failure Notification
         if: github.event.inputs.notification_type == 'failure' || github.event.inputs.notification_type == 'both'
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          # ADR: 2025-12-03-pushover-doppler-integration - dedicated Doppler project for repo-specific notifications
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_CMR }}
         run: |
           echo "Testing FAILURE notification..."
 
-          # Fetch credentials from Doppler
+          # Fetch credentials from Doppler (ADR: 2025-12-03-pushover-doppler-integration)
           PUSHOVER_APP_TOKEN=$(doppler secrets get PUSHOVER_APP_TOKEN \
-            --project notifications --config dev --plain)
+            --project crypto-marketcap-rank --config prd --plain)
           PUSHOVER_USER_KEY=$(doppler secrets get PUSHOVER_USER_KEY \
-            --project notifications --config dev --plain)
+            --project crypto-marketcap-rank --config prd --plain)
 
           # Build message with simulated error
           MESSAGE="🧪 Test Notification - FAILURE
@@ -131,9 +133,9 @@ jobs:
           echo "**Time**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Credentials Source" >> $GITHUB_STEP_SUMMARY
-          echo "- **Doppler Project**: notifications" >> $GITHUB_STEP_SUMMARY
-          echo "- **Doppler Config**: dev" >> $GITHUB_STEP_SUMMARY
-          echo "- **Service Token**: DOPPLER_TOKEN (from repo secrets)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Doppler Project**: crypto-marketcap-rank" >> $GITHUB_STEP_SUMMARY
+          echo "- **Doppler Config**: prd" >> $GITHUB_STEP_SUMMARY
+          echo "- **Service Token**: DOPPLER_TOKEN_CMR (from repo secrets)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### What to Check" >> $GITHUB_STEP_SUMMARY
           echo "1. Check your Pushover app/device for test notification(s)" >> $GITHUB_STEP_SUMMARY
