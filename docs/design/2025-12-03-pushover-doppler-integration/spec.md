@@ -1,8 +1,8 @@
 ---
 adr: 2025-12-03-pushover-doppler-integration
 source: ~/.claude/plans/zazzy-enchanting-whale.md
-implementation-status: in_progress
-phase: phase-1
+implementation-status: completed
+phase: phase-3
 last-updated: 2025-12-03
 ---
 
