@@ -1,0 +1,19 @@
+# mise configuration - sets terrylica as GitHub account for this directory
+# GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/5
+
+[env]
+GH_TOKEN = "{{ read_file(path=env.HOME ~ '/.claude/.secrets/gh-token-terrylica') | trim }}"
+GITHUB_TOKEN = "{{ read_file(path=env.HOME ~ '/.claude/.secrets/gh-token-terrylica') | trim }}"
+
+[tools]
+python = "3.13"
+uv = "latest"
+
+[task_config]
+includes = [
+  ".mise/tasks/dev.toml",
+  ".mise/tasks/collect.toml",
+  ".mise/tasks/release.toml",
+  ".mise/tasks/sdk.toml",
+]
+

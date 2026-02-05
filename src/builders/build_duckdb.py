@@ -156,6 +156,81 @@ class DuckDBBuilder(DatabaseBuilder):
                 output_file.unlink()
             raise BuildError(f"DuckDB creation failed: {e}") from e
 
+    def export_parquet(
+        self,
+        database_file: Path,
+        output_dir: Path,
+        compression: str = "zstd",
+        compression_level: int = 3,
+        partition: bool = True,
+    ) -> Path:
+        """
+        Export DuckDB database to Parquet format.
+
+        Uses DuckDB's native COPY command for efficient Parquet export with
+        optional Hive-style partitioning by date components.
+
+        Args:
+            database_file: Path to .duckdb file
+            output_dir: Output directory for Parquet files
+            compression: Compression codec (zstd, snappy, gzip)
+            compression_level: Compression level (1-22 for zstd)
+            partition: If True, use Hive-style partitioning by year/month/day
+
+        Returns:
+            Path to output directory
+
+        Raises:
+            BuildError: If export fails
+        """
+        if not database_file.exists():
+            raise BuildError(f"Database file not found: {database_file}")
+
+        try:
+            print(f"Exporting to Parquet: {output_dir}")
+            con = duckdb.connect(str(database_file), read_only=True)
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            if partition:
+                # Hive-style partitioning: year=YYYY/month=MM/day=DD/
+                print("  Using Hive-style partitioning...")
+                con.execute(f"""
+                    COPY (
+                        SELECT *,
+                            EXTRACT(YEAR FROM date)::INTEGER AS year,
+                            EXTRACT(MONTH FROM date)::INTEGER AS month,
+                            EXTRACT(DAY FROM date)::INTEGER AS day
+                        FROM rankings
+                    ) TO '{output_dir}' (
+                        FORMAT PARQUET,
+                        PARTITION_BY (year, month, day),
+                        COMPRESSION {compression},
+                        COMPRESSION_LEVEL {compression_level}
+                    )
+                """)
+            else:
+                # Single flat Parquet file
+                parquet_file = output_dir / "rankings.parquet"
+                con.execute(f"""
+                    COPY rankings TO '{parquet_file}' (
+                        FORMAT PARQUET,
+                        COMPRESSION {compression},
+                        COMPRESSION_LEVEL {compression_level}
+                    )
+                """)
+
+            con.close()
+
+            # Calculate total size
+            total_size = sum(f.stat().st_size for f in output_dir.rglob("*.parquet"))
+            size_mb = total_size / (1024 * 1024)
+            print(f"✅ Parquet export complete: {output_dir} ({size_mb:.1f} MB)")
+
+            return output_dir
+
+        except Exception as e:
+            raise BuildError(f"Parquet export failed: {e}") from e
+
     def validate(self, database_file: Path) -> bool:
         """
         Validate built DuckDB database using comprehensive Schema V2 validation.

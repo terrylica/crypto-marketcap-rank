@@ -1,0 +1,48 @@
+# Publish to PyPI on GitHub Release
+#
+# GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/2
+#
+# Triggers when semantic-release creates a new release.
+# Uses PyPI trusted publishing (OIDC) - no API tokens needed.
+#
+# Setup required:
+# 1. Go to https://pypi.org/manage/project/crypto-marketcap-rank/settings/publishing/
+# 2. Add trusted publisher:
+#    - Owner: terrylica
+#    - Repository: crypto-marketcap-rank
+#    - Workflow: publish-pypi.yml
+#    - Environment: pypi
+
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write  # Required for OIDC trusted publishing
+
+jobs:
+  publish:
+    name: Build and Publish to PyPI
+    runs-on: ubuntu-latest
+    environment: pypi
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # No token needed - uses OIDC trusted publishing

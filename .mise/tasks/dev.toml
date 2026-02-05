@@ -1,0 +1,37 @@
+# Development workflow tasks
+# GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/5
+
+[fmt]
+description = "Format code with ruff"
+run = "uv run ruff format src/ tests/"
+
+[lint]
+description = "Lint code with ruff"
+run = "uv run ruff check src/ tests/"
+
+["lint:fix"]
+description = "Lint and auto-fix"
+run = "uv run ruff check --fix src/ tests/"
+
+["test:unit"]
+description = "Run unit tests"
+depends = ["lint"]
+run = "uv run pytest tests/unit/ -v"
+
+["test:integration"]
+description = "Run integration tests"
+run = "uv run pytest tests/integration/ -v"
+
+["test:e2e"]
+description = "Run E2E tests"
+run = "uv run pytest tests/e2e/ -v"
+
+["test:all"]
+description = "Run all tests"
+depends = ["test:unit", "test:integration", "test:e2e"]
+run = "echo 'All tests passed'"
+
+[check]
+description = "Run all checks (lint + test)"
+depends = ["lint", "test:unit"]
+run = "echo 'All checks passed'"

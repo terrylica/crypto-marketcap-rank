@@ -13,13 +13,17 @@ Main Entry Point - Daily Cryptocurrency Rankings Collection
 
 Orchestrates:
 1. Data collection (CoinGecko API)
-2. Database building (DuckDB + Parquet)
+2. Database building (DuckDB)
 3. Validation (quality checks)
+
+Note: Parquet export is available on-demand via DuckDBBuilder.export_parquet()
 
 Adheres to SLO:
 - Availability: Checkpoint-based resume
 - Correctness: Validate each step, raise on errors
 - Observability: Progress logging, metrics tracking
+
+GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/5
 """
 
 import sys
@@ -27,11 +31,10 @@ from datetime import datetime
 
 from builders.base_builder import BuildError
 from builders.build_duckdb import DuckDBBuilder
-from builders.build_parquet import ParquetBuilder
 from collectors.coingecko_collector import CoinGeckoCollector, CollectionError
 
 
-def main(date: str = None):
+def main(date: str | None = None):
     """
     Main pipeline: collect → build → validate.
 
@@ -87,19 +90,6 @@ def main(date: str = None):
         print(f"❌ DuckDB build failed: {e}")
         sys.exit(1)
 
-    # Build Parquet
-    try:
-        print("\n2b. Building Parquet...")
-        parquet_builder = ParquetBuilder()
-        parquet_dir = parquet_builder.build(raw_file)
-        parquet_builder.validate(parquet_dir)
-        built_files['parquet'] = parquet_dir
-        print(f"✅ Parquet complete: {parquet_dir}")
-
-    except BuildError as e:
-        print(f"❌ Parquet build failed: {e}")
-        sys.exit(1)
-
     # Step 3: Summary
     print(f"\n{'='*80}")
     print("✅ Pipeline Complete!")
@@ -109,7 +99,7 @@ def main(date: str = None):
     print("\nOutput files:")
     print(f"  Raw JSON:  {raw_file}")
     print(f"  DuckDB:    {built_files['duckdb']} ({built_files['duckdb'].stat().st_size / (1024*1024):.1f} MB)")
-    print(f"  Parquet:   {built_files['parquet']}")
+    print("\nNote: Use DuckDBBuilder.export_parquet() to export Parquet on-demand")
     print(f"{'='*80}\n")
 
 
@@ -122,8 +112,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n\n⚠️  Pipeline interrupted by user")
         sys.exit(130)
-    except Exception as e:
-        print(f"\n\n❌ Pipeline failed with unexpected error: {e}")
+    except (CollectionError, BuildError, OSError, ValueError, RuntimeError) as e:
+        print(f"\n\n❌ Pipeline failed with error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

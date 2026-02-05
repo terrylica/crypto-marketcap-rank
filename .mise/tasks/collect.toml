@@ -1,0 +1,40 @@
+# Data collection pipeline tasks
+# GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/5
+
+[collect]
+description = "Run full collection pipeline (today)"
+run = "uv run src/main.py"
+
+["collect:date"]
+description = "Collect for specific date (mise run collect:date date=2025-01-15)"
+run = "uv run src/main.py $date"
+
+["build:duckdb"]
+description = "Build DuckDB from raw JSON (mise run build:duckdb input=path/to/file.json)"
+run = "uv run src/builders/build_duckdb.py $input"
+
+["export:parquet"]
+description = "Export DuckDB to Parquet (mise run export:parquet db=path/to.duckdb output=path/to/dir)"
+run = '''
+uv run python -c "
+from pathlib import Path
+import sys
+sys.path.insert(0, 'src')
+from builders.build_duckdb import DuckDBBuilder
+builder = DuckDBBuilder()
+builder.export_parquet(Path('$db'), Path('$output'))
+"
+'''
+
+[validate]
+description = "Validate database (mise run validate db=path/to.duckdb)"
+run = '''
+uv run python -c "
+from pathlib import Path
+import sys
+sys.path.insert(0, 'src')
+from builders.build_duckdb import DuckDBBuilder
+builder = DuckDBBuilder()
+builder.validate(Path('$db'))
+"
+'''

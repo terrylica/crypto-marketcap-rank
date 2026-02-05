@@ -12,8 +12,9 @@ on:
         required: false
         type: string
 
+# GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/5
 env:
-  PYTHON_VERSION: '3.14'
+  PYTHON_VERSION: '3.13'
 
 jobs:
   collect-and-build:
@@ -53,14 +54,6 @@ jobs:
         with:
           name: duckdb-database
           path: data/processed/*.duckdb
-          retention-days: 7
-
-      - name: Upload Parquet artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: parquet-database
-          path: data/processed/*.parquet
           retention-days: 7
 
       - name: Get collection date
@@ -110,10 +103,9 @@ jobs:
             **Collection Date:** ${{ steps.get-date.outputs.date }}
             **Generated:** ${{ github.event.repository.updated_at }}
 
-            ## Download Options
+            ## Download
 
-            - **DuckDB** (instant SQL queries): `crypto_rankings_*.duckdb`
-            - **Parquet** (Hive-partitioned, zstd compressed): `crypto_rankings_*.parquet/`
+            **DuckDB** (instant SQL queries): `crypto_rankings_*.duckdb`
 
             ## Quick Start
 
@@ -123,11 +115,23 @@ jobs:
             con.execute("SELECT * FROM rankings ORDER BY rank LIMIT 10").df()
             ```
 
+            ## Export to Parquet
+
+            ```sql
+            -- Export to single Parquet file
+            COPY rankings TO 'rankings.parquet' (FORMAT PARQUET, COMPRESSION zstd);
+
+            -- Export with Hive partitioning
+            COPY (
+                SELECT *, EXTRACT(YEAR FROM date) AS year, EXTRACT(MONTH FROM date) AS month
+                FROM rankings
+            ) TO 'rankings/' (FORMAT PARQUET, PARTITION_BY (year, month));
+            ```
+
             ---
             *Automated daily collection via GitHub Actions*
           files: |
             artifacts/duckdb-database/*.duckdb
-            artifacts/parquet-database/*.parquet
           draft: false
           prerelease: false
           make_latest: true

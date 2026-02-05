@@ -1,0 +1,46 @@
+# SDK development tasks
+#
+# GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/1
+
+["sdk:load-latest"]
+description = "Test load_latest() function"
+run = '''
+uv run python -c "
+import sys
+sys.path.insert(0, 'src')
+from crypto_marketcap_rank import load_latest
+db = load_latest()
+print(db.get_top_n(10))
+db.close()
+"
+'''
+
+["sdk:cache-clear"]
+description = "Clear SDK cache"
+run = "rm -rf ~/.cache/crypto_marketcap_rank/"
+
+["sdk:demo"]
+description = "Run SDK demo"
+run = '''
+uv run python -c "
+import sys
+sys.path.insert(0, 'src')
+from crypto_marketcap_rank import load_latest, __version__
+print(f'crypto-marketcap-rank v{__version__}')
+print()
+print('Loading latest rankings...')
+db = load_latest()
+print()
+print('Top 10 by Market Cap:')
+df = db.get_top_n(10)
+print(df[['rank', 'symbol', 'name', 'market_cap']].to_string(index=False))
+db.close()
+"
+'''
+
+["sdk:cli-test"]
+description = "Test CLI commands"
+run = '''
+uv run python -m crypto_marketcap_rank.cli --version
+uv run python -m crypto_marketcap_rank.cli rankings --top 5
+'''

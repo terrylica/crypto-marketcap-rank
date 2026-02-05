@@ -79,7 +79,7 @@ wheels = [
 
 [[package]]
 name = "crypto-marketcap-rank"
-version = "2.0.1"
+version = "2.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "duckdb" },
@@ -90,9 +90,17 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+collection = [
+    { name = "python-dateutil" },
+]
 dev = [
     { name = "pytest" },
     { name = "ruff" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
 ]
 
 [package.metadata]
@@ -102,10 +110,14 @@ requires-dist = [
     { name = "pyarrow", specifier = ">=15.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "python-dateutil", specifier = ">=2.8.0" },
+    { name = "python-dateutil", marker = "extra == 'collection'", specifier = ">=2.8.0" },
     { name = "requests", specifier = ">=2.31.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["dev", "collection"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=9.0.1" }]
 
 [[package]]
 name = "duckdb"

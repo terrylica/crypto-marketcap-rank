@@ -1,0 +1,22 @@
+# Release workflow tasks
+# GitHub Issue: https://github.com/terrylica/crypto-marketcap-rank/issues/5
+
+["release:check"]
+description = "Check release readiness"
+depends = ["check"]
+run = "gh release list --limit 5"
+
+["release:daily"]
+description = "Create daily release (manual)"
+run = '''
+DATE=$(date +%Y-%m-%d)
+gh release create "daily-$DATE" \
+  --title "Daily Rankings $DATE" \
+  --notes "Manual daily collection" \
+  data/processed/*.duckdb
+'''
+
+["release:pypi"]
+description = "Build and publish to PyPI"
+env = { UV_PUBLISH_TOKEN = "{{ op('Engineering/PyPI Token - terrylica-pypi-entire-account-token', 'credential') }}" }
+run = "uv build && uv publish"

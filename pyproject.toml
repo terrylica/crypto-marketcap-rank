@@ -1,9 +1,26 @@
 [project]
 name = "crypto-marketcap-rank"
 version = "2.1.1"
-description = "Historical cryptocurrency market cap rankings dataset acquisition"
+description = "Daily cryptocurrency market cap rankings with auto-download from GitHub Releases"
 readme = "README.md"
 requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    { name = "terrylica" },
+]
+keywords = ["cryptocurrency", "market-cap", "rankings", "duckdb", "bitcoin", "ethereum"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Typing :: Typed",
+]
 dependencies = [
     "pandas>=2.0.0",
     "requests>=2.31.0",
@@ -17,13 +34,34 @@ dev = [
     "pytest>=8.0.0",
     "ruff>=0.1.0",
 ]
+collection = [
+    "python-dateutil>=2.8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/terrylica/crypto-marketcap-rank"
+Documentation = "https://github.com/terrylica/crypto-marketcap-rank#readme"
+Repository = "https://github.com/terrylica/crypto-marketcap-rank.git"
+Issues = "https://github.com/terrylica/crypto-marketcap-rank/issues"
+Changelog = "https://github.com/terrylica/crypto-marketcap-rank/blob/main/CHANGELOG.md"
+
+[project.scripts]
+crypto-marketcap-rank = "crypto_marketcap_rank.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["src/crypto_marketcap_rank"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/crypto_marketcap_rank",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+]
 
 [tool.ruff]
 line-length = 120
@@ -32,3 +70,8 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W"]
 ignore = []
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.1",
+]
