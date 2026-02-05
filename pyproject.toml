@@ -1,6 +1,6 @@
 [project]
 name = "crypto-marketcap-rank"
-version = "3.0.0"
+version = "3.0.1"
 description = "Daily cryptocurrency market cap rankings with auto-download from GitHub Releases"
 readme = "README.md"
 requires-python = ">=3.12"

@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/terrylica/crypto-marketcap-rank/compare/v3.0.0...v3.0.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* **sdk:** use importlib.metadata for SSoT version discovery ([0ad7952](https://github.com/terrylica/crypto-marketcap-rank/commit/0ad7952ad22a783c9e306ee93b84a0832d3a8a41))
+
 # [3.0.0](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.1.1...v3.0.0) (2026-02-05)
 
 
