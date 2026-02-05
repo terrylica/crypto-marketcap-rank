@@ -181,6 +181,28 @@ def load_date_range(
     return RankingsDatabase(merged_path)
 
 
+def get_data_availability() -> dict:
+    """Get information about available data without downloading.
+
+    Queries GitHub API to determine the date range of available data.
+
+    Returns:
+        Dictionary with availability info:
+        - earliest: Earliest available date (datetime.date)
+        - latest: Most recent available date (datetime.date)
+        - total_days: Number of days with data
+        - source: Data source description
+
+    Example:
+        >>> from crypto_marketcap_rank import get_data_availability
+        >>> info = get_data_availability()
+        >>> print(f"Data available from {info['earliest']} to {info['latest']}")
+        >>> print(f"Total days: {info['total_days']}")
+    """
+    client = GitHubReleasesClient()
+    return client.get_data_availability()
+
+
 def _next_day(d: date) -> date:
     """Get next day, handling month/year boundaries."""
     from datetime import timedelta
@@ -189,6 +211,8 @@ def _next_day(d: date) -> date:
 
 def _merge_databases(db_paths: list[Path], cache_dir: Path | None) -> Path:
     """Merge multiple DuckDB databases into one.
+
+    Uses DuckDB ATTACH to read from source databases and merge data.
 
     Args:
         db_paths: List of database file paths.
@@ -209,19 +233,7 @@ def _merge_databases(db_paths: list[Path], cache_dir: Path | None) -> Path:
     # Remove existing merged database
     merged_path.unlink(missing_ok=True)
 
-    # Create and populate merged database
-    con = duckdb.connect(str(merged_path))
-
-    # Create table from first database
-    first_db = db_paths[0]
-    con.execute(f"CREATE TABLE rankings AS SELECT * FROM read_parquet('{first_db}')")
-
-    # This approach won't work - DuckDB files aren't parquet
-    # Let's use ATTACH instead
-    con.close()
-
-    # Rebuild with proper ATTACH approach
-    merged_path.unlink(missing_ok=True)
+    # Create and populate merged database using ATTACH
     con = duckdb.connect(str(merged_path))
 
     for i, db_path in enumerate(db_paths):
@@ -229,16 +241,20 @@ def _merge_databases(db_paths: list[Path], cache_dir: Path | None) -> Path:
         con.execute(f"ATTACH '{db_path}' AS {alias} (READ_ONLY)")
 
         if i == 0:
+            # Create table from first database
             con.execute(f"CREATE TABLE rankings AS SELECT * FROM {alias}.rankings")
         else:
+            # Insert from subsequent databases
             con.execute(f"INSERT INTO rankings SELECT * FROM {alias}.rankings")
 
         con.execute(f"DETACH {alias}")
 
-    # Create indexes
+    # Create indexes for query performance
     con.execute("CREATE INDEX IF NOT EXISTS idx_date ON rankings(date)")
     con.execute("CREATE INDEX IF NOT EXISTS idx_rank ON rankings(rank)")
+    con.execute("CREATE INDEX IF NOT EXISTS idx_coin_id ON rankings(coin_id)")
     con.execute("CHECKPOINT")
     con.close()
 
+    logger.info(f"Merged {len(db_paths)} databases into {merged_path}")
     return merged_path

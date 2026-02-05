@@ -60,11 +60,15 @@ class TestGitHubReleasesClientLatest:
     """Test get_latest_release functionality."""
 
     def test_get_latest_release_success(self, client, mock_response):
-        """Successfully fetches latest release."""
+        """Successfully fetches latest daily release (filters out semantic version tags)."""
         with patch.object(client._session, "get") as mock_get:
             mock_resp = MagicMock()
             mock_resp.status_code = 200
-            mock_resp.json.return_value = mock_response
+            # API now returns a list of releases, we filter for daily-* tags
+            mock_resp.json.return_value = [
+                mock_response,  # daily-2025-01-15 with DuckDB asset
+                {"tag_name": "v3.0.0", "assets": []},  # Semantic version (no assets)
+            ]
             mock_get.return_value = mock_resp
 
             result = client.get_latest_release()
@@ -84,17 +88,18 @@ class TestGitHubReleasesClientLatest:
                 client.get_latest_release()
 
     def test_get_latest_release_no_duckdb_asset(self, client):
-        """Raises DataNotFoundError when no DuckDB asset in release."""
+        """Raises DataNotFoundError when no daily releases with DuckDB assets."""
         with patch.object(client._session, "get") as mock_get:
             mock_resp = MagicMock()
             mock_resp.status_code = 200
-            mock_resp.json.return_value = {
-                "tag_name": "daily-2025-01-15",
-                "assets": [{"name": "README.md", "url": "...", "size": 100}],
-            }
+            # Only semantic version releases or daily releases without DuckDB
+            mock_resp.json.return_value = [
+                {"tag_name": "v3.0.0", "assets": []},
+                {"tag_name": "daily-2025-01-15", "assets": [{"name": "README.md", "url": "...", "size": 100}]},
+            ]
             mock_get.return_value = mock_resp
 
-            with pytest.raises(DataNotFoundError, match="No DuckDB asset"):
+            with pytest.raises(DataNotFoundError, match="No daily releases with DuckDB"):
                 client.get_latest_release()
 
 

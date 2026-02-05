@@ -23,22 +23,19 @@ from .historical import (
     get_top_n_at_date,
     get_universe_over_time,
 )
-from .loader import load_date, load_date_range, load_latest
+from .loader import get_data_availability, load_date, load_date_range, load_latest
 
 __all__ = [
-    # Exceptions
     "CacheError",
     "DataNotFoundError",
     "DownloadError",
-    # Database wrapper
     "RankingsDatabase",
-    # Historical query functions
     "get_available_dates",
     "get_coin_history",
+    "get_data_availability",
     "get_rank_changes",
     "get_top_n_at_date",
     "get_universe_over_time",
-    # Loader functions
     "load_date",
     "load_date_range",
     "load_latest",
