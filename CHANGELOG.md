@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.1.1...v3.0.0) (2026-02-05)
+
+
+### Features
+
+* **sdk:** add Python SDK with PyPI distribution ([3894a06](https://github.com/terrylica/crypto-marketcap-rank/commit/3894a0629e94bba3c1d0da30d6be51dea4cef1e4)), closes [1-#6](https://github.com/1-/issues/6) [#1](https://github.com/terrylica/crypto-marketcap-rank/issues/1) [#2](https://github.com/terrylica/crypto-marketcap-rank/issues/2) [#3](https://github.com/terrylica/crypto-marketcap-rank/issues/3) [#4](https://github.com/terrylica/crypto-marketcap-rank/issues/4) [#5](https://github.com/terrylica/crypto-marketcap-rank/issues/5) [#6](https://github.com/terrylica/crypto-marketcap-rank/issues/6)
+
+
+### BREAKING CHANGES
+
+* **sdk:** ParquetBuilder removed. Use DuckDBBuilder.export_parquet() instead.
+
 ## [2.1.1](https://github.com/terrylica/crypto-marketcap-rank/compare/v2.1.0...v2.1.1) (2025-12-04)
 
 
