@@ -12,6 +12,8 @@ Example:
     >>> print(df[['rank', 'symbol', 'name', 'market_cap']])
 """
 
+from importlib.metadata import version
+
 from .connection import RankingsDatabase
 from .exceptions import CacheError, DataNotFoundError, DownloadError
 from .historical import (
@@ -42,4 +44,6 @@ __all__ = [
     "load_latest",
 ]
 
-__version__ = "0.1.0"
+# SSoT: Version derived from pyproject.toml via importlib.metadata
+# Reference: https://github.com/terrylica/cc-skills/plugins/itp/skills/semantic-release/references/version-alignment.md
+__version__ = version("crypto-marketcap-rank")
