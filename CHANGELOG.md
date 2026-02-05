@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/terrylica/crypto-marketcap-rank/compare/v3.0.1...v3.0.2) (2026-02-05)
+
+
+### Bug Fixes
+
+* **sdk:** resolve load_latest and load_date_range bugs ([2b72673](https://github.com/terrylica/crypto-marketcap-rank/commit/2b7267325f13f21be7ee2dad77f30024218b9ce1)), closes [#7](https://github.com/terrylica/crypto-marketcap-rank/issues/7) [#7](https://github.com/terrylica/crypto-marketcap-rank/issues/7)
+
 ## [3.0.1](https://github.com/terrylica/crypto-marketcap-rank/compare/v3.0.0...v3.0.1) (2026-02-05)
 
 
