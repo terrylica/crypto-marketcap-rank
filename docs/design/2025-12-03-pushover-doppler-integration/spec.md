@@ -65,10 +65,10 @@ doppler configs create prd --project crypto-marketcap-rank
 
 ```bash
 # Add the Pushover credentials
-doppler secrets set PUSHOVER_APP_TOKEN="aj4pnat5kib3qbs8zy6rrzhnevcws3" \
+doppler secrets set PUSHOVER_APP_TOKEN="<pushover-app-token>" \
   --project crypto-marketcap-rank --config prd
 
-doppler secrets set PUSHOVER_USER_KEY="ury88s1def6v16seeueoefqn1zbua1" \
+doppler secrets set PUSHOVER_USER_KEY="<pushover-user-key>" \
   --project crypto-marketcap-rank --config prd
 ```
 
