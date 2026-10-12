@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://moonrepo.dev/schemas/project.json
+# crypto-marketcap-rank — local quality gate.
+#
+#   moon run cmr:check       offline gate: format check + lint + unit tests + integration tests
+#   moon run cmr:fmt         rewrite files with ruff format (not part of the gate)
+#   moon run cmr:<task>      any single task below
+#
+# Integration tests mock the network layer, so the whole gate runs offline.
+# The daily collection and the releases run in GitHub Actions (.github/workflows/).
+layer: 'library'
+language: 'python'
+
+tasks:
+  fmt:
+    script: 'uv run --extra dev ruff format src/ tests/'
+    options: { cache: false }
+  fmt-check:
+    script: 'uv run --extra dev ruff format --check src/ tests/'
+    inputs: ['src/**/*', 'tests/**/*', 'pyproject.toml']
+  lint:
+    script: 'uv run --extra dev ruff check src/ tests/'
+    inputs: ['src/**/*', 'tests/**/*', 'pyproject.toml']
+  lint-fix:
+    script: 'uv run --extra dev ruff check --fix src/ tests/'
+    options: { cache: false }
+  test:
+    script: 'uv run --extra dev pytest tests/unit/ -v'
+    inputs: ['src/**/*', 'tests/**/*', 'pyproject.toml', 'uv.lock']
+  test-integration:
+    script: 'uv run --extra dev pytest tests/integration/ -v'
+    inputs: ['src/**/*', 'tests/**/*', 'pyproject.toml', 'uv.lock']
+  check:
+    deps: ['~:fmt-check', '~:lint', '~:test', '~:test-integration']
+    script: "echo 'cmr:check passed'"
+    options: { cache: false }

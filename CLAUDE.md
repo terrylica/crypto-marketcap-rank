@@ -131,7 +131,15 @@ uv run src/validators/validator.py data/processed/crypto_rankings_2025-11-24.duc
 
 ### Run Tests
 
+The local quality gate is moon (`moon.yml`, project `cmr`); proto pins uv (`.prototools`) and `.python-version` pins Python 3.13.
+
 ```bash
+# Local gate: ruff format check + ruff lint + unit + integration tests (offline; network is mocked)
+moon run cmr:check
+
+# Rewrite formatting (not part of the gate)
+moon run cmr:fmt
+
 # Run all tests
 uv run pytest tests/ -v
 

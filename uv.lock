@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 
 [[package]]
@@ -79,7 +79,7 @@ wheels = [
 
 [[package]]
 name = "crypto-marketcap-rank"
-version = "3.0.1"
+version = "3.0.2"
 source = { editable = "." }
 dependencies = [
     { name = "duckdb" },

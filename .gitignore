@@ -79,3 +79,7 @@ node_modules/
 
 # Lychee link checker cache and results
 .lychee*
+
+# moon
+.moon/cache/
+.moon/docker/
